@@ -130,8 +130,8 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
         mechanism->fMagic = kMechanismMagic;
         mechanism->fEngine = inEngine;
         mechanism->fPlugin = plugin;
-        mechanism->fMachinePIN = (strcmp(mechanismId, "MachinePIN") == 0);
-        mechanism->fVerify = (strcmp(mechanismId, "Verify") == 0);
+        mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
+        mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
     }
     
     *outMechanism = mechanism;
@@ -149,9 +149,22 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     
     mechanism = (MechanismRecord *) inMechanism;
     assert([self MechanismValid:mechanism]);
+    // Call the GUI mechanism
+    #pragma mark --GUI
+    if (mechanism->fCryptGUI) {
+        CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
+        [cryptgui run];
+    }
     
-    Enablement *enablement = [[Enablement alloc]initWithMechanism:mechanism];
-    [enablement run];
+    // Call the Enablement mechanism
+    #pragma mark --Enablement
+    if (mechanism->fEnablement) {
+        Enablement *enablement = [[Enablement alloc] initWithMechanism:mechanism];
+        [enablement run];
+    }
+    
+//    Enablement *enablement = [[Enablement alloc]initWithMechanism:mechanism];
+//    [enablement run];
     
     // Default "Allow Login". Used if none of the mechanisms above are called or don't make
     // a decision

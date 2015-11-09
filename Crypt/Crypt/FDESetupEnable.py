@@ -30,4 +30,4 @@ if p.returncode != 0:
     sys.stdout.write(err)
 else:
     sys.stdout.write(stdout_data)
-    plistlib.writePlist(stdout_data, '/private/var/root/recovery_key.plist')
+    #plistlib.writePlist(stdout_data, '/private/var/root/recovery_key.plist')

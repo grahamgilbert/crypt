@@ -10,6 +10,7 @@
 		FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */; };
 		FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */; };
 		FCD4FDA41BF0D79100CF7F48 /* FDESetupEnable.py in Resources */ = {isa = PBXBuildFile; fileRef = FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */; };
+		FCD4FDA61BF1027100CF7F48 /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FDA51BF1027100CF7F48 /* CryptGUI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
 		FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = FDESetupEnable.py; sourceTree = "<group>"; };
+		FCD4FDA51BF1027100CF7F48 /* CryptGUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptGUI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 			children = (
 				FCD4FD971BEE763C00CF7F48 /* Info.plist */,
 				FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */,
+				FCD4FDA51BF1027100CF7F48 /* CryptGUI.swift */,
 				FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */,
 				FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */,
 			);
@@ -131,6 +134,7 @@
 			files = (
 				FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */,
 				FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */,
+				FCD4FDA61BF1027100CF7F48 /* CryptGUI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
