@@ -1,0 +1,279 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */; };
+		FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */; };
+		FCD4FDA41BF0D79100CF7F48 /* FDESetupEnable.py in Resources */ = {isa = PBXBuildFile; fileRef = FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FCD4FD941BEE763C00CF7F48 /* Crypt.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crypt.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCD4FD971BEE763C00CF7F48 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCD4FD9D1BEE76A100CF7F48 /* CryptAuthPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptAuthPlugin.h; sourceTree = "<group>"; };
+		FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptAuthPlugin.m; sourceTree = "<group>"; };
+		FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
+		FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
+		FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = FDESetupEnable.py; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FCD4FD911BEE763C00CF7F48 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FCD4FD8B1BEE763C00CF7F48 = {
+			isa = PBXGroup;
+			children = (
+				FCD4FD9D1BEE76A100CF7F48 /* CryptAuthPlugin.h */,
+				FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */,
+				FCD4FD961BEE763C00CF7F48 /* Crypt */,
+				FCD4FD951BEE763C00CF7F48 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FCD4FD951BEE763C00CF7F48 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FCD4FD941BEE763C00CF7F48 /* Crypt.bundle */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FCD4FD961BEE763C00CF7F48 /* Crypt */ = {
+			isa = PBXGroup;
+			children = (
+				FCD4FD971BEE763C00CF7F48 /* Info.plist */,
+				FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */,
+				FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */,
+				FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */,
+			);
+			path = Crypt;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FCD4FD931BEE763C00CF7F48 /* Crypt */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */;
+			buildPhases = (
+				FCD4FD901BEE763C00CF7F48 /* Sources */,
+				FCD4FD911BEE763C00CF7F48 /* Frameworks */,
+				FCD4FD921BEE763C00CF7F48 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Crypt;
+			productName = Crypt;
+			productReference = FCD4FD941BEE763C00CF7F48 /* Crypt.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FCD4FD8C1BEE763C00CF7F48 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0710;
+				ORGANIZATIONNAME = "Graham Gilbert";
+				TargetAttributes = {
+					FCD4FD931BEE763C00CF7F48 = {
+						CreatedOnToolsVersion = 7.1;
+					};
+				};
+			};
+			buildConfigurationList = FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FCD4FD8B1BEE763C00CF7F48;
+			productRefGroup = FCD4FD951BEE763C00CF7F48 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FCD4FD931BEE763C00CF7F48 /* Crypt */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		FCD4FD921BEE763C00CF7F48 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCD4FDA41BF0D79100CF7F48 /* FDESetupEnable.py in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FCD4FD901BEE763C00CF7F48 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */,
+				FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FCD4FD981BEE763C00CF7F48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FCD4FD991BEE763C00CF7F48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FCD4FD9B1BEE763C00CF7F48 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Graham Gilbert (9D8XP85393)";
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				INFOPLIST_FILE = Crypt/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		FCD4FD9C1BEE763C00CF7F48 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Developer ID Application: Graham Gilbert (9D8XP85393)";
+				COMBINE_HIDPI_IMAGES = YES;
+				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				INFOPLIST_FILE = Crypt/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCD4FD981BEE763C00CF7F48 /* Debug */,
+				FCD4FD991BEE763C00CF7F48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCD4FD9B1BEE763C00CF7F48 /* Debug */,
+				FCD4FD9C1BEE763C00CF7F48 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
+}

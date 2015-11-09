@@ -31,3 +31,5 @@ DerivedData
 # Carthage/Checkouts
 
 Carthage/Build
+
+Crypt/Crypt.xcodeproj/project.xcworkspace/contents.xcworkspacedata
