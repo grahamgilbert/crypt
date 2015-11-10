@@ -62,11 +62,11 @@
     // AuthorizationPlugin class . If the pin is nil, we still want to display to window. Hitting
     // enter will allow the login.
     
-    BOOL *showGUI;
+    BOOL showGUI;
     showGUI = [self getBoolHintValue];
     
     if (showGUI == true) {
-    [NSApp runModalForWindow:[promptWindowController window]];
+        [NSApp runModalForWindow:[promptWindowController window]];
     }
     
 #pragma mark Display PromptWindowController
@@ -96,6 +96,8 @@
     } else {
         NSLog(@"VerifyAuth:MechanismInvoke:Verify [!] Failed to read %@", contextCryptDomain);
     }
+    
+    NSLog(@"%@",hint);
     
     return [hint boolValue];
 }

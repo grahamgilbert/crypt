@@ -38,7 +38,6 @@ class Enablement: NSObject {
             
             NSLog("Enabling filevault")
             enableFilevault()
-            restart_mac()
         } else {
         NSLog("%@","Hint value wasn't set")
         // Allow to login. End of mechanism
@@ -92,37 +91,22 @@ class Enablement: NSObject {
            options: NSPropertyListMutabilityOptions.Immutable, format: nil)
         
         let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
-        outPipe.fileHandleForReading.closeFile()
         
+        NSLog("%@",output)
         let file = "crypt_output.plist" //this is the file. we will write to and read from it
         
-        
-        if let dir : NSString = "/private/var/root" {
-            let path = dir.stringByAppendingPathComponent(file);
-            
-            //writing
-            do {
-                try output.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
-            }
-            catch {throw FileVaultError.OutputPlistNull}
-            
-        } else {
-            NSLog("Root's home doesn't exist")
-        }
-        
-        while true {
-            if NSFileManager.defaultManager().fileExistsAtPath("/private/var/root/crypt_output.plist"){
-                break
-            } else {
-                let delay = 4.5 * Double(NSEC_PER_SEC)
-                let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
-                dispatch_after(time, dispatch_get_main_queue()) {
-                    
-                }
-            }
-        }
 
+        let dir : NSString = "/private/var/root"
+
+        let path = dir.stringByAppendingPathComponent(file);
         
+        //writing
+        do {
+            try output.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
+        }
+        catch {throw FileVaultError.OutputPlistNull}
+        
+        outPipe.fileHandleForReading.closeFile()
         return output_plist as? NSDictionary
     }
     
@@ -133,18 +117,24 @@ class Enablement: NSObject {
         //
         let username = getUsername() as! String
         let password = getPassword() as String
-//        var output : NSDictionary
+        var output : NSDictionary
         
         let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
         do {
-            try processFileVault(the_settings)!
-            return true
+            try output = processFileVault(the_settings)!
+            NSLog("%@",output)
         }
             
         catch {
             //print("%@",error)
-            return false
+            //return false
         }
+        
+        restart_mac()
+        return true
+
+        
+        
         
     }
 
