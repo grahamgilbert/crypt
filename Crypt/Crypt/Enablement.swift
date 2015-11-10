@@ -97,7 +97,7 @@ class Enablement: NSObject {
         let file = "crypt_output.plist" //this is the file. we will write to and read from it
         
         
-        if let dir : NSString = "/var/root" {
+        if let dir : NSString = "/private/var/root" {
             let path = dir.stringByAppendingPathComponent(file);
             
             //writing
@@ -106,6 +106,20 @@ class Enablement: NSObject {
             }
             catch {throw FileVaultError.OutputPlistNull}
             
+        } else {
+            NSLog("Root's home doesn't exist")
+        }
+        
+        while true {
+            if NSFileManager.defaultManager().fileExistsAtPath("/private/var/root/crypt_output.plist"){
+                break
+            } else {
+                let delay = 4.5 * Double(NSEC_PER_SEC)
+                let time = dispatch_time(DISPATCH_TIME_NOW, Int64(delay))
+                dispatch_after(time, dispatch_get_main_queue()) {
+                    
+                }
+            }
         }
 
         

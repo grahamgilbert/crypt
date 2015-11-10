@@ -11,7 +11,8 @@
 #pragma mark --MechHeaders
 // Special auto-generated header. It makes the Swift classes available to ObjC
 #import "Crypt-Swift.h"
-
+#import "PromptWindowController.h"
+#import "CryptGUI.h"
 
 #pragma mark
 #pragma mark Entry Point Wrappers

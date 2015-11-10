@@ -48,7 +48,6 @@ class Check: NSObject {
         }
         else {
             setBoolHintValue(true)
-            
         }
         
     }
