@@ -29,28 +29,25 @@ class CryptGUI: NSObject {
         
         NSLog("Crypt:MechanismInvoke:CryptGUI:run:[+]");
         
-        
-        
-        
     }
     
-    private func getHintValue() -> Bool {
+    private func getBoolHintValue() -> Bool {
         
-        let value : UnsafePointer<AuthorizationValue> = nil
-        let flags = AuthorizationContextFlags()
+        var value : UnsafePointer<AuthorizationValue> = nil
         var err: OSStatus = noErr
-        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.SetContextValue(mechanism.memory.fEngine, kAuthorizationEnvironmentPassword, flags, value)
+        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetHintValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
         if err != errSecSuccess {
+            NSLog("%@","couldn't retrieve hint value")
             return false
         }
-        guard let outputdata = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
-            else { return false }
+        let outputdata = NSData.init(bytes: value.memory.data, length: value.memory.length)
+        guard let boolHint = NSKeyedUnarchiver.unarchiveObjectWithData(outputdata)
+            else {
+                NSLog("couldn't unpack hint value")
+                return false
+        }
         
-        if outputdata == "true" {
-            return true
-        } else {
-            return false
-        }
+        return boolHint.boolValue
         
     }
     

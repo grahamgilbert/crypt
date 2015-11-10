@@ -34,7 +34,7 @@ class Enablement: NSObject {
     func run() {
         
         
-        if getHintValue() == true {
+        if getBoolHintValue() == true {
             
             NSLog("Enabling filevault")
             enableFilevault()
@@ -134,31 +134,26 @@ class Enablement: NSObject {
         
     }
 
-    private func getHintValue() -> Bool {
+    private func getBoolHintValue() -> Bool {
         
         var value : UnsafePointer<AuthorizationValue> = nil
-        var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
-        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &flags, &value)
+        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetHintValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
         if err != errSecSuccess {
             NSLog("%@","couldn't retrieve hint value")
             return false
         }
-        guard let outputdata = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
+        let outputdata = NSData.init(bytes: value.memory.data, length: value.memory.length)
+        guard let boolHint = NSKeyedUnarchiver.unarchiveObjectWithData(outputdata)
             else {
-                NSLog("%@","couldn't unpack hint value")
-                return false }
-       
-        
-        NSLog("Hint Value is %@",outputdata)
-        
-        if outputdata == "true" {
-            return true
-        } else {
-            return false
+                NSLog("couldn't unpack hint value")
+                return false
         }
        
+        return boolHint.boolValue
+        
     }
+    
     // This is how we set the inter-mechanism context data
     private func setHintValue(encryptionToBeEnabled : Bool) -> Bool {
         var inputdata : String

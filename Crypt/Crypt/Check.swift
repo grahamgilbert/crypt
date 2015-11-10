@@ -38,23 +38,22 @@ class Check: NSObject {
         
         if fvEnabled == true {
             NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
-            setHintValue(false)
+            setBoolHintValue(false)
             allowLogin()
         }
         else if serverURL == "NOT SET" {
             NSLog("%@","Preference isn't set, let's just log in")
-            setHintValue(false)
+            setBoolHintValue(false)
             allowLogin()
         }
         else {
-            setHintValue(true)
+            setBoolHintValue(true)
             
         }
         
     }
     
-    private func setHintValue(encryptionWasEnabled : Bool) -> Bool {
-        
+    private func setBoolHintValue(encryptionWasEnabled : NSNumber) -> Bool {
         
         // Try and unwrap the optional NSData returned from archivedDataWithRootObject
         // This can be decoded on the other side with unarchiveObjectWithData
