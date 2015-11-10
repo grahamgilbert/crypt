@@ -24,7 +24,7 @@ class Enablement: NSObject {
     //
     // init the class with a MechanismRecord
     init(mechanism:UnsafePointer<MechanismRecord>) {
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] initWithMechanismRecord");
+        NSLog("Crypt:MechanismInvoke:Enablement:[+] initWithMechanismRecord");
         self.mechanism = mechanism
     }
     
@@ -33,36 +33,18 @@ class Enablement: NSObject {
     // ObjC AuthorizationPlugin class
     func run() {
         
-        NSLog("Crypt:MechanismInvoke:Enablement:run:[+]");
         
-        let serverURL : NSString = getServerURL()
-        let fvEnabled : Bool = getFVEnabled()
-        
-        
-        if fvEnabled == true {
-            NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
-            setHintValue(false)
-            allowLogin()
-        } else if serverURL == "NOT SET" {
-            NSLog("%@","Preference isn't set, let's just log in")
-            setHintValue(false)
-            allowLogin()
-        }
-        else {
-            setHintValue(true)
+        if getHintValue() == true {
             
             NSLog("Enabling filevault")
-            let fvCompleted : Bool = enableFilevault()
-            if fvCompleted == true {
-                restart_mac()
-            }
-        }
-        
-        
-        
+            enableFilevault()
+            restart_mac()
+        } else {
+        NSLog("%@","Hint value wasn't set")
         // Allow to login. End of mechanism
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:run:[+] allowLogin");
+        NSLog("Crypt:MechanismInvoke:Enablement:run:[+] allowLogin");
         allowLogin()
+        }
         
     }
     
@@ -154,15 +136,21 @@ class Enablement: NSObject {
 
     private func getHintValue() -> Bool {
         
-        let value : UnsafePointer<AuthorizationValue> = nil
-        let flags = AuthorizationContextFlags()
+        var value : UnsafePointer<AuthorizationValue> = nil
+        var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
-        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.SetContextValue(mechanism.memory.fEngine, kAuthorizationEnvironmentPassword, flags, value)
+        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &flags, &value)
         if err != errSecSuccess {
+            NSLog("%@","couldn't retrieve hint value")
             return false
         }
         guard let outputdata = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
-            else { return false }
+            else {
+                NSLog("%@","couldn't unpack hint value")
+                return false }
+       
+        
+        NSLog("Hint Value is %@",outputdata)
         
         if outputdata == "true" {
             return true
@@ -198,37 +186,6 @@ class Enablement: NSObject {
             mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
         
         return (err == errSecSuccess) ? true : false
-        
-    }
-    
-    private func getFVEnabled() -> Bool {
-        let task = NSTask();
-        task.launchPath = "/usr/bin/fdesetup"
-        task.arguments = ["status"]
-        
-        let pipe = NSPipe()
-        task.standardOutput = pipe
-        
-        task.launch()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output: String = String(data: data, encoding: NSUTF8StringEncoding)!
-        
-        if output.rangeOfString("FileVault is Off.") != nil{
-            return false
-        } else {
-            return true
-        }
-    }
-    
-    private func getServerURL() -> NSString {
-        let prefValue = CFPreferencesCopyAppValue("ServerURL", bundleid) as? String
-        
-        if prefValue != nil {
-            return prefValue!
-        } else {
-            return "NOT SET"
-        }
-        
         
     }
     

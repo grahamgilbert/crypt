@@ -43,7 +43,7 @@ system_login_console_plist = "/private/var/tmp/system.login.console.plist"
 #authenticate_plist = "/private/var/tmp/authenticate.plist"
 
 ## Mechs that support FV2AuthPlugin
-fv2_mechs = ["Crypt:enablement,privileged"]
+fv2_mechs = ["Crypt:Check,privileged","Crypt:CryptGUI","Crypt:Enablement,privileged"]
 fv2_index_mech = "loginwindow:done"
 fv2_index_offset = 0
 

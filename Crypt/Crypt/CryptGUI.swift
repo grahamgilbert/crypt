@@ -21,38 +21,36 @@ class CryptGUI: NSObject {
     //
     // init the class with a MechanismRecord
     init(mechanism:UnsafePointer<MechanismRecord>) {
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] initWithMechanismRecord");
+        NSLog("Crypt:MechanismInvoke:CryptGUI:[+] initWithMechanismRecord");
         self.mechanism = mechanism
     }
     
     func run() {
         
-        NSLog("Crypt:MechanismInvoke:Enablement:run:[+]");
-        
-        //let serverURL : NSString = getServerURL()
-        let fvEnabled : Bool = getFVEnabled()
+        NSLog("Crypt:MechanismInvoke:CryptGUI:run:[+]");
         
         
-        if fvEnabled == true {
-            NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
-            setHintValue(false)
-            allowLogin()
+        
+        
+    }
+    
+    private func getHintValue() -> Bool {
+        
+        let value : UnsafePointer<AuthorizationValue> = nil
+        let flags = AuthorizationContextFlags()
+        var err: OSStatus = noErr
+        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.SetContextValue(mechanism.memory.fEngine, kAuthorizationEnvironmentPassword, flags, value)
+        if err != errSecSuccess {
+            return false
         }
-//        } else if serverURL == "NOT SET" {
-//            NSLog("%@","Preference isn't set, let's just log in")
-//            setHintValue(false)
-//            allowLogin()
-//        }
-        else {
-            setHintValue(true)
-            
+        guard let outputdata = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
+            else { return false }
+        
+        if outputdata == "true" {
+            return true
+        } else {
+            return false
         }
-        
-        
-        
-        // Allow to login. End of mechanism
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:run:[+] allowLogin");
-        allowLogin()
         
     }
     
@@ -80,39 +78,5 @@ class CryptGUI: NSObject {
         
     }
     
-    private func getFVEnabled() -> Bool {
-        let task = NSTask();
-        task.launchPath = "/usr/bin/fdesetup"
-        task.arguments = ["status"]
-        
-        let pipe = NSPipe()
-        task.standardOutput = pipe
-        
-        task.launch()
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output: String = String(data: data, encoding: NSUTF8StringEncoding)!
-        
-        if output.rangeOfString("FileVault is Off.") != nil{
-            return false
-        } else {
-            return true
-        }
-    }
 
-    
-    // Allow the login. End of the mechanism
-    private func allowLogin() -> OSStatus {
-        
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
-        var err: OSStatus = noErr
-        err = self.mechanism
-            .memory.fPlugin
-            .memory.fCallbacks
-            .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
-        return err
-        
-    }
-
-    
 }

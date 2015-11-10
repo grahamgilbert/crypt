@@ -30,6 +30,7 @@ struct MechanismRecord {
     OSType                          fMagic; // must be kMechanismMagic
     AuthorizationEngineRef          fEngine;
     const PluginRecord *            fPlugin;
+    Boolean                         fCheck;
     Boolean                         fCryptGUI;
     Boolean                         fEnablement;
     

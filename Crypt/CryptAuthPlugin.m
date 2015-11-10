@@ -130,6 +130,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
         mechanism->fMagic = kMechanismMagic;
         mechanism->fEngine = inEngine;
         mechanism->fPlugin = plugin;
+        mechanism->fCheck = (strcmp(mechanismId, "Check") == 0);
         mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
         mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
     }
@@ -149,11 +150,19 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     
     mechanism = (MechanismRecord *) inMechanism;
     assert([self MechanismValid:mechanism]);
-    // Call the GUI mechanism
-    #pragma mark --GUI
+    
+    // Call the Check mechanism
+    #pragma mark --CryptGUI
     if (mechanism->fCryptGUI) {
         CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
         [cryptgui run];
+    }
+    
+    // Call the GUI mechanism
+    #pragma mark --Check
+    if (mechanism->fCheck) {
+        Check *check = [[Check alloc] initWithMechanism:mechanism];
+        [check run];
     }
     
     // Call the Enablement mechanism
@@ -168,6 +177,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     
     // Default "Allow Login". Used if none of the mechanisms above are called or don't make
     // a decision
+    NSLog(@"No mechs called");
     err = mechanism->fPlugin->fCallbacks->SetResult(mechanism->fEngine, kAuthorizationResultAllow);
     return err;
     
