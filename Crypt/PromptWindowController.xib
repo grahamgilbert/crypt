@@ -66,8 +66,8 @@ DQ
                         <action selector="loginButton:" target="-2" id="fIC-BO-Rs9"/>
                     </connections>
                 </button>
-                <textField verticalHuggingPriority="749" horizontalCompressionResistancePriority="250" ambiguous="YES" misplaced="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ilv-BI-f7c">
-                    <rect key="frame" x="100" y="50" width="214" height="68"/>
+                <textField verticalHuggingPriority="749" horizontalCompressionResistancePriority="250" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ilv-BI-f7c">
+                    <rect key="frame" x="100" y="52" width="214" height="68"/>
                     <animations/>
                     <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="This machine must be encrypted. It will reboot shortly after clicking continue." id="bm0-Ae-gyq">
                         <font key="font" metaFont="system"/>
@@ -79,8 +79,6 @@ DQ
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="vIE-gi-rBT" secondAttribute="bottom" constant="20" symbolic="YES" id="Hq8-lE-6y6"/>
                 <constraint firstItem="vIE-gi-rBT" firstAttribute="top" secondItem="2z7-1y-0Ib" secondAttribute="top" constant="20" symbolic="YES" id="JeY-2z-UeS"/>
-                <constraint firstAttribute="trailing" secondItem="Ilv-BI-f7c" secondAttribute="trailing" constant="30" id="KlE-ek-DZ6"/>
-                <constraint firstItem="Ilv-BI-f7c" firstAttribute="leading" secondItem="vIE-gi-rBT" secondAttribute="trailing" constant="8" symbolic="YES" id="XCw-c1-U8E"/>
                 <constraint firstItem="vIE-gi-rBT" firstAttribute="leading" secondItem="2z7-1y-0Ib" secondAttribute="leading" constant="6" id="ru4-L3-orP"/>
             </constraints>
             <animations/>
