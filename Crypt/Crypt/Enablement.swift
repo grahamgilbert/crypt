@@ -32,12 +32,46 @@ class Enablement: NSObject {
     // This is the only public function. It will be called from the
     // ObjC AuthorizationPlugin class
     func run() {
+        let username = getUsername() as! String
+        let password = getPassword() as String
         
+        let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
+
         
         if getBoolHintValue() == true {
             
             NSLog("Enabling filevault")
-            enableFilevault()
+            do {
+                let output_data : NSData = try enableFileVault(the_settings)
+                let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
+                
+                //NSLog("%@",output)
+                let file = "crypt_output.plist" //this is the file. we will write to and read from it
+                
+                
+                let dir : NSString = "/private/var/root"
+                
+                let path = dir.stringByAppendingPathComponent(file);
+                
+                //writing
+                do {
+                    NSLog("%@",output)
+                    try output.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
+                    //Get to here, we can reboot
+                    restart_mac()
+                }
+                catch {
+                    NSLog("Couldn't write to plist. Saving it here: %@",output)
+                    throw FileVaultError.OutputPlistNull
+                }
+                
+            }
+                
+            catch {
+                print(error)
+            }
+            
+            
         } else {
         NSLog("%@","Hint value wasn't set")
         // Allow to login. End of mechanism
@@ -60,7 +94,7 @@ class Enablement: NSObject {
         case OutputPlistNull
     }
     
-    func processFileVault(the_settings : NSDictionary) throws -> NSDictionary?{
+    func enableFileVault(the_settings : NSDictionary) throws -> NSData{
         
         let input_plist = try NSPropertyListSerialization.dataWithPropertyList(the_settings,
             format: NSPropertyListFormat.XMLFormat_v1_0, options: 0)
@@ -87,57 +121,16 @@ class Enablement: NSObject {
             throw FileVaultError.OutputPlistNull
         }
         
-        let output_plist = try NSPropertyListSerialization.propertyListWithData(output_data,
-           options: NSPropertyListMutabilityOptions.Immutable, format: nil)
-        
-        let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
-        
-        NSLog("%@",output)
-        let file = "crypt_output.plist" //this is the file. we will write to and read from it
-        
-
-        let dir : NSString = "/private/var/root"
-
-        let path = dir.stringByAppendingPathComponent(file);
-        
-        //writing
-        do {
-            try output.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
-        }
-        catch {throw FileVaultError.OutputPlistNull}
+        //let output_plist = try NSPropertyListSerialization.propertyListWithData(output_data,
+        //    options: NSPropertyListMutabilityOptions.Immutable, format: nil)
         
         outPipe.fileHandleForReading.closeFile()
-        return output_plist as? NSDictionary
+        
+        //return (output_plist as! NSDictionary)
+        return output_data
     }
     
     
-    private func enableFilevault() -> Bool {
-        
-        // build input plist with username and password
-        //
-        let username = getUsername() as! String
-        let password = getPassword() as String
-        var output : NSDictionary
-        
-        let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
-        do {
-            try output = processFileVault(the_settings)!
-            NSLog("%@",output)
-        }
-            
-        catch {
-            //print("%@",error)
-            //return false
-        }
-        
-        restart_mac()
-        return true
-
-        
-        
-        
-    }
-
     private func getBoolHintValue() -> Bool {
         
         var value : UnsafePointer<AuthorizationValue> = nil
