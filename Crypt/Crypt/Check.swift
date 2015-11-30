@@ -34,10 +34,15 @@ class Check: NSObject {
         
         let serverURL : NSString = getServerURL()
         let fvEnabled : Bool = getFVEnabled()
-        
+        let skipUsers : Bool = getSkipUsers()
         
         if fvEnabled == true {
             NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
+            setBoolHintValue(false)
+            allowLogin()
+        }
+        else if skipUsers == true {
+            NSLog("%@","Username is in the skip list, not enforcing filevault")
             setBoolHintValue(false)
             allowLogin()
         }
@@ -58,7 +63,7 @@ class Check: NSObject {
         // This can be decoded on the other side with unarchiveObjectWithData
         guard let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(encryptionWasEnabled)
             else {
-                NSLog("Crypt:MechanismInvoke:Enablement:setHintValue [+] Failed to unwrap archivedDataWithRootObject");
+                NSLog("Crypt:MechanismInvoke:Check:setHintValue [+] Failed to unwrap archivedDataWithRootObject");
                 return false
         }
         
@@ -94,6 +99,30 @@ class Check: NSObject {
         }
     }
     
+    func trim_string(the_string:String) -> String {
+        let output = the_string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+        NSLog("Trimming %@ to %@", the_string, output)
+        return output
+    }
+    
+    private func getSkipUsers() -> Bool {
+        guard let prefValue = CFPreferencesCopyAppValue("SkipUsers", bundleid)
+        else { return false }
+        var foundSkipName = false
+        var username = getUsername() as! String
+
+        username = username.stringByReplacingOccurrencesOfString("\0", withString: "")
+        
+        for s in prefValue as! Array<String>{
+            if trim_string(s) == username {
+                foundSkipName = true
+            }
+        }
+        
+        NSLog("foundSkipName = %@",foundSkipName)
+        return foundSkipName
+    }
+    
     private func getServerURL() -> NSString {
         let prefValue = CFPreferencesCopyAppValue("ServerURL", bundleid) as? String
         
@@ -103,7 +132,21 @@ class Check: NSObject {
             return "NOT SET"
         }
         
+    }
+    
+    private func getUsername() -> NSString? {
         
+        var value : UnsafePointer<AuthorizationValue> = nil
+        var flags = AuthorizationContextFlags()
+        var err: OSStatus = noErr
+        err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(mechanism.memory.fEngine, kAuthorizationEnvironmentUsername, &flags, &value)
+        if err != errSecSuccess {
+            return nil
+        }
+        guard let username = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
+            else { return nil }
+  
+        return username
     }
     
     // Allow the login. End of the mechanism

@@ -42,29 +42,40 @@ class Enablement: NSObject {
             
             NSLog("Enabling filevault")
             do {
-                let output_data : NSData = try enableFileVault(the_settings)
-                let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
+                /* This is only here because running fdesetup stright off results in us loosing
+                half of the output a lot of the time. I hate you NSTask. */
+                let task_status = try runFDESetupEnable(username, password: password)
                 
-                //NSLog("%@",output)
-                let file = "crypt_output.plist" //this is the file. we will write to and read from it
-                
-                
-                let dir : NSString = "/private/var/root"
-                
-                let path = dir.stringByAppendingPathComponent(file);
-                
-                //writing
-                do {
-                    NSLog("%@",output)
-                    try output.writeToFile(path, atomically: true, encoding: NSUTF8StringEncoding)
-                    //Get to here, we can reboot
+                if task_status == true {
                     restart_mac()
                 }
-                catch {
-                    NSLog("Couldn't write to plist. Saving it here: %@",output)
-                    throw FileVaultError.OutputPlistNull
-                }
                 
+//                let output_data : NSData = try enableFileVault(the_settings)
+//                let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
+//                
+//                NSLog("%@",output)
+//                let file = "crypt_output.plist" //this is the file. we will write to and read from it
+//                
+//                
+//                let dir : NSString = "/private/var/root"
+//                
+//                let path = dir.stringByAppendingPathComponent(file);
+//                
+//                //writing
+//                do {
+//                    NSLog("%@",output)
+//                    try output.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
+//                    sleep(2)
+//                    //if success == true{
+//                    //Get to here, we can reboot
+//                    //restart_mac()
+//                    //}
+//                }
+//                catch {
+//                    NSLog("Couldn't write to plist. Saving it here: %@",output)
+//                    throw FileVaultError.OutputPlistNull
+//                }
+//                
             }
                 
             catch {
@@ -82,6 +93,8 @@ class Enablement: NSObject {
     }
     
     private func restart_mac() -> Bool {
+        // Wait a couple of seconds for everything to finish
+        sleep(3)
         let task = NSTask();
         NSLog("%@", "Restarting after enabling encryption")
         task.launchPath = "/sbin/reboot"
@@ -92,6 +105,22 @@ class Enablement: NSObject {
     enum FileVaultError: ErrorType {
         case FDESetupFailed(retCode: Int32)
         case OutputPlistNull
+    }
+    
+    func runFDESetupEnable(username : String, password: String) -> Bool {
+        let enableScript = "/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Resources/FDESetupEnable.py"
+        let task = NSTask.init()
+        task.launchPath = "/usr/bin/python"
+        task.arguments = [enableScript, "--username", username, "--password", password]
+
+        task.launch()
+        task.waitUntilExit()
+        if task.terminationStatus == 0 {
+            return true
+        } else {
+            return false
+        }
+
     }
     
     func enableFileVault(the_settings : NSDictionary) throws -> NSData{
@@ -109,6 +138,7 @@ class Enablement: NSObject {
         task.launch()
         inPipe.fileHandleForWriting.writeData(input_plist)
         inPipe.fileHandleForWriting.closeFile()
+        sleep(2)
         task.waitUntilExit()
         
         if task.terminationStatus != 0 {
@@ -116,7 +146,7 @@ class Enablement: NSObject {
         }
         
         let output_data = outPipe.fileHandleForReading.readDataToEndOfFile()
-        
+        NSLog("output from enablefv function: %@", String(data: output_data, encoding: NSUTF8StringEncoding)!)
         if output_data.length == 0 {
             throw FileVaultError.OutputPlistNull
         }
@@ -125,6 +155,7 @@ class Enablement: NSObject {
         //    options: NSPropertyListMutabilityOptions.Immutable, format: nil)
         
         outPipe.fileHandleForReading.closeFile()
+        
         
         //return (output_plist as! NSDictionary)
         return output_data

@@ -28,6 +28,10 @@ p = subprocess.Popen(['/usr/bin/fdesetup','enable','-outputplist', '-inputplist'
 if p.returncode != 0:
     NSLog('ERROR: %s' % err)
     sys.stdout.write(err)
+    sys.exit(1)
 else:
-    sys.stdout.write(stdout_data)
-    #plistlib.writePlist(stdout_data, '/private/var/root/recovery_key.plist')
+    # sys.stdout.write(stdout_data)
+    #plistlib.writePlist(stdout_data, '/private/var/root/crypt_output.plist')
+    with open('/private/var/root/crypt_output.plist', 'w') as outfile:
+        outfile.write(stdout_data)
+    sys.exit(0)

@@ -1,16 +1,8 @@
-//
-//  CryptGUI.m
-//  Crypt
-//
-//  Created by Graham Gilbert on 10/11/2015.
-//  Copyright © 2015 Graham Gilbert. All rights reserved.
-//
-
 /*
- Verify.m
- VerifyAuthPlugin
+ CryptGUI.m
+ Crypt
  
- Copyright 2015 Thomas Burgin.
+ Copyright 2015 Graham Gilbert.
  
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
