@@ -32,67 +32,39 @@ class Enablement: NSObject {
     // This is the only public function. It will be called from the
     // ObjC AuthorizationPlugin class
     func run() {
-        let username = getUsername() as! String
-        let password = getPassword() as String
+        
+        guard let username = getUsername()
+            else { allowLogin(); return }
+        guard let password = getPassword()
+            else { allowLogin(); return }
         
         let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
-
         
         if getBoolHintValue() == true {
             
-            NSLog("Enabling filevault")
-            do {
-                /* This is only here because running fdesetup stright off results in us loosing
-                half of the output a lot of the time. I hate you NSTask. */
-                let task_status = try runFDESetupEnable(username, password: password)
-                
-                if task_status == true {
-                    restart_mac()
-                }
-                
-//                let output_data : NSData = try enableFileVault(the_settings)
-//                let output: String = String(data: output_data, encoding: NSUTF8StringEncoding)!
-//                
-//                NSLog("%@",output)
-//                let file = "crypt_output.plist" //this is the file. we will write to and read from it
-//                
-//                
-//                let dir : NSString = "/private/var/root"
-//                
-//                let path = dir.stringByAppendingPathComponent(file);
-//                
-//                //writing
-//                do {
-//                    NSLog("%@",output)
-//                    try output.writeToFile(path, atomically: false, encoding: NSUTF8StringEncoding)
-//                    sleep(2)
-//                    //if success == true{
-//                    //Get to here, we can reboot
-//                    //restart_mac()
-//                    //}
-//                }
-//                catch {
-//                    NSLog("Couldn't write to plist. Saving it here: %@",output)
-//                    throw FileVaultError.OutputPlistNull
-//                }
-//                
-            }
-                
-            catch {
-                print(error)
-            }
+            NSLog("Attempting to Enable FileVault 2")
             
+            do {
+                let outputPlist = try enableFileVault(the_settings)
+                outputPlist.writeToFile("/private/var/root/crypt_output.plist", atomically: true)
+                restartMac()
+            }
+            catch let error as NSError {
+                NSLog("%@", error)
+                allowLogin()
+            }
             
         } else {
-        NSLog("%@","Hint value wasn't set")
-        // Allow to login. End of mechanism
-        NSLog("Crypt:MechanismInvoke:Enablement:run:[+] allowLogin");
-        allowLogin()
+            NSLog("Hint value wasn't set")
+            // Allow to login. End of mechanism
+            NSLog("Crypt:MechanismInvoke:Enablement:run:[+] allowLogin");
+            allowLogin()
         }
-        
     }
     
-    private func restart_mac() -> Bool {
+    //
+    // Restart
+    private func restartMac() -> Bool {
         // Wait a couple of seconds for everything to finish
         sleep(3)
         let task = NSTask();
@@ -102,31 +74,21 @@ class Enablement: NSObject {
         return true
     }
     
+    //
+    // fdesetup Errors
     enum FileVaultError: ErrorType {
         case FDESetupFailed(retCode: Int32)
         case OutputPlistNull
+        case OutputPlistMalformed
     }
     
-    func runFDESetupEnable(username : String, password: String) -> Bool {
-        let enableScript = "/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Resources/FDESetupEnable.py"
-        let task = NSTask.init()
-        task.launchPath = "/usr/bin/python"
-        task.arguments = [enableScript, "--username", username, "--password", password]
-
-        task.launch()
-        task.waitUntilExit()
-        if task.terminationStatus == 0 {
-            return true
-        } else {
-            return false
-        }
-
-    }
-    
-    func enableFileVault(the_settings : NSDictionary) throws -> NSData{
+    //
+    // fdesetup wrapper
+    func enableFileVault(theSettings : NSDictionary) throws -> NSDictionary {
         
-        let input_plist = try NSPropertyListSerialization.dataWithPropertyList(the_settings,
+        let inputPlist = try NSPropertyListSerialization.dataWithPropertyList(theSettings,
             format: NSPropertyListFormat.XMLFormat_v1_0, options: 0)
+        
         let inPipe = NSPipe.init()
         let outPipe = NSPipe.init()
         
@@ -136,32 +98,36 @@ class Enablement: NSObject {
         task.standardInput = inPipe
         task.standardOutput = outPipe
         task.launch()
-        inPipe.fileHandleForWriting.writeData(input_plist)
+        inPipe.fileHandleForWriting.writeData(inputPlist)
         inPipe.fileHandleForWriting.closeFile()
-        sleep(2)
         task.waitUntilExit()
         
         if task.terminationStatus != 0 {
             throw FileVaultError.FDESetupFailed(retCode: task.terminationStatus)
         }
         
-        let output_data = outPipe.fileHandleForReading.readDataToEndOfFile()
-        NSLog("output from enablefv function: %@", String(data: output_data, encoding: NSUTF8StringEncoding)!)
-        if output_data.length == 0 {
+        let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
+        outPipe.fileHandleForReading.closeFile()
+        
+        NSLog("%@", outputData)
+        
+        if outputData.length == 0 {
             throw FileVaultError.OutputPlistNull
         }
         
-        //let output_plist = try NSPropertyListSerialization.propertyListWithData(output_data,
-        //    options: NSPropertyListMutabilityOptions.Immutable, format: nil)
+        var format : NSPropertyListFormat = NSPropertyListFormat.XMLFormat_v1_0
+        let outputPlist = try NSPropertyListSerialization.propertyListWithData(outputData,
+            options: NSPropertyListReadOptions.Immutable, format: &format)
         
-        outPipe.fileHandleForReading.closeFile()
-        
-        
-        //return (output_plist as! NSDictionary)
-        return output_data
+        if (format == NSPropertyListFormat.XMLFormat_v1_0) {
+            return outputPlist as! NSDictionary
+        } else {
+            throw FileVaultError.OutputPlistMalformed
+        }
     }
     
-    
+    //
+    // This is how we get the inter-mechanism context data
     private func getBoolHintValue() -> Bool {
         
         var value : UnsafePointer<AuthorizationValue> = nil
@@ -177,15 +143,17 @@ class Enablement: NSObject {
                 NSLog("couldn't unpack hint value")
                 return false
         }
-       
+        
         return boolHint.boolValue
         
     }
     
+    //
     // This is how we set the inter-mechanism context data
     private func setHintValue(encryptionToBeEnabled : Bool) -> Bool {
+        
         var inputdata : String
-        if encryptionToBeEnabled == true{
+        if encryptionToBeEnabled == true {
             inputdata = "true"
         } else {
             inputdata = "false"
@@ -212,21 +180,24 @@ class Enablement: NSObject {
         
     }
     
-    private func getPassword() -> NSString {
+    //
+    // Get the kAuthorizationEnvironmentPassword
+    private func getPassword() -> NSString? {
         
         var value : UnsafePointer<AuthorizationValue> = nil
         var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
         err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(mechanism.memory.fEngine, kAuthorizationEnvironmentPassword, &flags, &value)
         if err != errSecSuccess {
-            return "None"
+            return nil
         }
         guard let pass = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
-            else { return "None" }
-        return pass
+            else { return nil }
+        return pass.stringByReplacingOccurrencesOfString("\0", withString: "")
     }
     
-    
+    //
+    // Get the AuthorizationEnvironmentUsername
     private func getUsername() -> NSString? {
         
         var value : UnsafePointer<AuthorizationValue> = nil
@@ -238,7 +209,8 @@ class Enablement: NSObject {
         }
         guard let username = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
             else { return nil }
-        return username
+        
+        return username.stringByReplacingOccurrencesOfString("\0", withString: "")
     }
     
     
@@ -256,8 +228,5 @@ class Enablement: NSObject {
         return err
         
     }
-    
-    
-    
 }
 
