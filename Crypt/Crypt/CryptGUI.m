@@ -65,7 +65,7 @@
     
 }
 
-- (BOOL *)getBoolHintValue {
+- (BOOL)getBoolHintValue {
     
     // Setup method variables
     NSString *hint;
