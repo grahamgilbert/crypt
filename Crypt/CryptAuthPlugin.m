@@ -70,74 +70,34 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
 - (OSStatus)AuthorizationPluginCreate:(const AuthorizationCallbacks *)callbacks
                             PluginRef:(AuthorizationPluginRef *)outPlugin
                       PluginInterface:(const AuthorizationPluginInterface **)outPluginInterface {
-    OSStatus err;
-    PluginRecord *plugin;
-    
-    assert(callbacks != NULL);
-    assert(callbacks->version >= kAuthorizationCallbacksVersion);
-    assert(outPlugin != NULL);
-    assert(outPluginInterface != NULL);
-    
-    // Create the plugin.
-    err = noErr;
-    plugin = (PluginRecord *) malloc(sizeof(*plugin));
-    if (plugin == NULL) {
-        err = memFullErr;
-    }
-    
-    // Fill it in.
-    if (err == noErr) {
-        plugin->fMagic = kPluginMagic;
-        plugin->fCallbacks = callbacks;
-    }
-    
+    PluginRecord *plugin = (PluginRecord *) malloc(sizeof(*plugin));
+    if (plugin == NULL) return errSecMemoryError;
+    plugin->fMagic = kPluginMagic;
+    plugin->fCallbacks = callbacks;
     *outPlugin = plugin;
     *outPluginInterface = &gPluginInterface;
-    assert((err == noErr) == (*outPlugin != NULL));
-    return err;
+    return errSecSuccess;
 }
 
 - (OSStatus)MechanismCreate:(AuthorizationPluginRef)inPlugin
                   EngineRef:(AuthorizationEngineRef)inEngine
                 MechanismId:(AuthorizationMechanismId)mechanismId
                MechanismRef:(AuthorizationMechanismRef *)outMechanism {
-    OSStatus err;
-    PluginRecord *plugin;
-    MechanismRecord *mechanism;
-    
-    plugin = (PluginRecord *) inPlugin;
-    assert([self PluginValid:plugin]);
-    assert(inEngine != NULL);
-    assert(mechanismId != NULL);
-    assert(outMechanism != NULL);
-    
-    err = noErr;
-    mechanism = (MechanismRecord *) malloc(sizeof(*mechanism));
-    if (mechanism == NULL) {
-        err = memFullErr;
-    }
-    
-    if (err == noErr) {
-        mechanism->fMagic = kMechanismMagic;
-        mechanism->fEngine = inEngine;
-        mechanism->fPlugin = plugin;
-        mechanism->fCheck = (strcmp(mechanismId, "Check") == 0);
-        mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
-        mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
-    }
-    
+    MechanismRecord *mechanism = (MechanismRecord *)malloc(sizeof(MechanismRecord));
+    if (mechanism == NULL) return errSecMemoryError;
+    mechanism->fMagic = kMechanismMagic;
+    mechanism->fEngine = inEngine;
+    mechanism->fPlugin = (PluginRecord *)inPlugin;;
+    mechanism->fCheck = (strcmp(mechanismId, "Check") == 0);
+    mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
+    mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
     *outMechanism = mechanism;
-    
-    assert((err == noErr) == (*outMechanism != NULL));
-    
-    return err;
+    return errSecSuccess;
 }
 
 - (OSStatus)MechanismInvoke:(AuthorizationMechanismRef)inMechanism {
     OSStatus err;
-    MechanismRecord *mechanism;
-    mechanism = (MechanismRecord *) inMechanism;
-    assert([self MechanismValid:mechanism]);
+    MechanismRecord *mechanism = (MechanismRecord *)inMechanism;
     
     // Call the GUI mechanism
     #pragma mark --Check
@@ -168,41 +128,19 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
 
 - (OSStatus)MechanismDeactivate:(AuthorizationMechanismRef)inMechanism {
     OSStatus err;
-    MechanismRecord *mechanism;
-    mechanism = (MechanismRecord *) inMechanism;
-    assert([self MechanismValid:mechanism]);
+    MechanismRecord *mechanism = (MechanismRecord *)inMechanism;
     err = mechanism->fPlugin->fCallbacks->DidDeactivate(mechanism->fEngine);
     return err;
 }
 
 - (OSStatus)MechanismDestroy:(AuthorizationMechanismRef)inMechanism {
-    MechanismRecord *mechanism;
-    mechanism = (MechanismRecord *) inMechanism;
-    assert([self MechanismValid:mechanism]);
-    free(mechanism);
+    free(inMechanism);
     return noErr;
 }
 
 - (OSStatus)PluginDestroy:(AuthorizationPluginRef)inPlugin {
-    PluginRecord *plugin;
-    plugin = (PluginRecord *) inPlugin;
-    assert([self PluginValid:plugin]);
-    free(plugin);
+    free(inPlugin);
     return noErr;
-}
-
-- (BOOL)MechanismValid:(const MechanismRecord *)mechanism {
-    return (mechanism != NULL)
-    && (mechanism->fMagic == kMechanismMagic)
-    && (mechanism->fEngine != NULL)
-    && (mechanism->fPlugin != NULL);
-}
-
-- (BOOL)PluginValid:(const PluginRecord *)plugin {
-    return (plugin != NULL)
-    && (plugin->fMagic == kPluginMagic)
-    && (plugin->fCallbacks != NULL)
-    && (plugin->fCallbacks->version >= kAuthorizationCallbacksVersion);
 }
 
 @end

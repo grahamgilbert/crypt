@@ -49,7 +49,6 @@ typedef struct PluginRecord PluginRecord;
  *
  *  @return BOOL Value. Is the plugin valid
  */
-- (BOOL) PluginValid:(const PluginRecord *)plugin;
 
 #pragma mark - Mechanism
 
@@ -80,7 +79,6 @@ typedef struct MechanismRecord MechanismRecord;
  *
  *  @return BOOL Value. Is the mech valid
  */
-- (BOOL) MechanismValid:(const MechanismRecord *)mechanism;
 
 #pragma mark
 #pragma mark Mechanism Entry Points
