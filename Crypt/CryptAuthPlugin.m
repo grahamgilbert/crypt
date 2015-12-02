@@ -7,10 +7,7 @@
 //
 
 #import "CryptAuthPlugin.h"
-
-#pragma mark --MechHeaders
-// Special auto-generated header. It makes the Swift classes available to ObjC
-#import "Crypt-Swift.h"
+#import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
 #import "PromptWindowController.h"
 #import "CryptGUI.h"
 
@@ -57,7 +54,6 @@ static AuthorizationPluginInterface gPluginInterface = {
 extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callbacks,
                                           AuthorizationPluginRef *outPlugin,
                                           const AuthorizationPluginInterface **outPluginInterface) {
-    
     if (authorizationPlugin == nil) {
         authorizationPlugin = [[CryptAuthPlugin alloc] init];
     }
@@ -65,7 +61,6 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     return [authorizationPlugin AuthorizationPluginCreate:callbacks
                                                 PluginRef:outPlugin
                                           PluginInterface:outPluginInterface];
-    
 }
 
 #pragma mark
@@ -75,9 +70,8 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
 - (OSStatus)AuthorizationPluginCreate:(const AuthorizationCallbacks *)callbacks
                             PluginRef:(AuthorizationPluginRef *)outPlugin
                       PluginInterface:(const AuthorizationPluginInterface **)outPluginInterface {
-    
-    OSStatus        err;
-    PluginRecord *  plugin;
+    OSStatus err;
+    PluginRecord *plugin;
     
     assert(callbacks != NULL);
     assert(callbacks->version >= kAuthorizationCallbacksVersion);
@@ -93,27 +87,23 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     
     // Fill it in.
     if (err == noErr) {
-        plugin->fMagic     = kPluginMagic;
+        plugin->fMagic = kPluginMagic;
         plugin->fCallbacks = callbacks;
     }
     
     *outPlugin = plugin;
     *outPluginInterface = &gPluginInterface;
-    
-    assert( (err == noErr) == (*outPlugin != NULL) );
-    
+    assert((err == noErr) == (*outPlugin != NULL));
     return err;
-    
 }
 
 - (OSStatus)MechanismCreate:(AuthorizationPluginRef)inPlugin
                   EngineRef:(AuthorizationEngineRef)inEngine
                 MechanismId:(AuthorizationMechanismId)mechanismId
                MechanismRef:(AuthorizationMechanismRef *)outMechanism {
-    
-    OSStatus            err;
-    PluginRecord *      plugin;
-    MechanismRecord *   mechanism;
+    OSStatus err;
+    PluginRecord *plugin;
+    MechanismRecord *mechanism;
     
     plugin = (PluginRecord *) inPlugin;
     assert([self PluginValid:plugin]);
@@ -138,32 +128,29 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     
     *outMechanism = mechanism;
     
-    assert( (err == noErr) == (*outMechanism != NULL) );
+    assert((err == noErr) == (*outMechanism != NULL));
     
     return err;
-    
 }
 
 - (OSStatus)MechanismInvoke:(AuthorizationMechanismRef)inMechanism {
-    
-    OSStatus                    err;
-    MechanismRecord *           mechanism;
-    
+    OSStatus err;
+    MechanismRecord *mechanism;
     mechanism = (MechanismRecord *) inMechanism;
     assert([self MechanismValid:mechanism]);
-    
-    // Call the Check mechanism
-    #pragma mark --CryptGUI
-    if (mechanism->fCryptGUI) {
-        CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
-        [cryptgui run];
-    }
     
     // Call the GUI mechanism
     #pragma mark --Check
     if (mechanism->fCheck) {
         Check *check = [[Check alloc] initWithMechanism:mechanism];
         [check run];
+    }
+    
+    // Call the Check mechanism
+    #pragma mark --CryptGUI
+    if (mechanism->fCryptGUI) {
+        CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
+        [cryptgui run];
     }
     
     // Call the Enablement mechanism
@@ -173,75 +160,49 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
         [enablement run];
     }
     
-//    Enablement *enablement = [[Enablement alloc]initWithMechanism:mechanism];
-//    [enablement run];
-    
     // Default "Allow Login". Used if none of the mechanisms above are called or don't make
     // a decision
-    NSLog(@"No mechs called");
     err = mechanism->fPlugin->fCallbacks->SetResult(mechanism->fEngine, kAuthorizationResultAllow);
     return err;
-    
 }
 
 - (OSStatus)MechanismDeactivate:(AuthorizationMechanismRef)inMechanism {
-    
-    OSStatus            err;
-    MechanismRecord *   mechanism;
-    
+    OSStatus err;
+    MechanismRecord *mechanism;
     mechanism = (MechanismRecord *) inMechanism;
     assert([self MechanismValid:mechanism]);
-    
     err = mechanism->fPlugin->fCallbacks->DidDeactivate(mechanism->fEngine);
-    
     return err;
-    
 }
 
 - (OSStatus)MechanismDestroy:(AuthorizationMechanismRef)inMechanism {
-    
     MechanismRecord *mechanism;
-    
     mechanism = (MechanismRecord *) inMechanism;
     assert([self MechanismValid:mechanism]);
-    
     free(mechanism);
-    
     return noErr;
-    
 }
 
 - (OSStatus)PluginDestroy:(AuthorizationPluginRef)inPlugin {
-    
     PluginRecord *plugin;
-    
     plugin = (PluginRecord *) inPlugin;
     assert([self PluginValid:plugin]);
-    
     free(plugin);
-    
     return noErr;
-    
 }
 
-
 - (BOOL)MechanismValid:(const MechanismRecord *)mechanism {
-    
     return (mechanism != NULL)
     && (mechanism->fMagic == kMechanismMagic)
     && (mechanism->fEngine != NULL)
     && (mechanism->fPlugin != NULL);
-    
 }
 
-
 - (BOOL)PluginValid:(const PluginRecord *)plugin {
-    
     return (plugin != NULL)
     && (plugin->fMagic == kPluginMagic)
     && (plugin->fCallbacks != NULL)
     && (plugin->fCallbacks->version >= kAuthorizationCallbacksVersion);
-    
 }
 
 @end

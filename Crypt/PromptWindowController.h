@@ -24,17 +24,5 @@
 @interface PromptWindowController : NSWindowController <NSWindowDelegate>
 
 @property MechanismRecord *mechanism;
-@property (nonatomic, strong) NSString *pin;
-@property (nonatomic, strong) NSSound *tts;
-@property NSRect screenRect;
-
-@property (weak) IBOutlet NSWindow *backdropWindow;
-@property (weak) IBOutlet NSView *mainView;
-@property (weak) IBOutlet NSView *stopLoginView;
-@property (weak) IBOutlet NSView *promptView;
-@property (weak) IBOutlet NSSecureTextField *promptPINTextField;
-
-- (IBAction)okayButton:(id)sender;
-- (IBAction)loginButton:(id)sender;
 
 @end

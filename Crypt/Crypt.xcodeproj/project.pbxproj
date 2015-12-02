@@ -7,23 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D2B4004A1C0F37E600441E41 /* fv2.png in Resources */ = {isa = PBXBuildFile; fileRef = D2B400491C0F37E600441E41 /* fv2.png */; };
 		FCB20DB51BF2462C00650628 /* CryptGUI.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB20DB41BF2462C00650628 /* CryptGUI.m */; };
-		FCB20DC01BF24AAB00650628 /* BorderlessWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB20DBB1BF24AAB00650628 /* BorderlessWindow.m */; };
-		FCB20DC11BF24AAB00650628 /* Keychain_Locked@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FCB20DBC1BF24AAB00650628 /* Keychain_Locked@2x.png */; };
 		FCB20DC21BF24AAB00650628 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = FCB20DBE1BF24AAB00650628 /* PromptWindowController.m */; };
 		FCB20DC31BF24AAB00650628 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = FCB20DBF1BF24AAB00650628 /* PromptWindowController.xib */; };
 		FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */; };
 		FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */; };
-		FCD4FDA41BF0D79100CF7F48 /* FDESetupEnable.py in Resources */ = {isa = PBXBuildFile; fileRef = FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */; };
 		FCD4FDA81BF1D84B00CF7F48 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCD4FDA71BF1D84B00CF7F48 /* Check.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D2B400491C0F37E600441E41 /* fv2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fv2.png; sourceTree = "<group>"; };
 		FCB20DB41BF2462C00650628 /* CryptGUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptGUI.m; sourceTree = "<group>"; };
 		FCB20DB61BF2464F00650628 /* CryptGUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CryptGUI.h; sourceTree = "<group>"; };
-		FCB20DBA1BF24AAB00650628 /* BorderlessWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BorderlessWindow.h; sourceTree = "<group>"; };
-		FCB20DBB1BF24AAB00650628 /* BorderlessWindow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BorderlessWindow.m; sourceTree = "<group>"; };
-		FCB20DBC1BF24AAB00650628 /* Keychain_Locked@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Keychain_Locked@2x.png"; sourceTree = "<group>"; };
 		FCB20DBD1BF24AAB00650628 /* PromptWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptWindowController.h; sourceTree = "<group>"; };
 		FCB20DBE1BF24AAB00650628 /* PromptWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptWindowController.m; sourceTree = "<group>"; };
 		FCB20DBF1BF24AAB00650628 /* PromptWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptWindowController.xib; sourceTree = "<group>"; };
@@ -33,7 +29,6 @@
 		FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptAuthPlugin.m; sourceTree = "<group>"; };
 		FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
-		FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = FDESetupEnable.py; sourceTree = "<group>"; };
 		FCD4FDA71BF1D84B00CF7F48 /* Check.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -55,9 +50,7 @@
 				FCD4FD9E1BEE76A100CF7F48 /* CryptAuthPlugin.m */,
 				FCD4FD961BEE763C00CF7F48 /* Crypt */,
 				FCD4FD951BEE763C00CF7F48 /* Products */,
-				FCB20DBA1BF24AAB00650628 /* BorderlessWindow.h */,
-				FCB20DBB1BF24AAB00650628 /* BorderlessWindow.m */,
-				FCB20DBC1BF24AAB00650628 /* Keychain_Locked@2x.png */,
+				D2B400491C0F37E600441E41 /* fv2.png */,
 				FCB20DBD1BF24AAB00650628 /* PromptWindowController.h */,
 				FCB20DBE1BF24AAB00650628 /* PromptWindowController.m */,
 				FCB20DBF1BF24AAB00650628 /* PromptWindowController.xib */,
@@ -80,7 +73,6 @@
 				FCD4FDA71BF1D84B00CF7F48 /* Check.swift */,
 				FCD4FD971BEE763C00CF7F48 /* Info.plist */,
 				FCD4FDA11BEE78B400CF7F48 /* Enablement.swift */,
-				FCD4FDA31BF0D79100CF7F48 /* FDESetupEnable.py */,
 				FCD4FDA01BEE78B400CF7F48 /* Crypt-Bridging-Header.h */,
 			);
 			path = Crypt;
@@ -143,9 +135,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCB20DC11BF24AAB00650628 /* Keychain_Locked@2x.png in Resources */,
+				D2B4004A1C0F37E600441E41 /* fv2.png in Resources */,
 				FCB20DC31BF24AAB00650628 /* PromptWindowController.xib in Resources */,
-				FCD4FDA41BF0D79100CF7F48 /* FDESetupEnable.py in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,7 +149,6 @@
 			files = (
 				FCD4FDA81BF1D84B00CF7F48 /* Check.swift in Sources */,
 				FCD4FDA21BEE78B400CF7F48 /* Enablement.swift in Sources */,
-				FCB20DC01BF24AAB00650628 /* BorderlessWindow.m in Sources */,
 				FCB20DC21BF24AAB00650628 /* PromptWindowController.m in Sources */,
 				FCD4FD9F1BEE76A100CF7F48 /* CryptAuthPlugin.m in Sources */,
 				FCB20DB51BF2462C00650628 /* CryptGUI.m in Sources */,
@@ -185,7 +175,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: NATIONAL INSTITUTE OF MENTAL HEALTH (QZQALU4M8H)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -229,7 +219,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: NATIONAL INSTITUTE OF MENTAL HEALTH (QZQALU4M8H)";
+				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
