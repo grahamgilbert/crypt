@@ -12,8 +12,6 @@ import CoreFoundation
 
 class Enablement: NSObject {
     
-    let bundleid = "com.grahamgilbert.crypt"
-    
     // Define a pointer to the MechanismRecord. This will be used to get and set
     // all the inter-mechanism data. It is also used to allow or deny the login.
     private var mechanism:UnsafePointer<MechanismRecord>
@@ -21,18 +19,15 @@ class Enablement: NSObject {
     // This NSString will be used as the domain for the inter-mechanism context data
     private let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
     
-    //
     // init the class with a MechanismRecord
     init(mechanism:UnsafePointer<MechanismRecord>) {
         NSLog("Crypt:MechanismInvoke:Enablement:[+] initWithMechanismRecord");
         self.mechanism = mechanism
     }
     
-    //
     // This is the only public function. It will be called from the
     // ObjC AuthorizationPlugin class
     func run() {
-        
         guard let username = getUsername()
             else { allowLogin(); return }
         guard let password = getPassword()
@@ -62,7 +57,6 @@ class Enablement: NSObject {
         }
     }
     
-    //
     // Restart
     private func restartMac() -> Bool {
         // Wait a couple of seconds for everything to finish
@@ -74,7 +68,6 @@ class Enablement: NSObject {
         return true
     }
     
-    //
     // fdesetup Errors
     enum FileVaultError: ErrorType {
         case FDESetupFailed(retCode: Int32)
@@ -82,10 +75,8 @@ class Enablement: NSObject {
         case OutputPlistMalformed
     }
     
-    //
     // fdesetup wrapper
     func enableFileVault(theSettings : NSDictionary) throws -> NSDictionary {
-        
         let inputPlist = try NSPropertyListSerialization.dataWithPropertyList(theSettings,
             format: NSPropertyListFormat.XMLFormat_v1_0, options: 0)
         
@@ -126,10 +117,8 @@ class Enablement: NSObject {
         }
     }
     
-    //
     // This is how we get the inter-mechanism context data
     private func getBoolHintValue() -> Bool {
-        
         var value : UnsafePointer<AuthorizationValue> = nil
         var err: OSStatus = noErr
         err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetHintValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
@@ -145,13 +134,10 @@ class Enablement: NSObject {
         }
         
         return boolHint.boolValue
-        
     }
     
-    //
     // This is how we set the inter-mechanism context data
     private func setHintValue(encryptionToBeEnabled : Bool) -> Bool {
-        
         var inputdata : String
         if encryptionToBeEnabled == true {
             inputdata = "true"
@@ -177,13 +163,10 @@ class Enablement: NSObject {
             mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
         
         return (err == errSecSuccess) ? true : false
-        
     }
     
-    //
     // Get the kAuthorizationEnvironmentPassword
     private func getPassword() -> NSString? {
-        
         var value : UnsafePointer<AuthorizationValue> = nil
         var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
@@ -196,10 +179,8 @@ class Enablement: NSObject {
         return pass.stringByReplacingOccurrencesOfString("\0", withString: "")
     }
     
-    //
     // Get the AuthorizationEnvironmentUsername
     private func getUsername() -> NSString? {
-        
         var value : UnsafePointer<AuthorizationValue> = nil
         var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
@@ -213,11 +194,8 @@ class Enablement: NSObject {
         return username.stringByReplacingOccurrencesOfString("\0", withString: "")
     }
     
-    
-    //
     // Allow the login. End of the mechanism
     private func allowLogin() -> OSStatus {
-        
         NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
         var err: OSStatus = noErr
         err = self.mechanism
@@ -226,7 +204,6 @@ class Enablement: NSObject {
             .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
         NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
         return err
-        
     }
 }
 

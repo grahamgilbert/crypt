@@ -10,7 +10,6 @@
 
 @interface CryptGUI : NSObject
 
-
 @property MechanismRecord *mechanism;
 
 - (id)initWithMechanism:(MechanismRecord *)inMechanism;

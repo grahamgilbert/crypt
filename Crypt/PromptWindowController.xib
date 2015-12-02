@@ -7,7 +7,6 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="PromptWindowController">
             <connections>
-                <outlet property="backdropWindow" destination="jqe-iD-XYk" id="ekd-vV-qEe"/>
                 <outlet property="mainView" destination="lsR-d2-cB7" id="IHq-tA-yyZ"/>
                 <outlet property="promptView" destination="2z7-1y-0Ib" id="E9p-h3-2K1"/>
                 <outlet property="window" destination="myi-Qa-LCF" id="eGN-4c-87V"/>
@@ -18,7 +17,7 @@
         <window allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" oneShot="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="myi-Qa-LCF" userLabel="Prompt Window">
             <windowStyleMask key="styleMask" titled="YES"/>
             <rect key="contentRect" x="636" y="390" width="332" height="162"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1417"/>
             <value key="maxSize" type="size" width="610" height="460"/>
             <view key="contentView" id="lsR-d2-cB7">
                 <rect key="frame" x="0.0" y="0.0" width="332" height="162"/>
@@ -30,39 +29,32 @@
             </connections>
             <point key="canvasLocation" x="411" y="318.5"/>
         </window>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" oneShot="NO" releasedWhenClosed="NO" showsToolbarButton="NO" visibleAtLaunch="NO" animationBehavior="default" id="jqe-iD-XYk" userLabel="Grey Background" customClass="BorderlessWindow">
-            <rect key="contentRect" x="163" y="199" width="268" height="83"/>
-            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
-            <view key="contentView" id="zzC-cl-ETd">
-                <rect key="frame" x="0.0" y="0.0" width="268" height="83"/>
-                <autoresizingMask key="autoresizingMask"/>
-                <animations/>
-            </view>
-            <point key="canvasLocation" x="14" y="463.5"/>
-        </window>
         <customView id="2z7-1y-0Ib">
-            <rect key="frame" x="0.0" y="0.0" width="332" height="168"/>
+            <rect key="frame" x="0.0" y="0.0" width="332" height="162"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
             <subviews>
                 <imageView horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="vIE-gi-rBT">
-                    <rect key="frame" x="6" y="20" width="115" height="128"/>
+                    <rect key="frame" x="20" y="19" width="125" height="125"/>
                     <constraints>
-                        <constraint firstAttribute="width" constant="115" id="Jos-e9-2ch"/>
+                        <constraint firstAttribute="width" constant="125" id="dgi-4g-g5K"/>
                     </constraints>
                     <animations/>
-                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="Keychain_Locked" id="v6k-op-8Dh"/>
+                    <imageCell key="cell" refusesFirstResponder="YES" alignment="left" imageScaling="proportionallyDown" image="fv2" id="v6k-op-8Dh"/>
                 </imageView>
-                <textField verticalHuggingPriority="749" horizontalCompressionResistancePriority="250" fixedFrame="YES" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ilv-BI-f7c">
-                    <rect key="frame" x="109" y="52" width="214" height="68"/>
+                <textField verticalHuggingPriority="749" horizontalCompressionResistancePriority="250" setsMaxLayoutWidthAtFirstLayout="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ilv-BI-f7c">
+                    <rect key="frame" x="151" y="60" width="163" height="68"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="68" id="sL4-Yv-qMB"/>
+                    </constraints>
                     <animations/>
-                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" title="This machine must be encrypted. It will reboot shortly after clicking continue." id="bm0-Ae-gyq">
+                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="This machine must be encrypted. It will reboot shortly after clicking continue." id="bm0-Ae-gyq">
                         <font key="font" metaFont="system"/>
                         <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                         <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                     </textFieldCell>
                 </textField>
-                <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="3Ca-f2-ixY">
-                    <rect key="frame" x="119" y="16" width="95" height="32"/>
+                <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="3Ca-f2-ixY">
+                    <rect key="frame" x="147" y="19" width="95" height="32"/>
                     <animations/>
                     <buttonCell key="cell" type="push" title="Continue" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="R3S-od-lN9">
                         <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -72,20 +64,26 @@ DQ
 </string>
                     </buttonCell>
                     <connections>
-                        <action selector="loginButton:" target="-2" id="fIC-BO-Rs9"/>
+                        <action selector="continueClicked:" target="-2" id="Nex-2L-38k"/>
                     </connections>
                 </button>
             </subviews>
             <constraints>
-                <constraint firstAttribute="bottom" secondItem="vIE-gi-rBT" secondAttribute="bottom" constant="20" symbolic="YES" id="Hq8-lE-6y6"/>
-                <constraint firstItem="vIE-gi-rBT" firstAttribute="top" secondItem="2z7-1y-0Ib" secondAttribute="top" constant="20" symbolic="YES" id="JeY-2z-UeS"/>
-                <constraint firstItem="vIE-gi-rBT" firstAttribute="leading" secondItem="2z7-1y-0Ib" secondAttribute="leading" constant="6" id="ru4-L3-orP"/>
+                <constraint firstItem="3Ca-f2-ixY" firstAttribute="top" secondItem="Ilv-BI-f7c" secondAttribute="bottom" constant="13" id="1H2-C7-R0Z"/>
+                <constraint firstAttribute="trailing" secondItem="Ilv-BI-f7c" secondAttribute="trailing" constant="20" symbolic="YES" id="2PL-N8-EFa"/>
+                <constraint firstItem="vIE-gi-rBT" firstAttribute="leading" secondItem="2z7-1y-0Ib" secondAttribute="leading" constant="20" symbolic="YES" id="2gx-ew-0pp"/>
+                <constraint firstItem="Ilv-BI-f7c" firstAttribute="top" secondItem="2z7-1y-0Ib" secondAttribute="top" constant="34" id="DrE-X8-RR8"/>
+                <constraint firstItem="3Ca-f2-ixY" firstAttribute="leading" secondItem="Ilv-BI-f7c" secondAttribute="leading" id="K6x-bL-gYg"/>
+                <constraint firstItem="vIE-gi-rBT" firstAttribute="centerY" secondItem="2z7-1y-0Ib" secondAttribute="centerY" id="X6a-Oh-Jy5"/>
+                <constraint firstAttribute="bottom" secondItem="3Ca-f2-ixY" secondAttribute="bottom" constant="26" id="el7-v2-rfI"/>
+                <constraint firstItem="vIE-gi-rBT" firstAttribute="top" secondItem="2z7-1y-0Ib" secondAttribute="top" constant="18" id="iH2-Qf-gcG"/>
+                <constraint firstItem="Ilv-BI-f7c" firstAttribute="leading" secondItem="vIE-gi-rBT" secondAttribute="trailing" constant="8" symbolic="YES" id="vdS-Vy-GDv"/>
             </constraints>
             <animations/>
-            <point key="canvasLocation" x="411" y="550"/>
+            <point key="canvasLocation" x="414" y="544"/>
         </customView>
     </objects>
     <resources>
-        <image name="Keychain_Locked" width="128" height="128"/>
+        <image name="fv2" width="512" height="512"/>
     </resources>
 </document>

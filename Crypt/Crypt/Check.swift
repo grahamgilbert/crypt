@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import Foundation
 import Security
 import CoreFoundation
 
@@ -21,7 +20,6 @@ class Check: NSObject {
     // This NSString will be used as the domain for the inter-mechanism context data
     private let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
     
-    //
     // init the class with a MechanismRecord
     init(mechanism:UnsafePointer<MechanismRecord>) {
         NSLog("Crypt:MechanismInvoke:Check:[+] initWithMechanismRecord");
@@ -29,7 +27,6 @@ class Check: NSObject {
     }
     
     func run(){
-        
         NSLog("Crypt:MechanismInvoke:Check:run:[+]");
         
         let serverURL : NSString = getServerURL()
@@ -54,11 +51,9 @@ class Check: NSObject {
         else {
             setBoolHintValue(true)
         }
-        
     }
     
     private func setBoolHintValue(encryptionWasEnabled : NSNumber) -> Bool {
-        
         // Try and unwrap the optional NSData returned from archivedDataWithRootObject
         // This can be decoded on the other side with unarchiveObjectWithData
         guard let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(encryptionWasEnabled)
@@ -77,7 +72,6 @@ class Check: NSObject {
             mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
         
         return (err == errSecSuccess) ? true : false
-        
     }
     
     private func getFVEnabled() -> Bool {
@@ -92,11 +86,7 @@ class Check: NSObject {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         let output: String = String(data: data, encoding: NSUTF8StringEncoding)!
         
-        if output.rangeOfString("FileVault is Off.") != nil{
-            return false
-        } else {
-            return true
-        }
+        return (output.rangeOfString("FileVault is Off.") != nil) ? false : true
     }
     
     func trim_string(the_string:String) -> String {
@@ -135,7 +125,6 @@ class Check: NSObject {
     }
     
     private func getUsername() -> NSString? {
-        
         var value : UnsafePointer<AuthorizationValue> = nil
         var flags = AuthorizationContextFlags()
         var err: OSStatus = noErr
@@ -160,6 +149,5 @@ class Check: NSObject {
             .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
         NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
         return err
-        
     }
 }
