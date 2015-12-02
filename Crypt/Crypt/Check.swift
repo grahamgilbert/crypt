@@ -29,16 +29,16 @@ class Check: NSObject {
     func run(){
         NSLog("Crypt:MechanismInvoke:Check:run:[+]");
         
-        let serverURL : NSString = getServerURL()
+        let serverURL : NSString? = getServerURL()
         let fvEnabled : Bool = getFVEnabled()
         let skipUsers : Bool = getSkipUsers()
         
-        if fvEnabled == true {
+        if fvEnabled {
             NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
             setBoolHintValue(false)
             allowLogin()
         }
-        else if skipUsers == true {
+        else if skipUsers {
             NSLog("%@","Username is in the skip list, not enforcing filevault")
             setBoolHintValue(false)
             allowLogin()
@@ -78,14 +78,12 @@ class Check: NSObject {
         let task = NSTask();
         task.launchPath = "/usr/bin/fdesetup"
         task.arguments = ["status"]
-        
         let pipe = NSPipe()
         task.standardOutput = pipe
-        
         task.launch()
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output: String = String(data: data, encoding: NSUTF8StringEncoding)!
-        
+        guard let output: String = String(data: data, encoding: NSUTF8StringEncoding)
+            else { return false }
         return (output.rangeOfString("FileVault is Off.") != nil) ? false : true
     }
     
@@ -96,32 +94,30 @@ class Check: NSObject {
     }
     
     private func getSkipUsers() -> Bool {
-        guard let prefValue = CFPreferencesCopyAppValue("SkipUsers", bundleid)
-        else { return false }
-        var foundSkipName = false
-        var username = getUsername() as! String
-
-        username = username.stringByReplacingOccurrencesOfString("\0", withString: "")
-        
-        for s in prefValue as! Array<String>{
+        let uid : uid_t = getUID()
+        NSLog("%u", uid)
+        if (uid < 501) {
+            return true
+        }
+        guard let prefValue = CFPreferencesCopyAppValue("SkipUsers", bundleid) as? [String]
+            else { return false }
+        guard let username = getUsername()
+            else { return false }
+        for s in prefValue {
             if trim_string(s) == username {
-                foundSkipName = true
+                return true
             }
         }
-        
-        NSLog("foundSkipName = %@",foundSkipName)
-        return foundSkipName
+        return false
     }
     
-    private func getServerURL() -> NSString {
+    private func getServerURL() -> NSString? {
         let prefValue = CFPreferencesCopyAppValue("ServerURL", bundleid) as? String
-        
         if prefValue != nil {
-            return prefValue!
+            return prefValue
         } else {
             return "NOT SET"
         }
-        
     }
     
     private func getUsername() -> NSString? {
@@ -134,13 +130,26 @@ class Check: NSObject {
         }
         guard let username = NSString.init(bytes: value.memory.data, length: value.memory.length, encoding: NSUTF8StringEncoding)
             else { return nil }
-  
-        return username
+        
+        return username.stringByReplacingOccurrencesOfString("\0", withString: "")
+    }
+    
+    private func getUID() -> uid_t {
+        var value : UnsafePointer<AuthorizationValue> = nil
+        var flags = AuthorizationContextFlags()
+        var uid : uid_t = 0
+        if (self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(
+            mechanism.memory.fEngine,
+            ("uid" as NSString).UTF8String,
+            &flags, &value) == errSecSuccess) {
+                let uidData = NSData.init(bytes: value.memory.data, length: sizeof(uid_t))
+                uidData.getBytes(&uid, length: sizeof(uid_t))
+            }
+        return uid
     }
     
     // Allow the login. End of the mechanism
     private func allowLogin() -> OSStatus {
-        
         NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
         var err: OSStatus = noErr
         err = self.mechanism

@@ -35,7 +35,7 @@ class Enablement: NSObject {
         
         let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
         
-        if getBoolHintValue() == true {
+        if getBoolHintValue() {
             
             NSLog("Attempting to Enable FileVault 2")
             
@@ -137,7 +137,7 @@ class Enablement: NSObject {
     // This is how we set the inter-mechanism context data
     private func setHintValue(encryptionToBeEnabled : Bool) -> Bool {
         var inputdata : String
-        if encryptionToBeEnabled == true {
+        if encryptionToBeEnabled {
             inputdata = "true"
         } else {
             inputdata = "false"
