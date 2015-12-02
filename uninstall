@@ -64,10 +64,10 @@ def set_mechs_in_db(db, mech_list, index_mech, index_offset):
     db = remove_mechs_in_db(db, mech_list)
 
     ## Add mech_list to db
-    i = int(db['mechanisms'].index(index_mech)) + index_offset
-    for mech in mech_list:
-        db['mechanisms'].insert(i, mech)
-        i += 1
+    # i = int(db['mechanisms'].index(index_mech)) + index_offset
+    # for mech in mech_list:
+    #     db['mechanisms'].insert(i, mech)
+    #     i += 1
     return db
 
 def edit_authdb():

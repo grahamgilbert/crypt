@@ -1,0 +1,33 @@
+#!/usr/bin/python
+
+import os
+import shutil
+import sys
+
+import syslog
+syslog.openlog("crypt-preinstall")
+
+def fail(message):
+    syslog.syslog(syslog.LOG_ALERT, message)
+    sys.exit(1)
+
+def move_old_plist():
+    old_plist = '/private/var/root/recovery_key.plist'
+    new_plist =
+    if os.path.exists('/private/var/root/recovery_key.plist'):
+        # We have an old recovery key, move it to the new location
+        try:
+            shutil.move(old_plist, new_plist)
+        except:
+            fail('Could not move old plist to new location')
+
+def remove_old_app():
+    # remove old installdir
+    old_install_dir = '/usr/local/crypt'
+    # remove package receipt
+
+def main():
+    move_old_plist()
+
+if __name__ == '__main__':
+    main()

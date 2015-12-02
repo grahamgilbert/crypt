@@ -5,7 +5,8 @@ PACKAGE_VERSION=2.0
 REVERSE_DOMAIN=com.grahamgilbert
 PAYLOAD=\
 			pack-plugin\
-            pack-script-postinstall
+			pack-script-postinstall\
+			pack-script-preinstall
 
 #################################################
 
