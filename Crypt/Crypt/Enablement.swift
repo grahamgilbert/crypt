@@ -99,9 +99,7 @@ class Enablement: NSObject {
         
         let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
         outPipe.fileHandleForReading.closeFile()
-        
-        NSLog("%@", outputData)
-        
+                
         if outputData.length == 0 {
             throw FileVaultError.OutputPlistNull
         }
