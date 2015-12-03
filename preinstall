@@ -13,7 +13,7 @@ def fail(message):
 
 def move_old_plist():
     old_plist = '/private/var/root/recovery_key.plist'
-    new_plist =
+    new_plist = '/private/var/root/crypt_output.plist'
     if os.path.exists('/private/var/root/recovery_key.plist'):
         # We have an old recovery key, move it to the new location
         try:
@@ -24,8 +24,14 @@ def move_old_plist():
 def remove_old_app():
     # remove old installdir
     old_install_dir = '/usr/local/crypt'
+    if os.path.exists(old_install_dir):
+        shutil.rmtree(old_install_dir)
     # remove package receipt
-
+    try:
+        cmd = ['/usr/sbin/pkgutil', '--forget', 'com.grahamgilbert.Crypt_Client']
+        subprocess.check_output(cmd)
+    except:
+        pass
 def main():
     move_old_plist()
 

@@ -1,5 +1,7 @@
 # Crypt 2
 
+**WARNING:** This is an alpha release, bugs and edge cases are expected. As this has the potential for stopping users from logging in, extensive testing should take place before deploying into production.
+
 Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). It makes use of Swift, so is theoretically compatible with 10.9 +, however in it's present alpha quality state, it has only been tested on 10.11.
 
 ## Features
