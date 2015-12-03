@@ -29,3 +29,7 @@ The `SkipUsers` preference allows you to define an array of users that will not 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt SkipUsers -array-add adminuser
 ```
+
+## Credits
+
+Crypt 2 couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.
