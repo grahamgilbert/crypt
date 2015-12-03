@@ -1,8 +1,8 @@
 /*
     PromptWindowController.m
-    VerifyAuthPlugin
+    Crypt
 
-    Copyright 2015 Thomas Burgin.
+    Copyright 2015 The Crypt Project.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
