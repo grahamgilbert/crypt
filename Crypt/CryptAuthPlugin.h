@@ -17,7 +17,6 @@
     limitations under the License.
  */
 
-
 #import <Foundation/Foundation.h>
 #include <CoreServices/CoreServices.h>
 #include <Security/AuthorizationPlugin.h>
