@@ -8,13 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
-		D2D31D5E1C2303F500839D93 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D521C2303F500839D93 /* Info.plist */; };
 		D2D31D5F1C2303F500839D93 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
-		D2D31D601C2303F500839D93 /* CryptGUI.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D561C2303F500839D93 /* CryptGUI.m */; };
 		D2D31D611C2303F500839D93 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
 		D2D31D621C2303F500839D93 /* fv2.png in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D591C2303F500839D93 /* fv2.png */; };
 		D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D5B1C2303F500839D93 /* PromptWindowController.m */; };
 		D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */; };
+		D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D661C2307D500839D93 /* CryptGUI.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,14 +22,13 @@
 		D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CryptAuthPlugin.m; path = Crypt/CryptAuthPlugin.m; sourceTree = "<group>"; };
 		D2D31D521C2303F500839D93 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Crypt/Info.plist; sourceTree = "<group>"; };
 		D2D31D541C2303F500839D93 /* Check.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
-		D2D31D551C2303F500839D93 /* CryptGUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptGUI.h; sourceTree = "<group>"; };
-		D2D31D561C2303F500839D93 /* CryptGUI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptGUI.m; sourceTree = "<group>"; };
 		D2D31D571C2303F500839D93 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
 		D2D31D591C2303F500839D93 /* fv2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fv2.png; sourceTree = "<group>"; };
 		D2D31D5A1C2303F500839D93 /* PromptWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptWindowController.h; sourceTree = "<group>"; };
 		D2D31D5B1C2303F500839D93 /* PromptWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptWindowController.m; sourceTree = "<group>"; };
 		D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptWindowController.xib; sourceTree = "<group>"; };
 		D2D31D651C23042A00839D93 /* Crypt.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crypt.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2D31D661C2307D500839D93 /* CryptGUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptGUI.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,8 +46,7 @@
 			isa = PBXGroup;
 			children = (
 				D2D31D541C2303F500839D93 /* Check.swift */,
-				D2D31D551C2303F500839D93 /* CryptGUI.h */,
-				D2D31D561C2303F500839D93 /* CryptGUI.m */,
+				D2D31D661C2307D500839D93 /* CryptGUI.swift */,
 				D2D31D571C2303F500839D93 /* Enablement.swift */,
 			);
 			name = Mechanisms;
@@ -140,7 +137,6 @@
 			files = (
 				D2D31D621C2303F500839D93 /* fv2.png in Resources */,
 				D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */,
-				D2D31D5E1C2303F500839D93 /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,9 +148,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2D31D5F1C2303F500839D93 /* Check.swift in Sources */,
-				D2D31D601C2303F500839D93 /* CryptGUI.m in Sources */,
 				D2D31D611C2303F500839D93 /* Enablement.swift in Sources */,
 				D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */,
+				D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */,
 				D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -179,7 +175,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -223,7 +218,6 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -247,8 +241,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Crypt/Info.plist;
@@ -268,8 +260,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Crypt/Info.plist;

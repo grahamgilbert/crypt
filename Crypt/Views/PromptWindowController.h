@@ -24,6 +24,6 @@
 
 @interface PromptWindowController : NSWindowController <NSWindowDelegate>
 
-@property MechanismRecord *mechanism;
+@property const MechanismRecord *mechanism;
 
 @end
