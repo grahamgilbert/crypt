@@ -21,7 +21,6 @@
 #import "CryptAuthPlugin.h"
 #import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
 #import "PromptWindowController.h"
-#import "CryptGUI.h"
 
 #pragma mark
 #pragma mark Entry Point Wrappers

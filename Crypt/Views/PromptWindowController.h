@@ -1,5 +1,5 @@
 /*
-    CryptGUI.h
+    PromptWindowController.h
     Crypt
 
     Copyright 2015 The Crypt Project.
@@ -16,14 +16,14 @@
     See the License for the specific language governing permissions and
     limitations under the License.
  */
-#import <Foundation/Foundation.h>
+
+
+#import <Cocoa/Cocoa.h>
+#include <Security/AuthorizationPlugin.h>
 #import "CryptAuthPlugin.h"
 
-@interface CryptGUI : NSObject
+@interface PromptWindowController : NSWindowController <NSWindowDelegate>
 
-@property MechanismRecord *mechanism;
-
-- (id)initWithMechanism:(MechanismRecord *)inMechanism;
-- (void)run;
+@property const MechanismRecord *mechanism;
 
 @end

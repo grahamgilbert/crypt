@@ -13,14 +13,14 @@ PAYLOAD=\
 #################################################
 
 build: clean-crypt
-	xcodebuild -project Crypt/Crypt.xcodeproj -configuration Release
+	xcodebuild -project ../Crypt.xcodeproj -configuration Release
 
 clean-crypt:
-	rm -rf Crypt/build
+	rm -rf ../build
 
 pack-plugin: build
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
-	@sudo ${CP} -R Crypt/build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
+	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
 
 pack-checkin: l_Library
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
