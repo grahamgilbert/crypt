@@ -1,7 +1,7 @@
 include /usr/local/share/luggage/luggage.make
-
 TITLE=Crypt
-PACKAGE_VERSION=2.0
+GITVERSION=$(shell ./build_no.sh)
+PACKAGE_VERSION=2.0.0.${GITVERSION}
 REVERSE_DOMAIN=com.grahamgilbert
 PAYLOAD=\
 			pack-plugin\
