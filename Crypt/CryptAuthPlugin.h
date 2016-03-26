@@ -23,70 +23,37 @@
 #include <Security/AuthSession.h>
 #include <Security/AuthorizationTags.h>
 
-@interface CryptAuthPlugin : NSObject
-
 #pragma mark
 #pragma mark Core Data Structures
 
 #pragma mark - Plugin
-
 enum {
-    kPluginMagic = 'PlgN'
+  kPluginMagic = 'PlgN'
 };
-
 struct PluginRecord {
-    OSType fMagic;
-    const AuthorizationCallbacks *fCallbacks;
+  OSType fMagic;
+  const AuthorizationCallbacks *fCallbacks;
 };
-
 typedef struct PluginRecord PluginRecord;
 
-/**
- * PluginRecord is the per-plugin data structure.  As the system only
- * instantiates a plugin once per plugin host, per mech type, this information could
- * just as easily be kept in global variables for like mech types. Differing mech types
- * (privileged vs. non-privileged) instantiate a plugin once for each process.
- *
- * As a plugin may host multiple mechanism, and there's no guarantee
- * that these mechanisms won't be running on different threads, data
- * in this record should be protected from multiple concurrent access.
- * In my case, however, all of the data is read-only, so I don't need
- * to do anything special.
- *
- *  @param plugin PluginRecord
- *
- *  @return BOOL Value. Is the plugin valid
- */
-
 #pragma mark - Mechanism
-
 enum {
-    kMechanismMagic = 'Mchn'
+  kMechanismMagic = 'Mchn'
 };
-
 struct MechanismRecord {
-    OSType                          fMagic;
-    AuthorizationEngineRef          fEngine;
-    const PluginRecord *            fPlugin;
-    Boolean                         fCheck;
-    Boolean                         fCryptGUI;
-    Boolean                         fEnablement;
+  OSType                          fMagic;
+  AuthorizationEngineRef          fEngine;
+  const PluginRecord *            fPlugin;
+  Boolean                         fCheck;
+  Boolean                         fCryptGUI;
+  Boolean                         fEnablement;
 };
-
 typedef struct MechanismRecord MechanismRecord;
 
-/**
- * MechanismRecord is the per-mechanism data structure.  One of these
- * is created for each mechanism that's instantiated, and holds all
- * of the data needed to run that mechanism.
- *
- * Mechanisms are single threaded; the code does not have to guard
- * against multiple threads running inside the mechanism simultaneously.
- *
- *  @param mechanism MechanismRecord
- *
- *  @return BOOL Value. Is the mech valid
- */
+#pragma mark
+#pragma mark ObjC AuthPlugin Wrapper
+
+@interface CryptAuthPlugin : NSObject
 
 #pragma mark
 #pragma mark Mechanism Entry Points
