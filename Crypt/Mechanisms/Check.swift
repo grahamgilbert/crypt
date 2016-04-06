@@ -161,13 +161,13 @@ class Check: NSObject {
 
     // Allow the login. End of the mechanism
     private func allowLogin() -> OSStatus {
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
+        NSLog("Crypt:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
         var err: OSStatus = noErr
         err = self.mechanism
             .memory.fPlugin
             .memory.fCallbacks
             .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
+        NSLog("Crypt:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
         return err
     }
 }
