@@ -45,17 +45,17 @@ class Check: NSObject {
         let skipUsers : Bool = getSkipUsers()
 
         if fvEnabled {
-            NSLog("%@","filevault is enabled, encrypting or decrypting, allow login")
+            NSLog("%@","Crypt:MechanismInvoke:Check:getFVEnabled:[+] Filevault is enabled, encrypting or decrypting. Allow login normally")
             setBoolHintValue(false)
             allowLogin()
         }
         else if skipUsers {
-            NSLog("%@","Username is in the skip list, not enforcing filevault")
+            NSLog("%@","Crypt:MechanismInvoke:Check:getSkipUsers:[+] The user logging in is in the skip list. Not enforcing filevault")
             setBoolHintValue(false)
             allowLogin()
         }
         else if serverURL == "NOT SET" {
-            NSLog("%@","Preference isn't set, let's just log in")
+            NSLog("%@","Crypt:MechanismInvoke:Check:getServerURL:[+] Failed to get Server URL for key escrow. Allowing login normally.")
             setBoolHintValue(false)
             allowLogin()
         }
@@ -69,7 +69,7 @@ class Check: NSObject {
         // This can be decoded on the other side with unarchiveObjectWithData
         guard let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(encryptionWasEnabled)
             else {
-                NSLog("Crypt:MechanismInvoke:Check:setHintValue [+] Failed to unwrap archivedDataWithRootObject");
+                NSLog("Crypt:MechanismInvoke:Check:setHintValue:[+] Failed to unwrap archivedDataWithRootObject");
                 return false
         }
 
@@ -161,13 +161,13 @@ class Check: NSObject {
 
     // Allow the login. End of the mechanism
     private func allowLogin() -> OSStatus {
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
+        NSLog("Crypt:MechanismInvoke:Check:[+] Done. Thanks and have a lovely day.");
         var err: OSStatus = noErr
         err = self.mechanism
             .memory.fPlugin
             .memory.fCallbacks
             .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
+        NSLog("Crypt:MechanismInvoke:Check:[+] [%d]", Int(err));
         return err
     }
 }
