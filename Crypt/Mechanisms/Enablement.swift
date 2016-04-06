@@ -44,7 +44,7 @@ class Enablement: NSObject {
             else { allowLogin(); return }
         guard let password = getPassword()
             else { allowLogin(); return }
-
+        
         let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
 
         if getBoolHintValue() {
@@ -206,13 +206,13 @@ class Enablement: NSObject {
 
     // Allow the login. End of the mechanism
     private func allowLogin() -> OSStatus {
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] Done. Thanks and have a lovely day.");
+        NSLog("Crypt:MechanismInvoke:Enablement:[+] Done. Thanks and have a lovely day.");
         var err: OSStatus = noErr
         err = self.mechanism
             .memory.fPlugin
             .memory.fCallbacks
             .memory.SetResult(mechanism.memory.fEngine, AuthorizationResult.Allow)
-        NSLog("VerifyAuth:MechanismInvoke:MachinePIN:[+] [%d]", Int(err));
+        NSLog("Crypt:MechanismInvoke:Enablement:[+] [%d]", Int(err));
         return err
     }
 }

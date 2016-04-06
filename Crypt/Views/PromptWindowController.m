@@ -33,14 +33,14 @@
 - (id)init
 {
     if ([super init]) {
-        NSLog(@"VerifyAuth:MechanismInvoke:PromptWindowController:init [+] initWithWindowNibName");
+        NSLog(@"Crypt:MechanismInvoke:PromptWindowController:init [+] initWithWindowNibName");
         self = [super initWithWindowNibName:@"PromptWindowController"];
     }
     return self;
 }
 
 - (void)awakeFromNib {
-    NSLog(@"VerifyAuth:MechanismInvoke:PromptWindowController [+] awakeFromNib.");
+    NSLog(@"Crypt:MechanismInvoke:PromptWindowController [+] awakeFromNib.");
     // Make the window visible at the LoginWindow
     // Set the order so the Main Window will
     // be on top of the BackdropWindow
