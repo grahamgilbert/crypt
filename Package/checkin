@@ -4,6 +4,7 @@ import subprocess
 import os
 import urllib
 import sys
+import datetime
 
 from Foundation import *
 import FoundationPlist
@@ -34,6 +35,7 @@ def pref(pref_name):
         - default_prefs defined here.
     """
     default_prefs = {
+        'RemovePlist':True,
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value == None:
@@ -82,9 +84,22 @@ def escrow_key(plist):
 def main():
     if os.path.isfile(PLIST_PATH):
         plist = FoundationPlist.readPlist(PLIST_PATH)
+
+        # Exit if we've run this within the last hour
+        if 'last_run' in plist:
+
+            now = datetime.datetime.now()
+            hour_ago = now - datetime.timedelta(hours = 1)
+            if plist['last_run'] > hour_ago:
+                sys.exit(0)
         escrow_result = escrow_key(plist=plist)
         if escrow_result:
-            os.remove(PLIST_PATH)
+            remove_plist = pref('RemovePlist')
+            plist['escrow_success'] = True
+            plist['last_run'] = datetime.datetime.now()
+            FoundationPlist.writePlist(plist, PLIST_PATH)
+            if remove_plist:
+                os.remove(PLIST_PATH)
 
 
 if __name__ == '__main__':
