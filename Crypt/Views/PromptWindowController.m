@@ -30,9 +30,9 @@
 
 @implementation PromptWindowController
 
-- (id)init
-{
-    if ([super init]) {
+- (id)init {
+    self = [super init];
+    if (self) {
         NSLog(@"Crypt:MechanismInvoke:PromptWindowController:init [+] initWithWindowNibName");
         self = [super initWithWindowNibName:@"PromptWindowController"];
     }
@@ -47,7 +47,7 @@
     [[self window] setCanBecomeVisibleWithoutLogin:TRUE];
     [[self window] setLevel:NSScreenSaverWindowLevel + 1];
     [[self window] orderFrontRegardless];
-    [_mainView addSubview:_promptView];
+    [self.mainView addSubview:_promptView];
 };
 
 - (void)windowWillClose:(NSNotification *)notification {
@@ -55,7 +55,7 @@
 }
 
 - (IBAction)continueClicked:(id)sender {
-    _mechanism->fPlugin->fCallbacks->SetResult(_mechanism->fEngine, kAuthorizationResultAllow);
+    self.mechanism->fPlugin->fCallbacks->SetResult(_mechanism->fEngine, kAuthorizationResultAllow);
     [self close];
 }
 @end
