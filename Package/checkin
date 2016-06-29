@@ -5,6 +5,7 @@ import os
 import urllib
 import sys
 import datetime
+import syslog
 
 from Foundation import *
 import FoundationPlist
@@ -14,9 +15,9 @@ PLIST_PATH = '/private/var/root/crypt_output.plist'
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
-        /Library/Preferences/ManagedInstalls.plist.
+        /Library/Preferences/com.grahamgilbert.crypt.plist.
         This should normally be used only for 'bookkeeping' values;
-        values that control the behavior of munki may be overridden
+        values that control the behavior of crypt may be overridden
         elsewhere (by MCX, for example)"""
     try:
         CFPreferencesSetValue(
@@ -36,6 +37,7 @@ def pref(pref_name):
     """
     default_prefs = {
         'RemovePlist':True,
+        'RotateUsedKey':True,
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value == None:
@@ -80,14 +82,103 @@ def escrow_key(plist):
         return True
     else:
         return False
+def using_recovery_key():
+    """Check if FileVault is currently unlocked using
+    the recovery key.
+    """
+    cmd = ['/usr/bin/fdesetup','usingrecoverykey']
+    using_key = subprocess.check_output(cmd).strip()
+    if using_key == 'true':
+        return True
+    else:
+        return False
+
+def get_recovery_key(key_location):
+    """Returns recovery key as a string... If we failed
+    to get the proper information, returns an empty string"""
+    # checks to see if recovery key preference is set
+    try:
+        keyplist = FoundationPlist.readPlist(key_location)
+        recovery_key = keyplist['RecoveryKey'].strip()
+        return recovery_key
+    except FoundationPlist.NSPropertyListSerializationException:
+        print(
+            'We had trouble getting info from {0}...'.format(recoverykeyplist))
+        return False
+    except KeyError:
+        print(
+            'Problem with Key: RecoveryKey in {0}...'.format(recoverykeyplist))
+        return False
+
+def validate_key(current_key):
+    """validates recovery key"""
+    key = {'Password': current_key}
+    input_plist = FoundationPlist.writePlistToString(key)
+    cmd = subprocess.Popen(['/usr/bin/fdesetup','validaterecovery',
+        '-inputplist'],
+        stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout_data, err = cmd.communicate(input=input_plist)
+    if err:
+        print(err)
+    if stdout_data.strip() == 'true':
+        return True
+    else:
+        return False
+def rotate_key(current_key, plist):
+    """This rotates the recovery key to something new
+    by using the current recovery key"""
+    rotate_inputplist = {'Password': current_key}
+    input_plist = FoundationPlist.writePlistToString(rotate_inputplist)
+    cmd = subprocess.Popen(['/usr/bin/fdesetup','changerecovery', '-personal',
+        '-outputplist', '-inputplist'],
+        stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout_data, err = cmd.communicate(input=input_plist)
+    try:
+        output_plist = FoundationPlist.readPlistFromString(stdout_data)
+        FoundationPlist.writePlist(output_plist, plist)
+    except Exception:
+        if err:
+            print 'Encountered error Key Rotation: {0}.'.format(err)
+
+def get_enabled_user(plist):
+    """Crypt needs an enabled user it its plist that our normal output
+    doesn't give us so we need to add a user to the plist"""
+    nonusers = pref('SkipUsers')
+    fde_users = subprocess.check_output(
+        ["/usr/bin/fdesetup", "list"]).split('\n')
+    for user in fde_users:
+        if not user.split(',')[0] in nonusers:
+            cryptuser = user.split(',')[0]
+            break
+    crypt_info = FoundationPlist.readPlist(plist)
+    crypt_info['EnabledUser'] = cryptuser
+    FoundationPlist.writePlist(crypt_info, plist)
+
+def rotate_if_used(key_path):
+    if not using_recovery_key():
+        return ''
+    if not os.path.isfile(key_path):
+        syslog.syslog(
+            syslog.LOG_ALERT, 'Could not locate {0}'.format(key_path))
+    rotate_message = 'Recovery Key has been used.. Attempting to Rotate'
+    syslog.syslog(syslog.LOG_ALERT, rotate_message)
+    current_key = get_recovery_key(key_path)
+    valid_key = validate_key(current_key)
+    if not valid_key:
+        syslog.syslog(syslog.LOG_ALERT,
+        'ERROR: Our current key is not valid')
+        return ''
+    rotate_key(current_key, key_path)
+    get_enabled_user(key_path)
 
 def main():
+    syslog.openlog("Crypt")
+    if pref('RotateUsedKey'):
+        rotate_if_used(PLIST_PATH)
     if os.path.isfile(PLIST_PATH):
         plist = FoundationPlist.readPlist(PLIST_PATH)
-
         # Exit if we've run this within the last hour
         if 'last_run' in plist:
-
             now = datetime.datetime.now()
             hour_ago = now - datetime.timedelta(hours = 1)
             if plist['last_run'] > hour_ago:
@@ -100,7 +191,6 @@ def main():
             FoundationPlist.writePlist(plist, PLIST_PATH)
             if remove_plist:
                 os.remove(PLIST_PATH)
-
 
 if __name__ == '__main__':
     main()
