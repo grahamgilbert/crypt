@@ -146,7 +146,10 @@ def rotate_key(current_key, plist):
 def get_enabled_user(plist):
     """Crypt needs an enabled user in its plist that our normal output
     doesn't give us so we need to add a user to the plist"""
-    nonusers = pref('SkipUsers')
+    if pref('SkipUsers'):
+        nonusers = pref('SkipUsers')
+    else:
+        nonusers = []
     fde_users = subprocess.check_output(
         ["/usr/bin/fdesetup", "list"]).split('\n')
     for user in fde_users:
