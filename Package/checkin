@@ -104,11 +104,11 @@ def get_recovery_key(key_location):
         return recovery_key
     except FoundationPlist.NSPropertyListSerializationException:
         print(
-            'We had trouble getting info from {0}...'.format(recoverykeyplist))
+            'We had trouble getting info from {0}...'.format(key_location))
         return False
     except KeyError:
         print(
-            'Problem with Key: RecoveryKey in {0}...'.format(recoverykeyplist))
+            'Problem with Key: RecoveryKey in {0}...'.format(key_location))
         return False
 
 def validate_key(current_key):
