@@ -82,6 +82,7 @@ def escrow_key(plist):
         return True
     else:
         return False
+
 def using_recovery_key():
     """Check if FileVault is currently unlocked using
     the recovery key.
@@ -111,7 +112,8 @@ def get_recovery_key(key_location):
         return False
 
 def validate_key(current_key):
-    """validates recovery key"""
+    """Validates the given recovery key against FileVault, returns True
+    or False accordingly"""
     key = {'Password': current_key}
     input_plist = FoundationPlist.writePlistToString(key)
     cmd = subprocess.Popen(['/usr/bin/fdesetup','validaterecovery',
@@ -124,6 +126,7 @@ def validate_key(current_key):
         return True
     else:
         return False
+
 def rotate_key(current_key, plist):
     """This rotates the recovery key to something new
     by using the current recovery key"""
@@ -141,7 +144,7 @@ def rotate_key(current_key, plist):
             print 'Encountered error Key Rotation: {0}.'.format(err)
 
 def get_enabled_user(plist):
-    """Crypt needs an enabled user it its plist that our normal output
+    """Crypt needs an enabled user in its plist that our normal output
     doesn't give us so we need to add a user to the plist"""
     nonusers = pref('SkipUsers')
     fde_users = subprocess.check_output(
@@ -155,6 +158,8 @@ def get_enabled_user(plist):
     FoundationPlist.writePlist(crypt_info, plist)
 
 def rotate_if_used(key_path):
+    """Checks to see if the recovery key was used to unlock the machine
+    if it was then use our current key to rotate it"""
     if not using_recovery_key():
         return ''
     if not os.path.isfile(key_path):
