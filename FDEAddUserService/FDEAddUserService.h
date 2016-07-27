@@ -16,16 +16,8 @@
   limitations under the License.
 */
 
-import Foundation
+#import <Foundation/Foundation.h>
+#import "FDEAddUserServiceProtocol.h"
 
-class CryptGUI: CryptMechanism {
-  func run() {
-    if (getBoolHintValue()) {
-      let promptWindowController = PromptWindowController.init()
-      promptWindowController.mechanism = self.mechanism
-      guard let promptWindow = promptWindowController.window
-        else { return }
-      NSApp.runModalForWindow(promptWindow)
-    }
-  }
-}
+@interface FDEAddUserService : NSObject <FDEAddUserServiceProtocol>
+@end

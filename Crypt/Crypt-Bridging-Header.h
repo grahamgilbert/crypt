@@ -3,4 +3,5 @@
 //
 
 #import "CryptAuthPlugin.h"
+#import "FDEAddUserServiceProtocol.h"
 #import "PromptWindowController.h"

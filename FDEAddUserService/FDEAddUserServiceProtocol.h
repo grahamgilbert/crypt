@@ -16,16 +16,12 @@
   limitations under the License.
 */
 
-import Foundation
+#import <Foundation/Foundation.h>
 
-class CryptGUI: CryptMechanism {
-  func run() {
-    if (getBoolHintValue()) {
-      let promptWindowController = PromptWindowController.init()
-      promptWindowController.mechanism = self.mechanism
-      guard let promptWindow = promptWindowController.window
-        else { return }
-      NSApp.runModalForWindow(promptWindow)
-    }
-  }
-}
+@protocol FDEAddUserServiceProtocol
+
+- (void)ODFDEAddUser:(NSString *)username
+        withPassword:(NSString *)password
+           withReply:(void (^)(BOOL))reply;
+
+@end
