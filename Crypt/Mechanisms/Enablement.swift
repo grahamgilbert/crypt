@@ -73,6 +73,27 @@ class Enablement: CryptMechanism {
     case OutputPlistMalformed
   }
   
+  // check authrestart capability
+  func checkAuthRestart() -> Bool {
+    let outPipe = NSPipe.init()
+    let authRestartCheck = NSTask.init()
+    authRestartCheck.launchPath = "/usr/bin/fdesetup"
+    authRestartCheck.arguments = ["supportsauthrestart"]
+    authRestartCheck.standardOutput = outPipe
+    authRestartCheck.launch()
+    let outputData = outPipe.fileHandleForReading.availableData
+    let outputString = String(data: outputData, encoding: NSUTF8StringEncoding) ?? ""
+    if (outputString.rangeOfString("true") != nil) {
+      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart: [+] Authrestart capability is 'true', will authrestart as appropriate")
+      return true
+    }
+    else {
+      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart: [+] Authrestart capability is 'false', reverting to standard reboot")
+      return false
+    }
+  }
+  
+  
   // fdesetup wrapper
   func enableFileVault(theSettings : NSDictionary) throws -> NSDictionary {
     let inputPlist = try NSPropertyListSerialization.dataWithPropertyList(theSettings,
@@ -83,7 +104,12 @@ class Enablement: CryptMechanism {
     
     let task = NSTask.init()
     task.launchPath = "/usr/bin/fdesetup"
-    task.arguments = ["enable", "-outputplist", "-inputplist"]
+    if checkAuthRestart() == true {
+      task.arguments = ["enable", "-authrestart", "-outputplist", "-inputplist"]
+    }
+    else {
+      task.arguments = ["enable", "-outputplist", "-inputplist"]
+    }
     task.standardInput = inPipe
     task.standardOutput = outPipe
     task.launch()
