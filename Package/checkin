@@ -66,7 +66,7 @@ def escrow_key(plist):
         theurl = server_url+"checkin/"
     else:
         theurl = server_url+"/checkin/"
-    # In the future, we're going to submit the whole plsit, but for now...
+    # In the future, we're going to submit the whole plist, but for now...
     serial = plist['SerialNumber']
     key = plist['RecoveryKey']
     username = plist['EnabledUser']

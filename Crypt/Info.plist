@@ -15,13 +15,13 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.1.1</string>
+	<string>2.2.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>2.1.1</string>
+	<string>2.2.0</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2016 Graham Gilbert. All rights reserved.</string>
+	<string>Copyright © 2016 The Crypt Project. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>

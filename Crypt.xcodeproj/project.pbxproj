@@ -412,6 +412,7 @@
 				C7AD38FE1D22B049000FB736 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
 			isa = XCConfigurationList;
