@@ -84,11 +84,11 @@ class Enablement: CryptMechanism {
     let outputData = outPipe.fileHandleForReading.availableData
     let outputString = String(data: outputData, encoding: NSUTF8StringEncoding) ?? ""
     if (outputString.rangeOfString("true") != nil) {
-      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart: [+] Authrestart capability is 'true', will authrestart as appropriate")
+      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart:[+] Authrestart capability is 'true', will authrestart as appropriate")
       return true
     }
     else {
-      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart: [+] Authrestart capability is 'false', reverting to standard reboot")
+      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart:[+] Authrestart capability is 'false', reverting to standard reboot")
       return false
     }
   }
@@ -104,7 +104,7 @@ class Enablement: CryptMechanism {
     
     let task = NSTask.init()
     task.launchPath = "/usr/bin/fdesetup"
-    if checkAuthRestart() == true {
+    if checkAuthRestart() {
       task.arguments = ["enable", "-authrestart", "-outputplist", "-inputplist"]
     }
     else {
