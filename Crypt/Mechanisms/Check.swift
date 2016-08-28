@@ -36,7 +36,7 @@ class Check: CryptMechanism {
     let addUser : Bool = getAddUserPreference()
     
     if fvEnabled {
-      NSLog("%@","Crypt:MechanismInvoke:Check:getFVEnabled:[+] Filevault is enabled, encrypting" +
+      NSLog("%@","Crypt:MechanismInvoke:Check:getFVEnabled:[+] Filevault is enabled, encrypting " +
           "or decrypting")
       if addUser && !skipUsers {
         NSLog("%@","Crypt:MechanismInvoke: Adding user to FV2")
@@ -46,13 +46,13 @@ class Check: CryptMechanism {
       allowLogin()
     }
     else if skipUsers {
-      NSLog("%@","Crypt:MechanismInvoke:Check:getSkipUsers:[+] The user logging in is in the skip" +
+      NSLog("%@","Crypt:MechanismInvoke:Check:getSkipUsers:[+] The user logging in is in the skip " +
           "list. Not enforcing filevault")
       setBoolHintValue(false)
       allowLogin()
     }
     else if (serverURL == nil) {
-      NSLog("%@","Crypt:MechanismInvoke:Check:getServerURL:[+] Failed to get Server URL for key" +
+      NSLog("%@","Crypt:MechanismInvoke:Check:getServerURL:[+] Failed to get Server URL for key " +
           "escrow. Allowing login normally.")
       setBoolHintValue(false)
       allowLogin()
