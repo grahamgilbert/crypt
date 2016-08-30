@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import logging
 import subprocess
 import os
 import urllib
@@ -12,6 +13,15 @@ import FoundationPlist
 
 BUNDLE_ID = 'com.grahamgilbert.crypt'
 PLIST_PATH = '/private/var/root/crypt_output.plist'
+LOG_FILE = '/var/log/crypt.log'
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
+                    datefmt='%Y-%m-%d %I:%M:%S %p',
+                    level=logging.DEBUG,
+                    filename=LOG_FILE)
+stdout_logging = logging.StreamHandler()
+stdout_logging.setFormatter(logging.Formatter())
+logging.getLogger().addHandler(stdout_logging)
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
@@ -80,8 +90,10 @@ def escrow_key(plist):
     (output, error) = task.communicate()
     if task.returncode == 0:
         return True
+        logging.info('Key escrow successful.')
     else:
         return False
+        logging.error('Key escrow unsuccessful.')
 
 def using_recovery_key():
     """Check if FileVault is currently unlocked using
@@ -91,6 +103,7 @@ def using_recovery_key():
     using_key = subprocess.check_output(cmd).strip()
     if using_key == 'true':
         return True
+        logging.warning('Detected Recovery Key use.')
     else:
         return False
 
@@ -103,11 +116,11 @@ def get_recovery_key(key_location):
         recovery_key = keyplist['RecoveryKey'].strip()
         return recovery_key
     except FoundationPlist.NSPropertyListSerializationException:
-        print(
+        logging.info(
             'We had trouble getting info from {0}...'.format(key_location))
         return False
     except KeyError:
-        print(
+        logging.warning(
             'Problem with Key: RecoveryKey in {0}...'.format(key_location))
         return False
 
@@ -121,11 +134,12 @@ def validate_key(current_key):
         stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_data, err = cmd.communicate(input=input_plist)
     if err:
-        print(err)
+        logging.error(err)
     if stdout_data.strip() == 'true':
         return True
     else:
         return False
+        logging.info('Recovery Key could not be validated.')
 
 def rotate_key(current_key, plist):
     """This rotates the recovery key to something new
@@ -136,12 +150,14 @@ def rotate_key(current_key, plist):
         '-outputplist', '-inputplist'],
         stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_data, err = cmd.communicate(input=input_plist)
+    logging.info('Attempting to rotate Recovery Key.')
     try:
         output_plist = FoundationPlist.readPlistFromString(stdout_data)
         FoundationPlist.writePlist(output_plist, plist)
+        logging.info('Recovery Key rotated.')
     except Exception:
         if err:
-            print 'Encountered error Key Rotation: {0}.'.format(err)
+            logging.warning('Encountered error Key Rotation: {0}.'.format(err))
 
 def get_enabled_user(plist):
     """Crypt needs an enabled user in its plist that our normal output
@@ -166,21 +182,20 @@ def rotate_if_used(key_path):
     if not using_recovery_key():
         return ''
     if not os.path.isfile(key_path):
-        syslog.syslog(
+        logging.warning(
             syslog.LOG_ALERT, 'Could not locate {0}'.format(key_path))
     rotate_message = 'Recovery Key has been used.. Attempting to Rotate'
-    syslog.syslog(syslog.LOG_ALERT, rotate_message)
+    logging.info(syslog.LOG_ALERT, rotate_message)
     current_key = get_recovery_key(key_path)
     valid_key = validate_key(current_key)
     if not valid_key:
-        syslog.syslog(syslog.LOG_ALERT,
+        logging.warning(syslog.LOG_ALERT,
         'ERROR: Our current key is not valid')
         return ''
     rotate_key(current_key, key_path)
     get_enabled_user(key_path)
 
 def main():
-    syslog.openlog("Crypt")
     if pref('RotateUsedKey'):
         rotate_if_used(PLIST_PATH)
     if os.path.isfile(PLIST_PATH):
@@ -196,9 +211,11 @@ def main():
             remove_plist = pref('RemovePlist')
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
+            logging.info('Successfully escrowed key.')
             FoundationPlist.writePlist(plist, PLIST_PATH)
             if remove_plist:
                 os.remove(PLIST_PATH)
+                logging.info('Removing plist due to configuration.')
 
 if __name__ == '__main__':
     main()
