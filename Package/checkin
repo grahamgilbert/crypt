@@ -228,7 +228,7 @@ def main():
             plist['last_run'] = datetime.datetime.now()
             logging.info('Successfully escrowed key.')
             FoundationPlist.writePlist(plist, PLIST_PATH)
-            if remove_plist == True:
+            if remove_plist is True:
                 os.remove(PLIST_PATH)
                 logging.info('Removing plist due to configuration.')
 
