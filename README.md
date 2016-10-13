@@ -38,6 +38,10 @@ By default, the plist with the FileVault Key will be removed once it has been es
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -bool FALSE
 ```
 
+## Uninstalling
+
+The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. A script that will do this can be found at [Package/uninstall](https://github.com/grahamgilbert/crypt2/blob/master/Package/uninstall).
+
 ## Credits
 
 Crypt 2 couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.
