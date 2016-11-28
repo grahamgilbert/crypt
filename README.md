@@ -42,6 +42,14 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -
 
 The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. A script that will do this can be found at [Package/uninstall](https://github.com/grahamgilbert/crypt2/blob/master/Package/uninstall).
 
+## Building from source
+
+You will need to configure Xcode to sign the bundle before building. Instructions for this are out of the scope of this readme, and [are available on Apple's site](https://developer.apple.com/support/code-signing/).
+
+* Install [The Luggage](https://github.com/unixorn/luggage)
+* ``cd Package``
+* ``make pkg``
+
 ## Credits
 
 Crypt 2 couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.

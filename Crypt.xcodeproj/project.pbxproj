@@ -164,6 +164,7 @@
 				FCD4FD911BEE763C00CF7F48 /* Frameworks */,
 				FCD4FD921BEE763C00CF7F48 /* Resources */,
 				C7AD39031D22C32F000FB736 /* CopyFiles */,
+				10173A431DBF70480030211B /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -231,6 +232,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		10173A431DBF70480030211B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# based on http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode\nif git rev-parse --is-inside-work-tree 2> /dev/null > /dev/null; then\necho \"Setting CFBundleVersion to Git rev-list --count\"\nbuild_number=$(git rev-list HEAD --count)\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $build_number\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nelse\necho \"Not in a Git repo, not setting CFBundleVersion\"\nfi";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C7AD38EF1D22B049000FB736 /* Sources */ = {
@@ -307,6 +324,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
@@ -350,6 +368,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
