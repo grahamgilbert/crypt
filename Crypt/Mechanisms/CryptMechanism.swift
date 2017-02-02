@@ -1,136 +1,145 @@
 /*
-  Crypt
+ Crypt
 
-  Copyright 2016 The Crypt Project.
+ Copyright 2017 The Crypt Project.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 import Foundation
-import Security
 
-class CryptMechanism: NSObject {  
-  // This NSString will be used as the domain for the inter-mechanism context data
-  let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
-  
+class CryptMechanism: NSObject {
+  private let needsEncryptionHintKey = "com.grahamgilbert.crypt.needsEncryption"
+
   // Define a pointer to the MechanismRecord. This will be used to get and set
   // all the inter-mechanism data. It is also used to allow or deny the login.
-  var mechanism:UnsafePointer<MechanismRecord>
-  
+  var mechanism: UnsafePointer<MechanismRecord>
+
   // init the class with a MechanismRecord
-  init(mechanism:UnsafePointer<MechanismRecord>) {
-    NSLog("Crypt:MechanismInvoke:Check:[+] initWithMechanismRecord");
+  init(mechanism: UnsafePointer<MechanismRecord>) {
     self.mechanism = mechanism
   }
-  
-  var username: NSString? {
-    get {
-      var value : UnsafePointer<AuthorizationValue> = nil
+
+  // Allow the login. End of the mechanism
+  func allowLogin() {
+    _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
+      mechanism.pointee.fEngine, AuthorizationResult.allow)
+  }
+
+  private func getContextData(key: AuthorizationString) -> Data? {
+    var value: UnsafePointer<AuthorizationValue>?
+    let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> Data? in
       var flags = AuthorizationContextFlags()
-      var err: OSStatus = noErr
-      err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(
-        mechanism.memory.fEngine, kAuthorizationEnvironmentUsername, &flags, &value)
-      if err != errSecSuccess {
+      if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
+        self.mechanism.pointee.fEngine, key, &flags, ptr) != errAuthorizationSuccess) {
+        return nil;
+      }
+      guard let length = ptr.pointee?.pointee.length else {
         return nil
       }
-      guard let username = NSString.init(bytes: value.memory.data,
-        length: value.memory.length, encoding: NSUTF8StringEncoding)
-        else { return nil }
-      
-      return username.stringByReplacingOccurrencesOfString("\0", withString: "")
-    }
-  }
-  
-  var password: NSString? {
-    get {
-      var value : UnsafePointer<AuthorizationValue> = nil
-      var flags = AuthorizationContextFlags()
-      var err: OSStatus = noErr
-      err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(
-        mechanism.memory.fEngine, kAuthorizationEnvironmentPassword, &flags, &value)
-      if err != errSecSuccess {
+      guard let buffer = ptr.pointee?.pointee.data else {
         return nil
       }
-      guard let pass = NSString.init(bytes: value.memory.data,
-        length: value.memory.length, encoding: NSUTF8StringEncoding)
-        else { return nil }
-      
-      return pass.stringByReplacingOccurrencesOfString("\0", withString: "")
+      if (length == 0) {
+        return nil
+      }
+      return Data.init(bytes: buffer, count: length)
+    }
+    return data
+  }
+
+  private func getHintData(key: AuthorizationString) -> Data? {
+    var value: UnsafePointer<AuthorizationValue>?
+    let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> Data? in
+      if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetHintValue(
+        self.mechanism.pointee.fEngine, key, ptr) != errAuthorizationSuccess) {
+        return nil;
+      }
+      guard let length = ptr.pointee?.pointee.length else {
+        return nil
+      }
+      guard let buffer = ptr.pointee?.pointee.data else {
+        return nil
+      }
+      if (length == 0) {
+        return nil
+      }
+      return Data.init(bytes: buffer, count: length)
+    }
+    return data
+  }
+
+  private func setHintData(key: AuthorizationString, data: NSData) -> Bool {
+    var value = AuthorizationValue(length: data.length ,
+                                   data: UnsafeMutableRawPointer(mutating: data.bytes))
+    return (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetHintValue(
+      self.mechanism.pointee.fEngine, key, &value) != errAuthorizationSuccess)
+  }
+
+  var username: String? {
+    get {
+      guard let data = getContextData(key: kAuthorizationEnvironmentUsername) else {
+        return nil
+      }
+      return String.init(data: data, encoding: String.Encoding.utf8)
     }
   }
-  
-  var uid: uid_t {
+
+  var password: String? {
     get {
-      var value : UnsafePointer<AuthorizationValue> = nil
-      var flags = AuthorizationContextFlags()
-      var uid : uid_t = 0
-      if (self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetContextValue(
-              mechanism.memory.fEngine, ("uid" as NSString).UTF8String, &flags, &value)
-              == errSecSuccess) {
-          let uidData = NSData.init(bytes: value.memory.data, length: sizeof(uid_t))
-          uidData.getBytes(&uid, length: sizeof(uid_t))
+      guard let data = getContextData(key: kAuthorizationEnvironmentPassword) else {
+        return nil
       }
+      return String.init(data: data, encoding: String.Encoding.utf8)
+    }
+  }
+
+  var uid: UInt32 {
+    get {
+      var uid: UInt32 = UInt32.max - 1 // nobody
+      guard let data = getContextData(key: kAuthorizationEnvironmentUID) else {
+        return uid
+      }
+      (data as NSData).getBytes(&uid, length: MemoryLayout<UInt32>.size)
       return uid
     }
   }
-  
-  func setBoolHintValue(encryptionWasEnabled : NSNumber) -> Bool {
-    // Try and unwrap the optional NSData returned from archivedDataWithRootObject
-    // This can be decoded on the other side with unarchiveObjectWithData
-    guard let data : NSData = NSKeyedArchiver.archivedDataWithRootObject(encryptionWasEnabled)
-      else {
-        NSLog("Crypt:MechanismInvoke:Check:setHintValue:[+] Failed to unwrap data");
-        return false
+
+  var gid: UInt32 {
+    get {
+      var gid: UInt32 = UInt32.max - 1 // nobody
+      guard let data = getContextData(key: kAuthorizationEnvironmentGID) else {
+        return gid
+      }
+      (data as NSData).getBytes(&gid, length: MemoryLayout<UInt32>.size)
+      return gid
     }
-    
-    // Fill the AuthorizationValue struct with our data
-    var value = AuthorizationValue(length: data.length,
-      data: UnsafeMutablePointer<Void>(data.bytes))
-    
-    // Use the MechanismRecord SetHintValue callback to set the
-    // inter-mechanism context data
-    let err : OSStatus = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.SetHintValue(
-      self.mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
-    
-    return (err == errSecSuccess)
   }
-  
-  // This is how we get the inter-mechanism context data
-  func getBoolHintValue() -> Bool {
-    var value : UnsafePointer<AuthorizationValue> = nil
-    var err: OSStatus = noErr
-    err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.GetHintValue(mechanism.memory.fEngine, contextCryptDomain.UTF8String, &value)
-    if err != errSecSuccess {
-      NSLog("%@","couldn't retrieve hint value")
-      return false
+
+  var needsEncryption: Bool {
+    set {
+      let data = NSKeyedArchiver.archivedData(withRootObject: NSNumber.init(value: newValue))
+      _ = setHintData(key: needsEncryptionHintKey, data: data as NSData)
     }
-    let outputdata = NSData.init(bytes: value.memory.data, length: value.memory.length)
-    guard let boolHint = NSKeyedUnarchiver.unarchiveObjectWithData(outputdata)
-      else {
-        NSLog("couldn't unpack hint value")
+
+    get {
+      guard let data = getHintData(key: needsEncryptionHintKey) else {
         return false
+      }
+      guard let value = NSKeyedUnarchiver.unarchiveObject(with: data) else {
+        return false
+      }
+      return (value as! NSNumber).boolValue
     }
-    
-    return boolHint.boolValue
-  }
-  
-  // Allow the login. End of the mechanism
-  func allowLogin() -> OSStatus {
-    NSLog("Crypt:MechanismInvoke:Check:[+] Done. Thanks and have a lovely day.");
-    var err: OSStatus = noErr
-    err = self.mechanism.memory.fPlugin.memory.fCallbacks.memory.SetResult(
-      mechanism.memory.fEngine, AuthorizationResult.Allow)
-    NSLog("Crypt:MechanismInvoke:Check:[+] [%d]", Int(err));
-    return err
   }
 }

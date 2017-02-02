@@ -18,10 +18,9 @@
 
 #import <Cocoa/Cocoa.h>
 #include <Security/AuthorizationPlugin.h>
-#import "CryptAuthPlugin.h"
 
-@interface PromptWindowController : NSWindowController <NSWindowDelegate>
+#import "CryptPluginCore.h"
 
-@property const MechanismRecord *mechanism;
-
+@interface PromptWindowController : NSWindowController<NSWindowDelegate>
+- (instancetype)initWithMechanismRecord:(const MechanismRecord *)mechanism;
 @end

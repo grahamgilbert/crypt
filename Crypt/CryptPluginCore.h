@@ -1,20 +1,20 @@
 /*
-  Crypt
+ Crypt
 
-  Copyright 2016 The Crypt Project.
+ Copyright 2017 The Crypt Project.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
 #import <Foundation/Foundation.h>
 #include <CoreServices/CoreServices.h>
@@ -23,36 +23,53 @@
 #include <Security/AuthorizationTags.h>
 
 #pragma mark
+#pragma mark Context & Hint Keys
+
+#define kAuthorizationEnvironmentAuthenticationAuthority "dsAttrTypeStandard:AuthenticationAuthority"
+#define kAuthorizationEnvironmentUID "uid"
+#define kAuthorizationEnvironmentGID "gid"
+#define kAuthorizationEnvironmentTokenName "token-name"
+#define kAuthorizationEnvironmentAuthorizeRight "authorize-right"
+#define kAuthorizationEnvironmentSuggestedUser "suggested-user"
+#define kAuthorizationEnvironmentClientPath "client-path"
+
+#pragma mark
 #pragma mark Core Data Structures
 
 #pragma mark - Plugin
+
 enum {
   kPluginMagic = 'PlgN'
 };
+
 struct PluginRecord {
   OSType fMagic;
   const AuthorizationCallbacks *fCallbacks;
 };
+
 typedef struct PluginRecord PluginRecord;
 
 #pragma mark - Mechanism
+
 enum {
   kMechanismMagic = 'Mchn'
 };
+
 struct MechanismRecord {
-  OSType                          fMagic;
-  AuthorizationEngineRef          fEngine;
-  const PluginRecord *            fPlugin;
-  Boolean                         fCheck;
-  Boolean                         fCryptGUI;
-  Boolean                         fEnablement;
+  OSType fMagic;
+  AuthorizationEngineRef fEngine;
+  const PluginRecord *fPlugin;
+  Boolean fCheck;
+  Boolean fCryptGUI;
+  Boolean fEnablement;
 };
+
 typedef struct MechanismRecord MechanismRecord;
 
 #pragma mark
 #pragma mark ObjC AuthPlugin Wrapper
 
-@interface CryptAuthPlugin : NSObject
+@interface CryptPluginCore : NSObject
 
 #pragma mark
 #pragma mark Mechanism Entry Points

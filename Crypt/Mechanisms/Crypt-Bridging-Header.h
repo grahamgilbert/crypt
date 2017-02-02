@@ -16,11 +16,6 @@
  limitations under the License.
  */
 
-#import <Foundation/Foundation.h>
-
-@protocol FDEAddUserServiceProtocol
-- (void)ODFDEAddUser:(NSString *)username
-        withPassword:(NSString *)password
-           withReply:(void (^)(BOOL))reply;
-@end
-
+#import "CryptPluginCore.h"
+#import "FDEAddUserServiceProtocol.h"
+#import "PromptWindowController.h"

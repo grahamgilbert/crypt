@@ -1,7 +1,7 @@
 /*
  Crypt
 
- Copyright 2017 The Crypt Project.
+ Copyright 2016 The Crypt Project.
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -16,11 +16,17 @@
  limitations under the License.
  */
 
-#import <Foundation/Foundation.h>
+import Foundation
 
-@protocol FDEAddUserServiceProtocol
-- (void)ODFDEAddUser:(NSString *)username
-        withPassword:(NSString *)password
-           withReply:(void (^)(BOOL))reply;
-@end
-
+class Prompt: CryptMechanism {
+  func run() {
+    NSLog("Crypt:Prompt running");
+    if (self.needsEncryption) {
+      let promptWindowController = PromptWindowController.init(mechanismRecord: self.mechanism)
+      guard let promptWindow = promptWindowController?.window else {
+        return
+      }
+      NSApp.runModal(for: promptWindow)
+    }
+  }
+}
