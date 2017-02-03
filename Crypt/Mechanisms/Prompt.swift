@@ -16,14 +16,19 @@
  limitations under the License.
  */
 
-import Foundation
+import os.log
 
 class Prompt: CryptMechanism {
+  // Log for the Prompt functions
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Prompt")
+
   func run() {
-    NSLog("Crypt:Prompt running");
+    os_log("running", log: Prompt.log, type: .debug)
     if (self.needsEncryption) {
+      os_log("prompt needed", log: Prompt.log, type: .debug)
       let promptWindowController = PromptWindowController.init(mechanismRecord: self.mechanism)
       guard let promptWindow = promptWindowController?.window else {
+        os_log("prompt failed", log: Prompt.log, type: .error)
         return
       }
       NSApp.runModal(for: promptWindow)

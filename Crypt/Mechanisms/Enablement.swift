@@ -16,13 +16,14 @@
  limitations under the License.
  */
 
-import Foundation
-import Security
-import CoreFoundation
+import os.log
 
 class Enablement: CryptMechanism {
+  // Log for the Enablement functions
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Enablement")
+
   func run() {
-    NSLog("Crypt:Enablement running");
+    os_log("running", log: Enablement.log, type: .debug)
     guard let username = self.username else {
       return allowLogin()
     }
@@ -33,20 +34,19 @@ class Enablement: CryptMechanism {
     let settings: [String: String] = ["Username" : username, "Password" : password]
 
     if self.needsEncryption {
-      NSLog("Crypt:Enablement Attempting to Enable FileVault 2")
+      os_log("attempting to enable FV2", log: Enablement.log, type: .debug)
       do {
         let outputPlist = try enableFileVault(settings: settings)
         outputPlist.write(toFile: "/private/var/root/crypt_output.plist", atomically: true)
         restartMac()
       }
       catch let error as NSError {
-        NSLog("Crypt:Enablement %@", error)
+        os_log("%@", log: Enablement.log, type: .error, error)
         allowLogin()
       }
 
     } else {
-      NSLog("Crypt:Enablement Hint value wasn't set")
-      // Allow to login. End of mechanism
+      os_log("nothing to do", log: Enablement.log, type: .debug)
       allowLogin()
     }
   }
@@ -56,7 +56,7 @@ class Enablement: CryptMechanism {
     // Wait a couple of seconds for everything to finish
     sleep(3)
     let task = Process();
-    NSLog("%@", "Restarting after enabling encryption")
+    os_log("restarting after enabling FV2", log: Enablement.log, type: .debug)
     task.launchPath = "/sbin/reboot"
     task.launch()
   }
@@ -79,15 +79,13 @@ class Enablement: CryptMechanism {
     let outputData = outPipe.fileHandleForReading.availableData
     let outputString = String(data: outputData, encoding: String.Encoding.utf8) ?? ""
     if (outputString.contains("true")) {
-      NSLog("Crypt:Enablement Authrestart capability is 'true', will authrestart as appropriate")
+      os_log("supports authrestart", log: Enablement.log, type: .debug)
       return true
-    }
-    else {
-      NSLog("Crypt:Enablement Authrestart capability is 'false', reverting to standard reboot")
+    } else {
+      os_log("does not supports authrestart", log: Enablement.log, type: .debug)
       return false
     }
   }
-
 
   // fdesetup wrapper
   func enableFileVault(settings : Dictionary<String, String>) throws -> NSDictionary {

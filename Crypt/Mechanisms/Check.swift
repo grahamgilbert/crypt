@@ -16,11 +16,12 @@
  limitations under the License.
  */
 
-import Foundation
-import Security
-import CoreFoundation
+import os.log
 
 class Check: CryptMechanism {
+  // Log for the Check functions
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Check")
+
   // Preference bundle id
   private let bundleid = "com.grahamgilbert.crypt"
   
@@ -28,27 +29,28 @@ class Check: CryptMechanism {
   private let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
   
   func run(){
-    NSLog("Crypt:Check running");
-    
+    os_log("running", log: Check.log, type: .debug)
+
     let serverURL: String? = getServerURL()
     let fvEnabled: Bool = getFVEnabled()
     let skipUsers: Bool = getSkipUsers()
     let addUser: Bool = getAddUserPreference()
     
     if fvEnabled {
-      NSLog("%@","Crypt:Check Filevault is enabled, encrypting or decrypting")
+      os_log("FV2 is already active", log: Check.log, type: .debug)
       if addUser && !skipUsers {
-        NSLog("%@","Crypt:Check Adding user to FV2")
+        os_log("adding user to FV2", log: Check.log, type: .debug)
         fdeAddUser(username: self.username, password: self.password)
       }
       self.needsEncryption = false
     } else if skipUsers {
-      NSLog("%@","Crypt:Check The user logging in is in the skip list. Not enforcing filevault")
+      os_log("user is in the skip list", log: Check.log, type: .debug)
       self.needsEncryption = false
     } else if (serverURL == nil) {
-      NSLog("%@","Crypt:Check Failed to get Server URL for key escrow. Allowing login normally.")
+      os_log("missing ServerURL", log: Check.log, type: .debug)
       self.needsEncryption = false
     } else {
+      os_log("needs encryption", log: Check.log, type: .debug)
       self.needsEncryption = true
     }
 
@@ -112,10 +114,10 @@ class Check: CryptMechanism {
     connection.remoteObjectInterface = NSXPCInterface(with: FDEAddUserServiceProtocol.self)
     connection.resume()
     let service = connection.remoteObjectProxyWithErrorHandler { (error: Error) -> Void in
-      NSLog("Crypt:Check %@ Connection Error", self.fdeAddUserService);
+      os_log("can not connect to FDEAddUserService", log: Check.log, type: .error)
     } as! FDEAddUserServiceProtocol
     service.odfdeAddUser(username, withPassword: password) { (ret: Bool) -> Void in
-      NSLog("Crypt:Check FDEAddUser %@", ret ? "Success" : "Fail")
+      os_log("FDEAddUser %@", log: Check.log, type: .error, ret ? "Success" : "Fail")
     }
   }
 }

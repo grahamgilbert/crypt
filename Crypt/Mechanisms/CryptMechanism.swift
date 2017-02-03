@@ -16,9 +16,13 @@
  limitations under the License.
  */
 
-import Foundation
+import os.log
 
 class CryptMechanism: NSObject {
+  // Log for the CryptMechanism functions
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Mechanism")
+
+  // Key for hint data
   private let needsEncryptionHintKey = "com.grahamgilbert.crypt.needsEncryption"
 
   // Define a pointer to the MechanismRecord. This will be used to get and set
@@ -32,54 +36,68 @@ class CryptMechanism: NSObject {
 
   // Allow the login. End of the mechanism
   func allowLogin() {
+    os_log("allow login", log: CryptMechanism.log, type: .debug)
     _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
       mechanism.pointee.fEngine, AuthorizationResult.allow)
   }
 
   private func getContextData(key: AuthorizationString) -> Data? {
+    os_log("getContextData called", log: CryptMechanism.log, type: .debug)
     var value: UnsafePointer<AuthorizationValue>?
     let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> Data? in
       var flags = AuthorizationContextFlags()
       if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
         self.mechanism.pointee.fEngine, key, &flags, ptr) != errAuthorizationSuccess) {
+        os_log("GetContextValue failed", log: CryptMechanism.log, type: .error)
         return nil;
       }
       guard let length = ptr.pointee?.pointee.length else {
+        os_log("length failed to unwrap", log: CryptMechanism.log, type: .error)
         return nil
       }
       guard let buffer = ptr.pointee?.pointee.data else {
+        os_log("data failed to unwrap", log: CryptMechanism.log, type: .error)
         return nil
       }
       if (length == 0) {
+        os_log("length is 0", log: CryptMechanism.log, type: .error)
         return nil
       }
       return Data.init(bytes: buffer, count: length)
     }
+    os_log("getContextData success", log: CryptMechanism.log, type: .debug)
     return data
   }
 
   private func getHintData(key: AuthorizationString) -> Data? {
+    os_log("getHintData called", log: CryptMechanism.log, type: .debug)
     var value: UnsafePointer<AuthorizationValue>?
     let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> Data? in
       if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetHintValue(
         self.mechanism.pointee.fEngine, key, ptr) != errAuthorizationSuccess) {
+        os_log("GetHintValue failed", log: CryptMechanism.log, type: .error)
         return nil;
       }
       guard let length = ptr.pointee?.pointee.length else {
+        os_log("length failed to unwrap", log: CryptMechanism.log, type: .error)
         return nil
       }
       guard let buffer = ptr.pointee?.pointee.data else {
+        os_log("data failed to unwrap", log: CryptMechanism.log, type: .error)
         return nil
       }
       if (length == 0) {
+        os_log("length is 0", log: CryptMechanism.log, type: .error)
         return nil
       }
       return Data.init(bytes: buffer, count: length)
     }
+    os_log("getHintData success", log: CryptMechanism.log, type: .debug)
     return data
   }
 
   private func setHintData(key: AuthorizationString, data: NSData) -> Bool {
+    os_log("setHintData called", log: CryptMechanism.log, type: .debug)
     var value = AuthorizationValue(length: data.length ,
                                    data: UnsafeMutableRawPointer(mutating: data.bytes))
     return (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetHintValue(
@@ -88,6 +106,7 @@ class CryptMechanism: NSObject {
 
   var username: String? {
     get {
+      os_log("username requested", log: CryptMechanism.log, type: .debug)
       guard let data = getContextData(key: kAuthorizationEnvironmentUsername) else {
         return nil
       }
@@ -97,6 +116,7 @@ class CryptMechanism: NSObject {
 
   var password: String? {
     get {
+      os_log("password requested", log: CryptMechanism.log, type: .debug)
       guard let data = getContextData(key: kAuthorizationEnvironmentPassword) else {
         return nil
       }
@@ -106,6 +126,7 @@ class CryptMechanism: NSObject {
 
   var uid: UInt32 {
     get {
+      os_log("uid requested", log: CryptMechanism.log, type: .debug)
       var uid: UInt32 = UInt32.max - 1 // nobody
       guard let data = getContextData(key: kAuthorizationEnvironmentUID) else {
         return uid
@@ -117,6 +138,7 @@ class CryptMechanism: NSObject {
 
   var gid: UInt32 {
     get {
+      os_log("gid requested", log: CryptMechanism.log, type: .debug)
       var gid: UInt32 = UInt32.max - 1 // nobody
       guard let data = getContextData(key: kAuthorizationEnvironmentGID) else {
         return gid
@@ -128,11 +150,13 @@ class CryptMechanism: NSObject {
 
   var needsEncryption: Bool {
     set {
+      os_log("needsEncryption set to %@", log: CryptMechanism.log, type: .debug, newValue as CVarArg)
       let data = NSKeyedArchiver.archivedData(withRootObject: NSNumber.init(value: newValue))
       _ = setHintData(key: needsEncryptionHintKey, data: data as NSData)
     }
 
     get {
+      os_log("needsEncryption requested", log: CryptMechanism.log, type: .debug)
       guard let data = getHintData(key: needsEncryptionHintKey) else {
         return false
       }
