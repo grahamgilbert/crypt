@@ -7,9 +7,13 @@ import urllib
 import sys
 import datetime
 import syslog
-
-from Foundation import *
 import FoundationPlist
+from Foundation import NSDate
+from Foundation import CFPreferencesAppSynchronize
+from Foundation import CFPreferencesCopyAppValue
+from Foundation import CFPreferencesSetValue
+from Foundation import kCFPreferencesAnyUser
+from Foundation import kCFPreferencesCurrentHost
 
 BUNDLE_ID = 'com.grahamgilbert.crypt'
 PLIST_PATH = '/private/var/root/crypt_output.plist'
