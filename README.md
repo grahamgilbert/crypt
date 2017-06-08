@@ -38,6 +38,15 @@ By default, the plist with the FileVault Key will be removed once it has been es
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -bool FALSE
 ```
 
+### RotateUsedKey
+
+As of version 2.2.0 Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. NOTE: Future plan is to add this to the authorized plug-in so a key is not needed on disk.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RotateUsedKey -bool FALSE
+```
+
+
 ## Uninstalling
 
 The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. A script that will do this can be found at [Package/uninstall](https://github.com/grahamgilbert/crypt2/blob/master/Package/uninstall).
