@@ -40,11 +40,18 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -
 
 ### RotateUsedKey
 
-As of version 2.2.0 Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default. NOTE: Future plan is to add this to the authorized plug-in so a key is not needed on disk.
+Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default. NOTE: Future plan is to add this to the authorized plug-in so a key is not needed on disk.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RotateUsedKey -bool FALSE
 ```
+
+### FDEAddUser
+
+Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (when the disk is unlocked). This feature works up until macOS 10.12. The default for this is `FALSE`.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -bool TRUE
 
 
 ## Uninstalling
