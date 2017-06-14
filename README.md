@@ -52,7 +52,7 @@ Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (w
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -bool TRUE
-
+```
 
 ## Uninstalling
 
