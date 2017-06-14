@@ -25,6 +25,8 @@ pack-plugin: build
 pack-checkin: l_Library
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
+	@sudo ${CP} generate_key ${WORK_D}/Library/Crypt/generate_key
 	@sudo ${CP} FoundationPlist.py ${WORK_D}/Library/Crypt/FoundationPlist.py
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
 	@sudo chmod 755 ${WORK_D}/Library/Crypt/checkin
+	@sudo chmod 755 ${WORK_D}/Library/Crypt/generate_key
