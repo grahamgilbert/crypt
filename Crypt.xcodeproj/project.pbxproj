@@ -7,73 +7,94 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F71D22B049000FB736 /* FDEAddUserService.m */; };
-		C7AD38FA1D22B049000FB736 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F91D22B049000FB736 /* main.m */; };
-		C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
-		C7AD39041D22C336000FB736 /* FDEAddUserService.xpc in CopyFiles */ = {isa = PBXBuildFile; fileRef = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
-		D2D31D5F1C2303F500839D93 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
-		D2D31D611C2303F500839D93 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
-		D2D31D621C2303F500839D93 /* fv2.png in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D591C2303F500839D93 /* fv2.png */; };
-		D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D5B1C2303F500839D93 /* PromptWindowController.m */; };
-		D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */; };
-		D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D661C2307D500839D93 /* CryptGUI.swift */; };
+		C7AD1B701E42A8C90056B613 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B6F1E42A8C90056B613 /* Check.swift */; };
+		C7AD1B711E42A8F40056B613 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B6F1E42A8C90056B613 /* Check.swift */; };
+		C7AD1B7B1E42AA400056B613 /* FDEAddUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B7A1E42AA400056B613 /* FDEAddUserService.m */; };
+		C7AD1B7D1E42AA400056B613 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B7C1E42AA400056B613 /* main.m */; };
+		C7AD1B851E42AA6E0056B613 /* FDEAddUserService.xpc in CopyFiles */ = {isa = PBXBuildFile; fileRef = C7AD1B761E42AA400056B613 /* FDEAddUserService.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		C7AD1B8B1E42AFFF0056B613 /* fv2.png in Resources */ = {isa = PBXBuildFile; fileRef = C7AD1B871E42AFFF0056B613 /* fv2.png */; };
+		C7AD1B8C1E42AFFF0056B613 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B891E42AFFF0056B613 /* PromptWindowController.m */; };
+		C7AD1B8D1E42AFFF0056B613 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7AD1B8A1E42AFFF0056B613 /* PromptWindowController.xib */; };
+		C7AD1B911E42B2470056B613 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B891E42AFFF0056B613 /* PromptWindowController.m */; };
+		C7AD1B921E42B25F0056B613 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = C7AD1B8A1E42AFFF0056B613 /* PromptWindowController.xib */; };
+		C7AD1B941E42B2AF0056B613 /* Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B931E42B2AF0056B613 /* Prompt.swift */; };
+		C7AD1B951E42B2AF0056B613 /* Prompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B931E42B2AF0056B613 /* Prompt.swift */; };
+		C7AD1B971E42B2F20056B613 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B961E42B2F20056B613 /* Enablement.swift */; };
+		C7AD1B981E42B2F20056B613 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD1B961E42B2F20056B613 /* Enablement.swift */; };
+		C7F1E8231E40FCD100A5C77E /* CryptPluginCore.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E8221E40FCD100A5C77E /* CryptPluginCore.m */; };
+		C7F1E82B1E40FEEF00A5C77E /* CryptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E82A1E40FEEF00A5C77E /* CryptTests.m */; };
+		C7F1E8301E40FF0000A5C77E /* CryptPluginCore.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E8221E40FCD100A5C77E /* CryptPluginCore.m */; };
+		C7F1E8331E40FF2C00A5C77E /* CryptCallbackEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E8321E40FF2C00A5C77E /* CryptCallbackEngine.m */; };
+		C7F1E8371E4108FD00A5C77E /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E8361E4108FD00A5C77E /* CryptMechanism.swift */; };
+		C7F1E8381E410C0600A5C77E /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7F1E8361E4108FD00A5C77E /* CryptMechanism.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		C7AD39011D22C329000FB736 /* PBXContainerItemProxy */ = {
+		C7AD1B821E42AA550056B613 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
+			containerPortal = C7F1E8101E40FB2A00A5C77E /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = C7AD38F21D22B049000FB736;
+			remoteGlobalIDString = C7AD1B751E42AA400056B613;
 			remoteInfo = FDEAddUserService;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		C7AD39031D22C32F000FB736 /* CopyFiles */ = {
+		C7AD1B841E42AA670056B613 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
 			dstSubfolderSpec = 16;
 			files = (
-				C7AD39041D22C336000FB736 /* FDEAddUserService.xpc in CopyFiles */,
+				C7AD1B851E42AA6E0056B613 /* FDEAddUserService.xpc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = FDEAddUserService.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7AD38F51D22B049000FB736 /* FDEAddUserServiceProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserServiceProtocol.h; sourceTree = "<group>"; };
-		C7AD38F61D22B049000FB736 /* FDEAddUserService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserService.h; sourceTree = "<group>"; };
-		C7AD38F71D22B049000FB736 /* FDEAddUserService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDEAddUserService.m; sourceTree = "<group>"; };
-		C7AD38F91D22B049000FB736 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C7AD38FB1D22B049000FB736 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = CryptMechanism.swift; sourceTree = "<group>"; tabWidth = 2; };
-		D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Crypt-Bridging-Header.h"; path = "Crypt/Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
-		D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptAuthPlugin.h; path = Crypt/CryptAuthPlugin.h; sourceTree = "<group>"; };
-		D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CryptAuthPlugin.m; path = Crypt/CryptAuthPlugin.m; sourceTree = "<group>"; };
-		D2D31D521C2303F500839D93 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Crypt/Info.plist; sourceTree = "<group>"; };
-		D2D31D541C2303F500839D93 /* Check.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
-		D2D31D571C2303F500839D93 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
-		D2D31D591C2303F500839D93 /* fv2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fv2.png; sourceTree = "<group>"; };
-		D2D31D5A1C2303F500839D93 /* PromptWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptWindowController.h; sourceTree = "<group>"; };
-		D2D31D5B1C2303F500839D93 /* PromptWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptWindowController.m; sourceTree = "<group>"; };
-		D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptWindowController.xib; sourceTree = "<group>"; };
-		D2D31D651C23042A00839D93 /* Crypt.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crypt.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2D31D661C2307D500839D93 /* CryptGUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptGUI.swift; sourceTree = "<group>"; };
+		C7AD1B6F1E42A8C90056B613 /* Check.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
+		C7AD1B761E42AA400056B613 /* FDEAddUserService.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = FDEAddUserService.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7AD1B781E42AA400056B613 /* FDEAddUserServiceProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserServiceProtocol.h; sourceTree = "<group>"; };
+		C7AD1B791E42AA400056B613 /* FDEAddUserService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserService.h; sourceTree = "<group>"; };
+		C7AD1B7A1E42AA400056B613 /* FDEAddUserService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDEAddUserService.m; sourceTree = "<group>"; };
+		C7AD1B7C1E42AA400056B613 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		C7AD1B7E1E42AA400056B613 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7AD1B871E42AFFF0056B613 /* fv2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fv2.png; sourceTree = "<group>"; };
+		C7AD1B881E42AFFF0056B613 /* PromptWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptWindowController.h; sourceTree = "<group>"; };
+		C7AD1B891E42AFFF0056B613 /* PromptWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptWindowController.m; sourceTree = "<group>"; };
+		C7AD1B8A1E42AFFF0056B613 /* PromptWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptWindowController.xib; sourceTree = "<group>"; };
+		C7AD1B931E42B2AF0056B613 /* Prompt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Prompt.swift; sourceTree = "<group>"; };
+		C7AD1B961E42B2F20056B613 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
+		C7F1E8181E40FB2A00A5C77E /* Crypt.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crypt.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7F1E81B1E40FB2A00A5C77E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7F1E8211E40FCD100A5C77E /* CryptPluginCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptPluginCore.h; sourceTree = "<group>"; };
+		C7F1E8221E40FCD100A5C77E /* CryptPluginCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptPluginCore.m; sourceTree = "<group>"; };
+		C7F1E8281E40FEEF00A5C77E /* CryptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		C7F1E82A1E40FEEF00A5C77E /* CryptTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CryptTests.m; sourceTree = "<group>"; };
+		C7F1E82C1E40FEEF00A5C77E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		C7F1E8311E40FF2C00A5C77E /* CryptCallbackEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptCallbackEngine.h; sourceTree = "<group>"; };
+		C7F1E8321E40FF2C00A5C77E /* CryptCallbackEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptCallbackEngine.m; sourceTree = "<group>"; };
+		C7F1E8351E4108FC00A5C77E /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
+		C7F1E8361E4108FD00A5C77E /* CryptMechanism.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptMechanism.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C7AD38F01D22B049000FB736 /* Frameworks */ = {
+		C7AD1B731E42AA400056B613 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCD4FD911BEE763C00CF7F48 /* Frameworks */ = {
+		C7F1E8151E40FB2A00A5C77E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7F1E8251E40FEEF00A5C77E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -83,69 +104,94 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		C7AD38F41D22B049000FB736 /* FDEAddUserService */ = {
+		C7AD1B771E42AA400056B613 /* FDEAddUserService */ = {
 			isa = PBXGroup;
 			children = (
-				C7AD38F51D22B049000FB736 /* FDEAddUserServiceProtocol.h */,
-				C7AD38F61D22B049000FB736 /* FDEAddUserService.h */,
-				C7AD38F71D22B049000FB736 /* FDEAddUserService.m */,
-				C7AD38F91D22B049000FB736 /* main.m */,
-				C7AD38FB1D22B049000FB736 /* Info.plist */,
+				C7AD1B781E42AA400056B613 /* FDEAddUserServiceProtocol.h */,
+				C7AD1B791E42AA400056B613 /* FDEAddUserService.h */,
+				C7AD1B7A1E42AA400056B613 /* FDEAddUserService.m */,
+				C7AD1B7C1E42AA400056B613 /* main.m */,
+				C7AD1B7E1E42AA400056B613 /* Info.plist */,
 			);
 			path = FDEAddUserService;
 			sourceTree = "<group>";
 		};
-		D2D31D531C2303F500839D93 /* Mechanisms */ = {
+		C7AD1B861E42AFFE0056B613 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */,
-				D2D31D541C2303F500839D93 /* Check.swift */,
-				D2D31D661C2307D500839D93 /* CryptGUI.swift */,
-				D2D31D571C2303F500839D93 /* Enablement.swift */,
+				C7AD1B871E42AFFF0056B613 /* fv2.png */,
+				C7AD1B881E42AFFF0056B613 /* PromptWindowController.h */,
+				C7AD1B891E42AFFF0056B613 /* PromptWindowController.m */,
+				C7AD1B8A1E42AFFF0056B613 /* PromptWindowController.xib */,
 			);
-			name = Mechanisms;
-			path = Crypt/Mechanisms;
+			path = Views;
 			sourceTree = "<group>";
 		};
-		D2D31D581C2303F500839D93 /* Views */ = {
+		C7F1E80F1E40FB2A00A5C77E = {
 			isa = PBXGroup;
 			children = (
-				D2D31D591C2303F500839D93 /* fv2.png */,
-				D2D31D5A1C2303F500839D93 /* PromptWindowController.h */,
-				D2D31D5B1C2303F500839D93 /* PromptWindowController.m */,
-				D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */,
+				C7F1E81A1E40FB2A00A5C77E /* Crypt */,
+				C7F1E8291E40FEEF00A5C77E /* CryptTests */,
+				C7AD1B771E42AA400056B613 /* FDEAddUserService */,
+				C7F1E8191E40FB2A00A5C77E /* Products */,
 			);
-			name = Views;
-			path = Crypt/Views;
 			sourceTree = "<group>";
 		};
-		FCD4FD8B1BEE763C00CF7F48 = {
+		C7F1E8191E40FB2A00A5C77E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */,
-				D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */,
-				D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */,
-				D2D31D521C2303F500839D93 /* Info.plist */,
-				D2D31D531C2303F500839D93 /* Mechanisms */,
-				D2D31D581C2303F500839D93 /* Views */,
-				D2D31D651C23042A00839D93 /* Crypt.bundle */,
-				C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */,
-				C7AD38F41D22B049000FB736 /* FDEAddUserService */,
+				C7F1E8181E40FB2A00A5C77E /* Crypt.bundle */,
+				C7F1E8281E40FEEF00A5C77E /* CryptTests.xctest */,
+				C7AD1B761E42AA400056B613 /* FDEAddUserService.xpc */,
 			);
-			indentWidth = 2;
+			name = Products;
 			sourceTree = "<group>";
-			tabWidth = 2;
+		};
+		C7F1E81A1E40FB2A00A5C77E /* Crypt */ = {
+			isa = PBXGroup;
+			children = (
+				C7F1E8341E4108E700A5C77E /* Mechanisms */,
+				C7AD1B861E42AFFE0056B613 /* Views */,
+				C7F1E81B1E40FB2A00A5C77E /* Info.plist */,
+				C7F1E8211E40FCD100A5C77E /* CryptPluginCore.h */,
+				C7F1E8221E40FCD100A5C77E /* CryptPluginCore.m */,
+			);
+			path = Crypt;
+			sourceTree = "<group>";
+		};
+		C7F1E8291E40FEEF00A5C77E /* CryptTests */ = {
+			isa = PBXGroup;
+			children = (
+				C7F1E82A1E40FEEF00A5C77E /* CryptTests.m */,
+				C7F1E82C1E40FEEF00A5C77E /* Info.plist */,
+				C7F1E8311E40FF2C00A5C77E /* CryptCallbackEngine.h */,
+				C7F1E8321E40FF2C00A5C77E /* CryptCallbackEngine.m */,
+			);
+			path = CryptTests;
+			sourceTree = "<group>";
+		};
+		C7F1E8341E4108E700A5C77E /* Mechanisms */ = {
+			isa = PBXGroup;
+			children = (
+				C7F1E8351E4108FC00A5C77E /* Crypt-Bridging-Header.h */,
+				C7F1E8361E4108FD00A5C77E /* CryptMechanism.swift */,
+				C7AD1B6F1E42A8C90056B613 /* Check.swift */,
+				C7AD1B931E42B2AF0056B613 /* Prompt.swift */,
+				C7AD1B961E42B2F20056B613 /* Enablement.swift */,
+			);
+			path = Mechanisms;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C7AD38F21D22B049000FB736 /* FDEAddUserService */ = {
+		C7AD1B751E42AA400056B613 /* FDEAddUserService */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C7AD38FC1D22B049000FB736 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */;
+			buildConfigurationList = C7AD1B7F1E42AA400056B613 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */;
 			buildPhases = (
-				C7AD38EF1D22B049000FB736 /* Sources */,
-				C7AD38F01D22B049000FB736 /* Frameworks */,
-				C7AD38F11D22B049000FB736 /* Resources */,
+				C7AD1B721E42AA400056B613 /* Sources */,
+				C7AD1B731E42AA400056B613 /* Frameworks */,
+				C7AD1B741E42AA400056B613 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -153,164 +199,192 @@
 			);
 			name = FDEAddUserService;
 			productName = FDEAddUserService;
-			productReference = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */;
+			productReference = C7AD1B761E42AA400056B613 /* FDEAddUserService.xpc */;
 			productType = "com.apple.product-type.xpc-service";
 		};
-		FCD4FD931BEE763C00CF7F48 /* Crypt */ = {
+		C7F1E8171E40FB2A00A5C77E /* Crypt */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */;
+			buildConfigurationList = C7F1E81E1E40FB2A00A5C77E /* Build configuration list for PBXNativeTarget "Crypt" */;
 			buildPhases = (
-				FCD4FD901BEE763C00CF7F48 /* Sources */,
-				FCD4FD911BEE763C00CF7F48 /* Frameworks */,
-				FCD4FD921BEE763C00CF7F48 /* Resources */,
-				C7AD39031D22C32F000FB736 /* CopyFiles */,
-				10173A431DBF70480030211B /* ShellScript */,
+				C7F1E8141E40FB2A00A5C77E /* Sources */,
+				C7F1E8151E40FB2A00A5C77E /* Frameworks */,
+				C7F1E8161E40FB2A00A5C77E /* Resources */,
+				C7AD1B841E42AA670056B613 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				C7AD39021D22C329000FB736 /* PBXTargetDependency */,
+				C7AD1B831E42AA550056B613 /* PBXTargetDependency */,
 			);
 			name = Crypt;
 			productName = Crypt;
-			productReference = D2D31D651C23042A00839D93 /* Crypt.bundle */;
+			productReference = C7F1E8181E40FB2A00A5C77E /* Crypt.bundle */;
 			productType = "com.apple.product-type.bundle";
+		};
+		C7F1E8271E40FEEF00A5C77E /* CryptTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C7F1E82D1E40FEEF00A5C77E /* Build configuration list for PBXNativeTarget "CryptTests" */;
+			buildPhases = (
+				C7F1E8241E40FEEF00A5C77E /* Sources */,
+				C7F1E8251E40FEEF00A5C77E /* Frameworks */,
+				C7F1E8261E40FEEF00A5C77E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CryptTests;
+			productName = CryptTests;
+			productReference = C7F1E8281E40FEEF00A5C77E /* CryptTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		FCD4FD8C1BEE763C00CF7F48 /* Project object */ = {
+		C7F1E8101E40FB2A00A5C77E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
-				ORGANIZATIONNAME = "Graham Gilbert";
+				LastUpgradeCheck = 0820;
+				ORGANIZATIONNAME = "The Crypt Project";
 				TargetAttributes = {
-					C7AD38F21D22B049000FB736 = {
-						CreatedOnToolsVersion = 7.2;
-						LastSwiftMigration = 0800;
+					C7AD1B751E42AA400056B613 = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
 					};
-					FCD4FD931BEE763C00CF7F48 = {
-						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = 9D8XP85393;
-						LastSwiftMigration = 0800;
+					C7F1E8171E40FB2A00A5C77E = {
+						CreatedOnToolsVersion = 8.2.1;
+						LastSwiftMigration = 0820;
+						ProvisioningStyle = Automatic;
+					};
+					C7F1E8271E40FEEF00A5C77E = {
+						CreatedOnToolsVersion = 8.2.1;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
-			buildConfigurationList = FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */;
+			buildConfigurationList = C7F1E8131E40FB2A00A5C77E /* Build configuration list for PBXProject "Crypt" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = FCD4FD8B1BEE763C00CF7F48;
-			productRefGroup = FCD4FD8B1BEE763C00CF7F48;
+			mainGroup = C7F1E80F1E40FB2A00A5C77E;
+			productRefGroup = C7F1E8191E40FB2A00A5C77E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				FCD4FD931BEE763C00CF7F48 /* Crypt */,
-				C7AD38F21D22B049000FB736 /* FDEAddUserService */,
+				C7F1E8171E40FB2A00A5C77E /* Crypt */,
+				C7F1E8271E40FEEF00A5C77E /* CryptTests */,
+				C7AD1B751E42AA400056B613 /* FDEAddUserService */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		C7AD38F11D22B049000FB736 /* Resources */ = {
+		C7AD1B741E42AA400056B613 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCD4FD921BEE763C00CF7F48 /* Resources */ = {
+		C7F1E8161E40FB2A00A5C77E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2D31D621C2303F500839D93 /* fv2.png in Resources */,
-				D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */,
+				C7AD1B8B1E42AFFF0056B613 /* fv2.png in Resources */,
+				C7AD1B8D1E42AFFF0056B613 /* PromptWindowController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7F1E8261E40FEEF00A5C77E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7AD1B921E42B25F0056B613 /* PromptWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		10173A431DBF70480030211B /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# based on http://tgoode.com/2014/06/05/sensible-way-increment-bundle-version-cfbundleversion-xcode\nif git rev-parse --is-inside-work-tree 2> /dev/null > /dev/null; then\necho \"Setting CFBundleVersion to Git rev-list --count\"\nbuild_number=$(git rev-list HEAD --count)\n/usr/libexec/PlistBuddy -c \"Set :CFBundleVersion $build_number\" \"${TARGET_BUILD_DIR}/${INFOPLIST_PATH}\"\nelse\necho \"Not in a Git repo, not setting CFBundleVersion\"\nfi";
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
-		C7AD38EF1D22B049000FB736 /* Sources */ = {
+		C7AD1B721E42AA400056B613 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7AD38FA1D22B049000FB736 /* main.m in Sources */,
-				C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */,
+				C7AD1B7D1E42AA400056B613 /* main.m in Sources */,
+				C7AD1B7B1E42AA400056B613 /* FDEAddUserService.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FCD4FD901BEE763C00CF7F48 /* Sources */ = {
+		C7F1E8141E40FB2A00A5C77E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2D31D5F1C2303F500839D93 /* Check.swift in Sources */,
-				D2D31D611C2303F500839D93 /* Enablement.swift in Sources */,
-				D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */,
-				D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */,
-				D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */,
-				C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */,
+				C7AD1B971E42B2F20056B613 /* Enablement.swift in Sources */,
+				C7F1E8371E4108FD00A5C77E /* CryptMechanism.swift in Sources */,
+				C7AD1B8C1E42AFFF0056B613 /* PromptWindowController.m in Sources */,
+				C7F1E8231E40FCD100A5C77E /* CryptPluginCore.m in Sources */,
+				C7AD1B701E42A8C90056B613 /* Check.swift in Sources */,
+				C7AD1B941E42B2AF0056B613 /* Prompt.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		C7F1E8241E40FEEF00A5C77E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C7F1E8301E40FF0000A5C77E /* CryptPluginCore.m in Sources */,
+				C7AD1B951E42B2AF0056B613 /* Prompt.swift in Sources */,
+				C7F1E8331E40FF2C00A5C77E /* CryptCallbackEngine.m in Sources */,
+				C7AD1B711E42A8F40056B613 /* Check.swift in Sources */,
+				C7F1E8381E410C0600A5C77E /* CryptMechanism.swift in Sources */,
+				C7AD1B911E42B2470056B613 /* PromptWindowController.m in Sources */,
+				C7AD1B981E42B2F20056B613 /* Enablement.swift in Sources */,
+				C7F1E82B1E40FEEF00A5C77E /* CryptTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		C7AD39021D22C329000FB736 /* PBXTargetDependency */ = {
+		C7AD1B831E42AA550056B613 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = C7AD38F21D22B049000FB736 /* FDEAddUserService */;
-			targetProxy = C7AD39011D22C329000FB736 /* PBXContainerItemProxy */;
+			target = C7AD1B751E42AA400056B613 /* FDEAddUserService */;
+			targetProxy = C7AD1B821E42AA550056B613 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		C7AD38FD1D22B049000FB736 /* Debug */ = {
+		C7AD1B801E42AA400056B613 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
-		C7AD38FE1D22B049000FB736 /* Release */ = {
+		C7AD1B811E42AA400056B613 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
-		FCD4FD981BEE763C00CF7F48 /* Debug */ = {
+		C7F1E81C1E40FB2A00A5C77E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -318,16 +392,18 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -344,17 +420,19 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
-		FCD4FD991BEE763C00CF7F48 /* Release */ = {
+		C7F1E81D1E40FB2A00A5C77E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -362,16 +440,18 @@
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
+				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -382,82 +462,117 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		FCD4FD9B1BEE763C00CF7F48 /* Debug */ = {
+		C7F1E81F1E40FB2A00A5C77E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Mechanisms/Crypt-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
 		};
-		FCD4FD9C1BEE763C00CF7F48 /* Release */ = {
+		C7F1E8201E40FB2A00A5C77E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
 				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Mechanisms/Crypt-Bridging-Header.h";
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
+		C7F1E82E1E40FEEF00A5C77E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CryptTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.CryptTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Mechanisms/Crypt-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Crypt-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
+			};
+			name = Debug;
+		};
+		C7F1E82F1E40FEEF00A5C77E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = CryptTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.CryptTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Mechanisms/Crypt-Bridging-Header.h";
+				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Crypt-Swift.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C7AD38FC1D22B049000FB736 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */ = {
+		C7AD1B7F1E42AA400056B613 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C7AD38FD1D22B049000FB736 /* Debug */,
-				C7AD38FE1D22B049000FB736 /* Release */,
+				C7AD1B801E42AA400056B613 /* Debug */,
+				C7AD1B811E42AA400056B613 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
+		C7F1E8131E40FB2A00A5C77E /* Build configuration list for PBXProject "Crypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCD4FD981BEE763C00CF7F48 /* Debug */,
-				FCD4FD991BEE763C00CF7F48 /* Release */,
+				C7F1E81C1E40FB2A00A5C77E /* Debug */,
+				C7F1E81D1E40FB2A00A5C77E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */ = {
+		C7F1E81E1E40FB2A00A5C77E /* Build configuration list for PBXNativeTarget "Crypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				FCD4FD9B1BEE763C00CF7F48 /* Debug */,
-				FCD4FD9C1BEE763C00CF7F48 /* Release */,
+				C7F1E81F1E40FB2A00A5C77E /* Debug */,
+				C7F1E8201E40FB2A00A5C77E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C7F1E82D1E40FEEF00A5C77E /* Build configuration list for PBXNativeTarget "CryptTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C7F1E82E1E40FEEF00A5C77E /* Debug */,
+				C7F1E82F1E40FEEF00A5C77E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
+	rootObject = C7F1E8101E40FB2A00A5C77E /* Project object */;
 }

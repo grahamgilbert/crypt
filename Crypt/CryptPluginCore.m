@@ -1,29 +1,29 @@
 /*
-  Crypt
+ Crypt
 
-  Copyright 2016 The Crypt Project.
+ Copyright 2017 The Crypt Project.
 
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-  http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 
-#import "CryptAuthPlugin.h"
+#import "CryptPluginCore.h"
+
 #import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
-#import "PromptWindowController.h"
 
 #pragma mark
 #pragma mark Entry Point Wrappers
 
-CryptAuthPlugin *authorizationPlugin = nil;
+CryptPluginCore *authorizationPlugin = nil;
 
 static OSStatus PluginDestroy(AuthorizationPluginRef inPlugin) {
   return [authorizationPlugin PluginDestroy:inPlugin];
@@ -64,22 +64,22 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
                                           AuthorizationPluginRef *outPlugin,
                                           const AuthorizationPluginInterface **outPluginInterface) {
   if (authorizationPlugin == nil) {
-    authorizationPlugin = [[CryptAuthPlugin alloc] init];
+    authorizationPlugin = [[CryptPluginCore alloc] init];
   }
-  
   return [authorizationPlugin AuthorizationPluginCreate:callbacks
                                               PluginRef:outPlugin
                                         PluginInterface:outPluginInterface];
 }
 
 #pragma mark
-#pragma mark CryptAuthPlugin Implementation
-@implementation CryptAuthPlugin
+#pragma mark CryptPluginCore Implementation
+
+@implementation CryptPluginCore
 
 - (OSStatus)AuthorizationPluginCreate:(const AuthorizationCallbacks *)callbacks
                             PluginRef:(AuthorizationPluginRef *)outPlugin
                       PluginInterface:(const AuthorizationPluginInterface **)outPluginInterface {
-  PluginRecord *plugin = (PluginRecord *) malloc(sizeof(*plugin));
+  PluginRecord *plugin = (PluginRecord *)malloc(sizeof(PluginRecord));
   if (plugin == NULL) return errSecMemoryError;
   plugin->fMagic = kPluginMagic;
   plugin->fCallbacks = callbacks;
@@ -98,7 +98,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
   mechanism->fEngine = inEngine;
   mechanism->fPlugin = (PluginRecord *)inPlugin;;
   mechanism->fCheck = (strcmp(mechanismId, "Check") == 0);
-  mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
+  mechanism->fCryptGUI = (strcmp(mechanismId, "Prompt") == 0);
   mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
   *outMechanism = mechanism;
   return errSecSuccess;
@@ -107,18 +107,18 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
 - (OSStatus)MechanismInvoke:(AuthorizationMechanismRef)inMechanism {
   OSStatus err;
   MechanismRecord *mechanism = (MechanismRecord *)inMechanism;
-  
+
   if (mechanism->fCheck) {
     Check *check = [[Check alloc] initWithMechanism:mechanism];
     [check run];
   } else if (mechanism->fCryptGUI) {
-    CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
-    [cryptgui run];
+    Prompt *prompt = [[Prompt alloc] initWithMechanism:mechanism];
+    [prompt run];
   } else if (mechanism->fEnablement) {
     Enablement *enablement = [[Enablement alloc] initWithMechanism:mechanism];
     [enablement run];
   }
-  
+
   // Default "Allow Login". Used if none of the mechanisms above are called or don't make
   // a decision
   err = mechanism->fPlugin->fCallbacks->SetResult(mechanism->fEngine, kAuthorizationResultAllow);

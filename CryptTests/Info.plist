@@ -15,12 +15,8 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.3.0</string>
+	<string>1.0</string>
 	<key>CFBundleVersion</key>
-	<string>2.3.0</string>
-	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2017 The Crypt Project. All rights reserved.</string>
-	<key>NSPrincipalClass</key>
-	<string></string>
+	<string>1</string>
 </dict>
 </plist>
