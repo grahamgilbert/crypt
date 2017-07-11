@@ -4,6 +4,7 @@ import logging
 import subprocess
 import os
 import urllib
+import urllib2
 import sys
 import datetime
 import syslog
@@ -104,6 +105,21 @@ def escrow_key(plist):
     else:
         return False
         logging.error('Key escrow unsuccessful.')
+
+
+def server_available():
+    server_url = pref('ServerURL')
+    if server_url is None:
+        logging.info('Server URL not set.')
+        return False
+
+    req = urllib2.Request(server_url)
+    try:
+        urllib2.urlopen(req, timeout=15)
+    except (urllib2.HTTPError, urllib2.URLError):
+        return False
+    else:
+        return True
 
 
 def using_recovery_key():
@@ -215,6 +231,12 @@ def rotate_if_used(key_path):
 
 
 def main():
+    if pref('CheckServerAvailability'):
+        if server_available():
+            logging.info('Server is available.')
+        else:
+            logging.info('Server is not available. Exiting.')
+            sys.exit(0)
     if pref('RotateUsedKey'):
         rotate_if_used(PLIST_PATH)
     if os.path.isfile(PLIST_PATH):
