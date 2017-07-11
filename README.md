@@ -54,6 +54,14 @@ Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (w
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -bool TRUE
 ```
 
+### CheckServerAvailability
+
+The `CheckServerAvailability ` preference allows you to pre-check if the server is reachable. The escrow process will be canceled if the server is not available.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CheckServerAvailability -bool TRUE
+```
+
 ## Uninstalling
 
 The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. A script that will do this can be found at [Package/uninstall](https://github.com/grahamgilbert/crypt2/blob/master/Package/uninstall).
