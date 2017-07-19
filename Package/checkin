@@ -16,7 +16,6 @@ from Foundation import kCFPreferencesAnyUser
 from Foundation import kCFPreferencesCurrentHost
 
 BUNDLE_ID = 'com.grahamgilbert.crypt'
-PLIST_PATH = '/private/var/root/crypt_output.plist'
 LOG_FILE = '/var/log/crypt.log'
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
@@ -54,6 +53,7 @@ def pref(pref_name):
     default_prefs = {
         'RemovePlist': True,
         'RotateUsedKey': True,
+        'OutputPath': '/private/var/root/crypt_output.plist'
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value is None:
@@ -215,10 +215,11 @@ def rotate_if_used(key_path):
 
 
 def main():
+    plist_path = pref('OutputPath')
     if pref('RotateUsedKey'):
-        rotate_if_used(PLIST_PATH)
-    if os.path.isfile(PLIST_PATH):
-        plist = FoundationPlist.readPlist(PLIST_PATH)
+        rotate_if_used(plist_path)
+    if os.path.isfile(plist_path):
+        plist = FoundationPlist.readPlist(plist_path)
         # Exit if we've run this within the last hour
         if 'last_run' in plist:
             now = datetime.datetime.now()
@@ -231,9 +232,9 @@ def main():
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
             logging.info('Successfully escrowed key.')
-            FoundationPlist.writePlist(plist, PLIST_PATH)
+            FoundationPlist.writePlist(plist, plist_path)
             if remove_plist is True:
-                os.remove(PLIST_PATH)
+                os.remove(plist_path)
                 logging.info('Removing plist due to configuration.')
 
 if __name__ == '__main__':

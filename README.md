@@ -12,7 +12,7 @@ Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submi
 
 ## Configuration
 
-Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MXC / Profiles.
+Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles.
 
 ### ServerURL
 
