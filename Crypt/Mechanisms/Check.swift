@@ -32,15 +32,15 @@ class Check: CryptMechanism {
   fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
   func run() {
-    os_log("executing run() in Crypt.Check", log: Check.log, type: .debug)
+    os_log("executing run() in Crypt.Check", log: Check.log, type: .info)
     
     let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-    os_log("OutPutPlist Prefences is set to %@", log: Check.log, type: .debug, filepath)
+    os_log("OutPutPlist Prefences is set to %@", log: Check.log, type: .info, filepath)
     let serverURL : NSString? = getServerURL()
     if let url = serverURL {
-      os_log("ServerURL Prefences is set to %@", log: Check.log, type: .debug, url)
+      os_log("ServerURL Prefences is set to %@", log: Check.log, type: .info, url)
     } else {
-      os_log("ServerURL is not set", log: Check.log, type: .debug)
+      os_log("ServerURL is not set", log: Check.log, type: .info)
     }
     let fvEnabled : Bool = getFVEnabled()
     let skipUsers : Bool = getSkipUsers()
@@ -52,10 +52,10 @@ class Check: CryptMechanism {
     //let usedKey: Bool = getUsedKey()
     //let onPatchedVersion: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 12, patchVersion: 4))
 
-    skipUsers ? os_log("Found users to skip", log: Check.log, type: .debug) : os_log("No Users to Skip", log: Check.log, type: .debug)
-    rotateKey ? os_log("Set to rotate key", log: Check.log, type: .debug) : os_log("Not set to rotate key", log: Check.log, type: .debug)
-    recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .debug) : os_log("Recovery Key was found on disk...", log: Check.log, type: .debug)
-    removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .debug) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .debug)
+    skipUsers ? os_log("Found users to skip", log: Check.log, type: .info) : os_log("No Users to Skip", log: Check.log, type: .info)
+    rotateKey ? os_log("Set to rotate key", log: Check.log, type: .info) : os_log("Not set to rotate key", log: Check.log, type: .info)
+    recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .info) : os_log("Recovery Key was found on disk...", log: Check.log, type: .info)
+    removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .info) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .info)
 
     guard let username = self.username
       else { _ = allowLogin(); return }
@@ -65,26 +65,26 @@ class Check: CryptMechanism {
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
     
     if fvEnabled {
-      os_log("FileVault is On.", log: Check.log, type: .debug)
+      os_log("FileVault is On.", log: Check.log, type: .info)
       
       // If we are decrypting we can't do anything
       if decrypting {
         // If we are decrypting we can't do anything so we can just log in
-        os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .debug)
+        os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .info)
         _ = allowLogin()
         _ = setBoolHintValue(false)
         return;
       }
       
-      os_log("Not Decrypting", log: Check.log, type: .debug)
+      os_log("Not Decrypting", log: Check.log, type: .info)
       
       if !recoveryKeyExists && !removePlist {
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
-        os_log("Key is missing when its not supposed to present. Attempting to generate a new one...", log: Check.log, type: .debug)
+        os_log("Key is missing when its not supposed to present. Attempting to generate a new one...", log: Check.log, type: .info)
         do {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
-          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .debug, error)
+          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .info, error)
           _ = allowLogin()
           _ = setBoolHintValue(false)
           return;
@@ -95,11 +95,11 @@ class Check: CryptMechanism {
 //      // Leaving code incase it gets fixed eventually
 //      // Check to see if we used the key to unlock the disk, rotate if configured to.
 //      if rotateKey && usedKey && onPatchedVersion {
-//        os_log("Used key to unlock, need to rotate", log: Check.log, type: .debug)
+//        os_log("Used key to unlock, need to rotate", log: Check.log, type: .info)
 //        do {
 //          try _ = rotateRecoveryKey(the_settings, filepath: filepath)
 //        } catch let error as NSError {
-//          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .debug, error)
+//          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .info, error)
 //          _ = allowLogin()
 //        }
 //      }
@@ -126,27 +126,27 @@ class Check: CryptMechanism {
 //      }
 
       if addUser && !skipUsers {
-        os_log("Adding new User to FileVault", log: Check.log, type: .debug)
+        os_log("Adding new User to FileVault", log: Check.log, type: .info)
         fdeAddUser(self.username, password: self.password)
       }
       
-      os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .debug)
+      os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .info)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
     else if skipUsers {
-      os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .debug)
+      os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .info)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
-      os_log("Couldn't find ServerURL Pref choosing not to do enable FileVault", log: Check.log, type: .debug)
+      os_log("Couldn't find ServerURL Pref choosing not to do enable FileVault", log: Check.log, type: .info)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
     else {
-      os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .debug)
+      os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .info)
       _ = setBoolHintValue(true)
     }
   }
@@ -159,7 +159,7 @@ class Check: CryptMechanism {
   }
 
   fileprivate func getFVEnabled() -> Bool {
-    os_log("Checking to see if FileVault is enabled..", log: Check.log, type: .debug)
+    os_log("Checking to see if FileVault is enabled..", log: Check.log, type: .info)
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["status"]
@@ -179,7 +179,7 @@ class Check: CryptMechanism {
   }
   
   fileprivate func getDecryptionStatus() -> Bool {
-    os_log("Checking to see if Decrypting", log: Check.log, type: .debug)
+    os_log("Checking to see if Decrypting", log: Check.log, type: .info)
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["status"]
@@ -271,7 +271,7 @@ class Check: CryptMechanism {
   }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
-    os_log("called rotateRecoveryKey()", log: Check.log, type: .debug)
+    os_log("called rotateRecoveryKey()", log: Check.log, type: .info)
     let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
                                                         format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
 
@@ -289,11 +289,11 @@ class Check: CryptMechanism {
     task.waitUntilExit()
     
     if task.terminationStatus != 0 {
-       os_log("rotate terminationStatus wasn't 0", log: Check.log, type: .debug)
+       os_log("rotate terminationStatus wasn't 0", log: Check.log, type: .info)
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
-    os_log("Trying to get output data", log: Check.log, type: .debug)
+    os_log("Trying to get output data", log: Check.log, type: .info)
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
     
@@ -308,19 +308,19 @@ class Check: CryptMechanism {
     
     if (format == PropertyListSerialization.PropertyListFormat.xml) {
       if outputPlist is NSDictionary {
-        os_log("Attempting to write key to: %@", log: Check.log, type: .debug, filepath)
+        os_log("Attempting to write key to: %@", log: Check.log, type: .info, filepath)
         _ = (outputPlist as! NSDictionary).write(toFile: filepath, atomically: true)
       }
       
       return true
     } else {
-      os_log("format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .debug)
+      os_log("format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .info)
       throw FileVaultError.outputPlistMalformed
     }
   }
   
   func checkFileExists(path: String) -> Bool {
-    os_log("running checkFileExists()", log: Check.log, type: .debug)
+    os_log("running checkFileExists()", log: Check.log, type: .info)
     let fm = FileManager.default
     if fm.fileExists(atPath: path) {
       return true
