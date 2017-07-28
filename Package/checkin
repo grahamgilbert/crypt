@@ -14,6 +14,8 @@ from Foundation import CFPreferencesCopyAppValue
 from Foundation import CFPreferencesSetValue
 from Foundation import kCFPreferencesAnyUser
 from Foundation import kCFPreferencesCurrentHost
+from SystemConfiguration import SCDynamicStoreCopyConsoleUser
+
 
 BUNDLE_ID = 'com.grahamgilbert.crypt'
 LOG_FILE = '/var/log/crypt.log'
@@ -26,6 +28,10 @@ stdout_logging = logging.StreamHandler()
 stdout_logging.setFormatter(logging.Formatter())
 logging.getLogger().addHandler(stdout_logging)
 
+def get_console_user():
+    """returns the current console user via PyObjc"""
+    cfuser = SCDynamicStoreCopyConsoleUser(None, None, None)
+    return cfuser[0]
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
@@ -169,6 +175,7 @@ def rotate_key(current_key, plist):
     logging.info('Attempting to rotate Recovery Key.')
     try:
         output_plist = FoundationPlist.readPlistFromString(stdout_data)
+
         FoundationPlist.writePlist(output_plist, plist)
         logging.info('Recovery Key rotated.')
     except Exception:
@@ -176,7 +183,7 @@ def rotate_key(current_key, plist):
             logging.warning('Encountered error Key Rotation: {0}.'.format(err))
 
 
-def get_enabled_user(plist):
+def get_enabled_user():
     """Crypt needs an enabled user in its plist that our normal output
     doesn't give us so we need to add a user to the plist"""
     if pref('SkipUsers'):
@@ -189,10 +196,7 @@ def get_enabled_user(plist):
         if not user.split(',')[0] in nonusers:
             cryptuser = user.split(',')[0]
             break
-    crypt_info = FoundationPlist.readPlist(plist)
-    crypt_info['EnabledUser'] = cryptuser
-    FoundationPlist.writePlist(crypt_info, plist)
-
+    return cryptuser
 
 def rotate_if_used(key_path):
     """Checks to see if the recovery key was used to unlock the machine
@@ -211,16 +215,21 @@ def rotate_if_used(key_path):
                         'ERROR: Our current key is not valid')
         return ''
     rotate_key(current_key, key_path)
-    get_enabled_user(key_path)
 
 
 def main():
     plist_path = pref('OutputPath')
+    logging.info('OutputPath Pref is set to: {}'.format(plist_path))
     if pref('RotateUsedKey'):
         rotate_if_used(plist_path)
     if os.path.isfile(plist_path):
         plist = FoundationPlist.readPlist(plist_path)
         # Exit if we've run this within the last hour
+        if not plist['EnabledUser']:
+            enableduser = get_console_user()
+            if not enableduser or 'root' in enableduser:
+                enableduser = get_enabled_user()
+            plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
             now = datetime.datetime.now()
             hour_ago = now - datetime.timedelta(hours=1)
