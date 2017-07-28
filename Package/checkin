@@ -229,7 +229,8 @@ def main():
             enableduser = plist['EnabledUser']
         except KeyError as e:
             enableduser = get_console_user()
-        if not enableduser or 'root' in enableduser:
+        skippedusers = ['root', '_mbsetupuser']
+        if not enableduser or enableduser in skippedusers:
             enableduser = get_enabled_user()
         plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
