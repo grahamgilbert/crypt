@@ -10,6 +10,12 @@ Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submi
 * Escrow is delayed until there is an active user, so FileVault can be enforced when the Mac is offline.
 * Administrators can specify a series of username that should not have to enable FileVault (IT admin, for example).
 
+#### New in v2.3.0
+* Added support for the use of Institutional Keys along with the default Personal Recovery Key. Just add your master keychain file at '/Library/Keychains/FileVaultMaster.keychain' and Crypt2 will handle the rest during initial Enablement.
+* If the RotateUsedKey preference is True and RemovePlist is False and OutputPath plist is missing, a new Recovery key will be generated at login.
+* OutputPath Preference. More info below.
+
+
 ## Configuration
 
 Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles.
@@ -40,7 +46,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -
 
 ### RotateUsedKey
 
-Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default. NOTE: Future plan is to add this to the authorized plug-in so a key is not needed on disk.
+Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RotateUsedKey -bool FALSE
@@ -53,6 +59,14 @@ Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (w
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -bool TRUE
 ```
+### OutputPath
+
+As of version 2.3.0 you can now define a new location for where the recovery key is written to. Default for this is '/var/root/crypt_output.plist'.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/path/to/different/location"
+```
+
 
 ## Uninstalling
 
