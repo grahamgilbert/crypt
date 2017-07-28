@@ -225,11 +225,13 @@ def main():
     if os.path.isfile(plist_path):
         plist = FoundationPlist.readPlist(plist_path)
         # Exit if we've run this within the last hour
-        if not plist['EnabledUser']:
+        try:
+            enableduser = plist['EnabledUser']
+        except KeyError as e:
             enableduser = get_console_user()
-            if not enableduser or 'root' in enableduser:
-                enableduser = get_enabled_user()
-            plist['EnabledUser'] = enableduser
+        if not enableduser or 'root' in enableduser:
+            enableduser = get_enabled_user()
+        plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
             now = datetime.datetime.now()
             hour_ago = now - datetime.timedelta(hours=1)
