@@ -12,7 +12,7 @@ Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submi
 
 #### New in v2.3.0
 * Added support for the use of Institutional Keys along with the default Personal Recovery Key. Just add your master keychain file at '/Library/Keychains/FileVaultMaster.keychain' and Crypt2 will handle the rest during initial Enablement.
-* If the RotateUsedKey preference is True and RemovePlist is False and OutputPath plist is missing, a new Recovery key will be generated at login.
+* If the RotateUsedKey preference is True and RemovePlist is False and the file defined by OutputPath is missing from disk, a new Recovery key will be generated at login.
 * OutputPath Preference. More info below.
 
 
