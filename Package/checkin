@@ -105,12 +105,11 @@ def escrow_key(plist):
                             stderr=subprocess.PIPE)
     (output, error) = task.communicate()
     if task.returncode == 0:
-        return True
         logging.info('Key escrow successful.')
+        return True
     else:
-        return False
         logging.error('Key escrow unsuccessful.')
-
+        return False
 
 def using_recovery_key():
     """Check if FileVault is currently unlocked using
