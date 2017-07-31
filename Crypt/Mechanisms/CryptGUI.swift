@@ -25,7 +25,7 @@ class CryptGUI: CryptMechanism {
       promptWindowController.mechanism = self.mechanism
       guard let promptWindow = promptWindowController.window
         else { return }
-      NSApp.runModalForWindow(promptWindow)
+      NSApp.runModal(for: promptWindow)
     }
   }
 }

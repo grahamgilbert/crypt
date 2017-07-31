@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1A5C742E1F15554700D9792A /* PromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C742D1F15554700D9792A /* PromptWindowController.swift */; };
+		1A8643121F15292200108C19 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A8643111F15292200108C19 /* Preferences.swift */; };
 		C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F71D22B049000FB736 /* FDEAddUserService.m */; };
 		C7AD38FA1D22B049000FB736 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F91D22B049000FB736 /* main.m */; };
 		C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
@@ -44,6 +46,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1A5C742D1F15554700D9792A /* PromptWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptWindowController.swift; sourceTree = "<group>"; };
+		1A8643111F15292200108C19 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = FDEAddUserService.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
 		C7AD38F51D22B049000FB736 /* FDEAddUserServiceProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserServiceProtocol.h; sourceTree = "<group>"; };
 		C7AD38F61D22B049000FB736 /* FDEAddUserService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserService.h; sourceTree = "<group>"; };
@@ -83,6 +87,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1A8643131F15294900108C19 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				1A8643111F15292200108C19 /* Preferences.swift */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
 		C7AD38F41D22B049000FB736 /* FDEAddUserService */ = {
 			isa = PBXGroup;
 			children = (
@@ -112,6 +124,7 @@
 			children = (
 				D2D31D591C2303F500839D93 /* fv2.png */,
 				D2D31D5A1C2303F500839D93 /* PromptWindowController.h */,
+				1A5C742D1F15554700D9792A /* PromptWindowController.swift */,
 				D2D31D5B1C2303F500839D93 /* PromptWindowController.m */,
 				D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */,
 			);
@@ -122,6 +135,7 @@
 		FCD4FD8B1BEE763C00CF7F48 = {
 			isa = PBXGroup;
 			children = (
+				1A8643131F15294900108C19 /* Utility */,
 				D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */,
 				D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */,
 				D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */,
@@ -182,17 +196,18 @@
 		FCD4FD8C1BEE763C00CF7F48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Graham Gilbert";
 				TargetAttributes = {
 					C7AD38F21D22B049000FB736 = {
 						CreatedOnToolsVersion = 7.2;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
+						ProvisioningStyle = Automatic;
 					};
 					FCD4FD931BEE763C00CF7F48 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = 9D8XP85393;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -264,9 +279,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2D31D5F1C2303F500839D93 /* Check.swift in Sources */,
+				1A8643121F15292200108C19 /* Preferences.swift in Sources */,
 				D2D31D611C2303F500839D93 /* Enablement.swift in Sources */,
 				D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */,
 				D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */,
+				1A5C742E1F15554700D9792A /* PromptWindowController.swift in Sources */,
 				D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */,
 				C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */,
 			);
@@ -286,30 +303,37 @@
 		C7AD38FD1D22B049000FB736 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
 		C7AD38FE1D22B049000FB736 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
 		FCD4FD981BEE763C00CF7F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -320,14 +344,15 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -344,7 +369,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -354,6 +379,7 @@
 		FCD4FD991BEE763C00CF7F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -364,14 +390,15 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "3rd Party Mac Developer Application";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -382,28 +409,32 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
 		FCD4FD9B1BEE763C00CF7F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Debug;
@@ -411,18 +442,21 @@
 		FCD4FD9C1BEE763C00CF7F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				EMBEDDED_CONTENT_CONTAINS_SWIFT = YES;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				WRAPPER_EXTENSION = bundle;
 			};
 			name = Release;

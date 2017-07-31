@@ -23,6 +23,8 @@ import CoreFoundation
 
 class Enablement: CryptMechanism {
   
+  fileprivate let bundleid = "com.grahamgilbert.crypt"
+  
   // This is the only public function. It will be called from the
   // ObjC AuthorizationPlugin class
   func run() {
@@ -39,7 +41,8 @@ class Enablement: CryptMechanism {
       
       do {
         let outputPlist = try enableFileVault(the_settings)
-        outputPlist.writeToFile("/private/var/root/crypt_output.plist", atomically: true)
+        let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
+        outputPlist.write(toFile: filepath, atomically: true)
         restartMac()
       }
       catch let error as NSError {
@@ -56,10 +59,10 @@ class Enablement: CryptMechanism {
   }
   
   // Restart
-  private func restartMac() -> Bool {
+  fileprivate func restartMac() -> Bool {
     // Wait a couple of seconds for everything to finish
     sleep(3)
-    let task = NSTask();
+    let task = Process();
     NSLog("%@", "Restarting after enabling encryption")
     task.launchPath = "/sbin/reboot"
     task.launch()
@@ -67,23 +70,23 @@ class Enablement: CryptMechanism {
   }
   
   // fdesetup Errors
-  enum FileVaultError: ErrorType {
-    case FDESetupFailed(retCode: Int32)
-    case OutputPlistNull
-    case OutputPlistMalformed
+  enum FileVaultError: Error {
+    case fdeSetupFailed(retCode: Int32)
+    case outputPlistNull
+    case outputPlistMalformed
   }
   
   // check authrestart capability
   func checkAuthRestart() -> Bool {
-    let outPipe = NSPipe.init()
-    let authRestartCheck = NSTask.init()
+    let outPipe = Pipe.init()
+    let authRestartCheck = Process.init()
     authRestartCheck.launchPath = "/usr/bin/fdesetup"
     authRestartCheck.arguments = ["supportsauthrestart"]
     authRestartCheck.standardOutput = outPipe
     authRestartCheck.launch()
     let outputData = outPipe.fileHandleForReading.availableData
-    let outputString = String(data: outputData, encoding: NSUTF8StringEncoding) ?? ""
-    if (outputString.rangeOfString("true") != nil) {
+    let outputString = String(data: outputData, encoding: String.Encoding.utf8) ?? ""
+    if (outputString.range(of: "true") != nil) {
       NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart:[+] Authrestart capability is 'true', will authrestart as appropriate")
       return true
     }
@@ -93,16 +96,26 @@ class Enablement: CryptMechanism {
     }
   }
   
+  // check for Institutional Master keychain
+  func checkInstitutionalRecoveryKey() -> Bool {
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: "/Library/Keychains/FileVaultMaster.keychain") {
+      NSLog("Found institutional recovery key")
+      return true
+    } else {
+      return false
+    }
+  }
   
   // fdesetup wrapper
-  func enableFileVault(theSettings : NSDictionary) throws -> NSDictionary {
-    let inputPlist = try NSPropertyListSerialization.dataWithPropertyList(theSettings,
-      format: NSPropertyListFormat.XMLFormat_v1_0, options: 0)
+  func enableFileVault(_ theSettings : NSDictionary) throws -> NSDictionary {
+    let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
+      format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
     
-    let inPipe = NSPipe.init()
-    let outPipe = NSPipe.init()
+    let inPipe = Pipe.init()
+    let outPipe = Pipe.init()
     
-    let task = NSTask.init()
+    let task = Process.init()
     task.launchPath = "/usr/bin/fdesetup"
     if checkAuthRestart() {
       task.arguments = ["enable", "-authrestart", "-outputplist", "-inputplist"]
@@ -110,32 +123,38 @@ class Enablement: CryptMechanism {
     else {
       task.arguments = ["enable", "-outputplist", "-inputplist"]
     }
+    
+    // if there's an IRK, need to add the -keychain argument
+    if checkInstitutionalRecoveryKey() {
+      task.arguments?.append("-keychain")
+    }
+    
     task.standardInput = inPipe
     task.standardOutput = outPipe
     task.launch()
-    inPipe.fileHandleForWriting.writeData(inputPlist)
+    inPipe.fileHandleForWriting.write(inputPlist)
     inPipe.fileHandleForWriting.closeFile()
     task.waitUntilExit()
     
     if task.terminationStatus != 0 {
-      throw FileVaultError.FDESetupFailed(retCode: task.terminationStatus)
+      throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
     
-    if outputData.length == 0 {
-      throw FileVaultError.OutputPlistNull
+    if outputData.count == 0 {
+      throw FileVaultError.outputPlistNull
     }
     
-    var format : NSPropertyListFormat = NSPropertyListFormat.XMLFormat_v1_0
-    let outputPlist = try NSPropertyListSerialization.propertyListWithData(outputData,
-      options: NSPropertyListReadOptions.Immutable, format: &format)
+    var format : PropertyListSerialization.PropertyListFormat = PropertyListSerialization.PropertyListFormat.xml
+    let outputPlist = try PropertyListSerialization.propertyList(from: outputData,
+      options: PropertyListSerialization.MutabilityOptions(), format: &format)
     
-    if (format == NSPropertyListFormat.XMLFormat_v1_0) {
+    if (format == PropertyListSerialization.PropertyListFormat.xml) {
       return outputPlist as! NSDictionary
     } else {
-      throw FileVaultError.OutputPlistMalformed
+      throw FileVaultError.outputPlistMalformed
     }
   }
 }

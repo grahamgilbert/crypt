@@ -24,6 +24,7 @@
 @property (weak) IBOutlet NSView *mainView;
 @property (weak) IBOutlet NSView *promptView;
 - (IBAction)continueClicked:(id)sender;
+@property (weak) IBOutlet NSTextField *windowText;
 
 @end
 

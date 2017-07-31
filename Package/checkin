@@ -14,9 +14,10 @@ from Foundation import CFPreferencesCopyAppValue
 from Foundation import CFPreferencesSetValue
 from Foundation import kCFPreferencesAnyUser
 from Foundation import kCFPreferencesCurrentHost
+from SystemConfiguration import SCDynamicStoreCopyConsoleUser
+
 
 BUNDLE_ID = 'com.grahamgilbert.crypt'
-PLIST_PATH = '/private/var/root/crypt_output.plist'
 LOG_FILE = '/var/log/crypt.log'
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
@@ -27,6 +28,10 @@ stdout_logging = logging.StreamHandler()
 stdout_logging.setFormatter(logging.Formatter())
 logging.getLogger().addHandler(stdout_logging)
 
+def get_console_user():
+    """returns the current console user via PyObjc"""
+    cfuser = SCDynamicStoreCopyConsoleUser(None, None, None)
+    return cfuser[0]
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
@@ -54,6 +59,7 @@ def pref(pref_name):
     default_prefs = {
         'RemovePlist': True,
         'RotateUsedKey': True,
+        'OutputPath': '/private/var/root/crypt_output.plist'
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value is None:
@@ -99,12 +105,11 @@ def escrow_key(plist):
                             stderr=subprocess.PIPE)
     (output, error) = task.communicate()
     if task.returncode == 0:
-        return True
         logging.info('Key escrow successful.')
+        return True
     else:
-        return False
         logging.error('Key escrow unsuccessful.')
-
+        return False
 
 def using_recovery_key():
     """Check if FileVault is currently unlocked using
@@ -169,6 +174,7 @@ def rotate_key(current_key, plist):
     logging.info('Attempting to rotate Recovery Key.')
     try:
         output_plist = FoundationPlist.readPlistFromString(stdout_data)
+
         FoundationPlist.writePlist(output_plist, plist)
         logging.info('Recovery Key rotated.')
     except Exception:
@@ -176,7 +182,7 @@ def rotate_key(current_key, plist):
             logging.warning('Encountered error Key Rotation: {0}.'.format(err))
 
 
-def get_enabled_user(plist):
+def get_enabled_user():
     """Crypt needs an enabled user in its plist that our normal output
     doesn't give us so we need to add a user to the plist"""
     if pref('SkipUsers'):
@@ -189,10 +195,7 @@ def get_enabled_user(plist):
         if not user.split(',')[0] in nonusers:
             cryptuser = user.split(',')[0]
             break
-    crypt_info = FoundationPlist.readPlist(plist)
-    crypt_info['EnabledUser'] = cryptuser
-    FoundationPlist.writePlist(crypt_info, plist)
-
+    return cryptuser
 
 def rotate_if_used(key_path):
     """Checks to see if the recovery key was used to unlock the machine
@@ -211,15 +214,24 @@ def rotate_if_used(key_path):
                         'ERROR: Our current key is not valid')
         return ''
     rotate_key(current_key, key_path)
-    get_enabled_user(key_path)
 
 
 def main():
+    plist_path = pref('OutputPath')
+    logging.info('OutputPath Pref is set to: {}'.format(plist_path))
     if pref('RotateUsedKey'):
-        rotate_if_used(PLIST_PATH)
-    if os.path.isfile(PLIST_PATH):
-        plist = FoundationPlist.readPlist(PLIST_PATH)
+        rotate_if_used(plist_path)
+    if os.path.isfile(plist_path):
+        plist = FoundationPlist.readPlist(plist_path)
         # Exit if we've run this within the last hour
+        try:
+            enableduser = plist['EnabledUser']
+        except KeyError as e:
+            enableduser = get_console_user()
+        skippedusers = ['root', '_mbsetupuser']
+        if not enableduser or enableduser in skippedusers:
+            enableduser = get_enabled_user()
+        plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
             now = datetime.datetime.now()
             hour_ago = now - datetime.timedelta(hours=1)
@@ -231,9 +243,9 @@ def main():
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
             logging.info('Successfully escrowed key.')
-            FoundationPlist.writePlist(plist, PLIST_PATH)
+            FoundationPlist.writePlist(plist, plist_path)
             if remove_plist is True:
-                os.remove(PLIST_PATH)
+                os.remove(plist_path)
                 logging.info('Removing plist due to configuration.')
 
 if __name__ == '__main__':
