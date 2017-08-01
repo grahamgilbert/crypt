@@ -7,7 +7,11 @@ import urllib
 import sys
 import datetime
 import syslog
+import platform
+from distutils.version import LooseVersion
+
 import FoundationPlist
+
 from Foundation import NSDate
 from Foundation import CFPreferencesAppSynchronize
 from Foundation import CFPreferencesCopyAppValue
@@ -33,6 +37,21 @@ def get_console_user():
     cfuser = SCDynamicStoreCopyConsoleUser(None, None, None)
     return cfuser[0]
 
+def get_os_version(only_major_minor=True, as_tuple=False):
+    """Returns an OS version.
+    Args:
+      only_major_minor: Boolean. If True, only include major/minor versions.
+      as_tuple: Boolean. If True, return a tuple of ints, otherwise a string.
+    100%, completely stolen from Munki.
+    """
+    os_version_tuple = platform.mac_ver()[0].split('.')
+    if only_major_minor:
+        os_version_tuple = os_version_tuple[0:2]
+    if as_tuple:
+        return tuple(map(int, os_version_tuple))
+    else:
+        return '.'.join(os_version_tuple)
+
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
         /Library/Preferences/com.grahamgilbert.crypt.plist.
@@ -41,8 +60,8 @@ def set_pref(pref_name, pref_value):
         elsewhere (by MCX, for example)"""
     try:
         CFPreferencesSetValue(
-                      pref_name, pref_value, BUNDLE_ID,
-                      kCFPreferencesAnyUser, kCFPreferencesCurrentHost)
+            pref_name, pref_value, BUNDLE_ID,
+            kCFPreferencesAnyUser, kCFPreferencesCurrentHost)
         CFPreferencesAppSynchronize(BUNDLE_ID)
     except Exception:
         pass
@@ -59,7 +78,8 @@ def pref(pref_name):
     default_prefs = {
         'RemovePlist': True,
         'RotateUsedKey': True,
-        'OutputPath': '/private/var/root/crypt_output.plist'
+        'OutputPath': '/private/var/root/crypt_output.plist',
+        'ValidateKey': True
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value is None:
@@ -75,6 +95,9 @@ def pref(pref_name):
 
 
 def GetMacName():
+    """
+    Returns the name of the mac
+    """
     theprocess = ['scutil', '--get', 'ComputerName']
     thename = subprocess.Popen(theprocess, stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE).communicate()[0]
@@ -83,7 +106,9 @@ def GetMacName():
 
 
 def escrow_key(plist):
+    logging.info('Attempting to Escrow Key...')
     server_url = pref('ServerURL')
+    logging.debug('ServerURL Pref set to: {0}...'.format(server_url))
     if server_url is None:
         return False
     if server_url.endswith("/"):
@@ -116,10 +141,14 @@ def using_recovery_key():
     the recovery key.
     """
     cmd = ['/usr/bin/fdesetup', 'usingrecoverykey']
-    using_key = subprocess.check_output(cmd).strip()
+    try:
+        using_key = subprocess.check_output(cmd).strip()
+    except Exception:
+        logging.warning('fdesetup usingrecoverykey failed to run correctly')
+        return False
     if using_key == 'true':
-        return True
         logging.warning('Detected Recovery Key use.')
+        return True
     else:
         return False
 
@@ -138,9 +167,42 @@ def get_recovery_key(key_location):
         return False
     except KeyError:
         logging.warning(
-            'Problem with Key: RecoveryKey in {0}...'.format(key_location))
+            'Problem with Key: "RecoveryKey" in {0}...'.format(key_location))
         return False
 
+def rotate_invalid_key(plist_path):
+    """
+    Will send the key (if present) for validation. If validation fails,
+    it will remove the plist so the key can be regenerated at next login.
+    Due to the bug that restricts the number of validations before reboot
+    in versions of macOS prior to 10.12.5, this will only run there.
+    """
+
+    macos_version = get_os_version(only_major_minor=False, as_tuple=False)
+
+    if LooseVersion('10.12.5') > LooseVersion(macos_version):
+        logging.warning('macOS version is too old to run reliably')
+        return False
+
+    if os.path.exists(plist_path):
+        recovery_key = get_recovery_key(plist_path)
+    else:
+        logging.warning('Recovery key is not present on disk')
+        return False
+
+    if recovery_key is not False:
+        key_is_valid = validate_key(recovery_key)
+    else:
+        logging.warning('Could not retrieve recovery key from plist')
+        return False
+
+    if not key_is_valid:
+        logging.info('Stored recovery key is not valid, removing from disk')
+        os.remove(plist_path)
+        return False
+
+    logging.info('Stored recovery key is valid.')
+    return True
 
 def validate_key(current_key):
     """Validates the given recovery key against FileVault, returns True
@@ -203,15 +265,13 @@ def rotate_if_used(key_path):
     if not using_recovery_key():
         return ''
     if not os.path.isfile(key_path):
-        logging.warning(
-            syslog.LOG_ALERT, 'Could not locate {0}'.format(key_path))
+        logging.warning('Could not locate {0}'.format(key_path))
     rotate_message = 'Recovery Key has been used.. Attempting to Rotate'
-    logging.info(syslog.LOG_ALERT, rotate_message)
+    logging.info(rotate_message)
     current_key = get_recovery_key(key_path)
     valid_key = validate_key(current_key)
     if not valid_key:
-        logging.warning(syslog.LOG_ALERT,
-                        'ERROR: Our current key is not valid')
+        logging.error('Our current key is not valid')
         return ''
     rotate_key(current_key, key_path)
 
@@ -221,6 +281,11 @@ def main():
     logging.info('OutputPath Pref is set to: {}'.format(plist_path))
     if pref('RotateUsedKey'):
         rotate_if_used(plist_path)
+
+    if pref('RotateUsedKey') and pref('ValidateKey') and \
+    not pref('RemovePlist'):
+        rotate_invalid_key(plist_path)
+
     if os.path.isfile(plist_path):
         plist = FoundationPlist.readPlist(plist_path)
         # Exit if we've run this within the last hour
@@ -242,7 +307,6 @@ def main():
             remove_plist = pref('RemovePlist')
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
-            logging.info('Successfully escrowed key.')
             FoundationPlist.writePlist(plist, plist_path)
             if remove_plist is True:
                 os.remove(plist_path)
