@@ -225,7 +225,7 @@ class Check: CryptMechanism {
         return true
       }
     }
-    if username as String == '_mbsetup' {
+    if username as String == "_mbsetup" {
       return true
     }
     return false
