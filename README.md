@@ -52,6 +52,14 @@ Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RotateUsedKey -bool FALSE
 ```
 
+### ValidateKey
+
+Crypt2 can validate the recovery key if it is stored on disk. If the key fails validation, the plist is removed so it can be regenerated on next login. This is set to `TRUE` by default.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ValidateKey -bool FALSE
+```
+
 ### FDEAddUser
 
 Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (when the disk is unlocked). This feature works up until macOS 10.12. The default for this is `FALSE`.
