@@ -37,3 +37,4 @@ Carthage/Build
 Crypt/Crypt.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 
 *.pkg
+*.pyc
