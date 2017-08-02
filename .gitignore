@@ -18,6 +18,9 @@ DerivedData
 *.xcuserstate
 ._.DS_Store
 .DS_Store
+*.xcuserstate
+project.xcworkspace/
+xcuserdata/
 
 # CocoaPods
 #
@@ -33,8 +36,6 @@ DerivedData
 # Carthage/Checkouts
 
 Carthage/Build
-
-Crypt/Crypt.xcodeproj/project.xcworkspace/contents.xcworkspacedata
 
 *.pkg
 *.pyc

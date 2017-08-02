@@ -170,10 +170,13 @@ class Check: CryptMechanism {
     guard let output: String = String(data: data, encoding: String.Encoding.utf8)
       else { return false }
     if ((output.range(of: "FileVault is On.")) != nil) {
+      os_log("Filevault is enabled", log: Check.log, type: .debug)
       return true
     } else if (output.range(of: "Decryption in progress:") != nil) {
+      os_log("Decryption is in progress", log: Check.log, type: .debug)
       return true
     } else {
+      os_log("FileVault is not enabled", log: Check.log, type: .debug)
       return false
     }
   }
@@ -213,19 +216,17 @@ class Check: CryptMechanism {
   }
 
   fileprivate func getSkipUsers() -> Bool {
-    let uid : uid_t = self.uid
-    NSLog("%u", uid)
-    if (uid < 501) {
-      return true
-    }
-    guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
-      else { return false }
     guard let username = self.username
+      else { return false }
+    guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
       else { return false }
     for s in prefValue {
       if trim_string(s) == username as String {
         return true
       }
+    }
+    if username as String == "_mbsetupuser" {
+      return true
     }
     return false
   }
