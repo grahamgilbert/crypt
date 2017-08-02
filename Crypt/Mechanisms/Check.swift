@@ -216,16 +216,16 @@ class Check: CryptMechanism {
   }
 
   fileprivate func getSkipUsers() -> Bool {
-    guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
-      else { return false }
     guard let username = self.username
+      else { return false }
+    guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
       else { return false }
     for s in prefValue {
       if trim_string(s) == username as String {
         return true
       }
     }
-    if username as String == "_mbsetup" {
+    if username as String == "_mbsetupuser" {
       return true
     }
     return false
