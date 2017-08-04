@@ -11,8 +11,8 @@
 		<string>/Library/Crypt/checkin</string>
 	</array>
 	<key>RunAtLoad</key>
-	<false/>
+	<true/>
 	<key>StartInterval</key>
-	<integer>900</integer>
+	<integer>120</integer>
 </dict>
 </plist>

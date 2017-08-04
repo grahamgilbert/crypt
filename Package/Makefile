@@ -1,4 +1,5 @@
 include /usr/local/share/luggage/luggage.make
+PB_EXTRA_ARGS+= --info "./PackageInfo"
 TITLE=Crypt
 GITVERSION=$(shell ./build_no.sh)
 PACKAGE_VERSION=2.3.0.${GITVERSION}
