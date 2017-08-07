@@ -299,7 +299,10 @@ def main():
             enableduser = get_enabled_user()
         plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
-            escrow_interval = int(pref('KeyEscrowInterval'))
+            try:
+                escrow_interval = int(pref('KeyEscrowInterval'))
+            except Exception:
+                escrow_interval = 1
             logging.info('KeyEscrowInterval set to: {} hour(s)...'.format(
                 escrow_interval))
             now = datetime.datetime.now()
