@@ -14,7 +14,8 @@ Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submi
 * Added support for the use of Institutional Keys along with the default Personal Recovery Key. Just add your master keychain file at '/Library/Keychains/FileVaultMaster.keychain' and Crypt2 will handle the rest during initial Enablement.
 * If the RotateUsedKey preference is True and RemovePlist is False and the file defined by OutputPath is missing from disk, a new Recovery key will be generated at login.
 * OutputPath Preference. More info below.
-
+* Local Recovery Key validation on 10.12.5+. More info below.
+* Configurable Time Interval for re-escrowing (KeyEscrowInterval) the key if left on disk.
 
 ## Configuration
 
@@ -38,7 +39,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt SkipUsers -ar
 
 ### RemovePlist
 
-By default, the plist with the FileVault Key will be removed once it has been escrowed. In a future version of Crypt, there will be the possibility of verifying the escrowed key with the client. In preparation for this feature, you can now choose to leave the key on disk.
+By default, the plist with the FileVault Key will be removed once it has been escrowed. In a future version of Crypt, there will be the possibility of verifying the escrowed key with the client. In preparation for this feature, you can now choose to leave the key on disk. 
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -bool FALSE
@@ -69,10 +70,18 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -b
 ```
 ### OutputPath
 
-As of version 2.3.0 you can now define a new location for where the recovery key is written to. Default for this is '/var/root/crypt_output.plist'.
+As of version 2.3.0 you can now define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/path/to/different/location"
+```
+
+### KeyEscrowInterval
+
+As of version 2.3.0 you can now define the time interval in Hours for how often Crypt tries to re-escrow the key, after the first successful escrow. Default for this is `1` hour.
+
+``` bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt KeyEscrowInterval -int 2
 ```
 
 

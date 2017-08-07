@@ -79,7 +79,8 @@ def pref(pref_name):
         'RemovePlist': True,
         'RotateUsedKey': True,
         'OutputPath': '/private/var/root/crypt_output.plist',
-        'ValidateKey': True
+        'ValidateKey': True,
+        'KeyEscrowInterval': 1
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value is None:
@@ -298,9 +299,18 @@ def main():
             enableduser = get_enabled_user()
         plist['EnabledUser'] = enableduser
         if 'last_run' in plist:
+            try:
+                escrow_interval = int(pref('KeyEscrowInterval'))
+            except Exception:
+                escrow_interval = 1
+            logging.info('KeyEscrowInterval set to: {} hour(s)...'.format(
+                escrow_interval))
             now = datetime.datetime.now()
-            hour_ago = now - datetime.timedelta(hours=1)
+            hour_ago = now - datetime.timedelta(hours=escrow_interval)
             if plist['last_run'] > hour_ago:
+                logging.info(
+                    'We escrowed less than {} hour(s) ago. Skipping...'.format(
+                        escrow_interval))
                 sys.exit(0)
         escrow_result = escrow_key(plist=plist)
         if escrow_result:
