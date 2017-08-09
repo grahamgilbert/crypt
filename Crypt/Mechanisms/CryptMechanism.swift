@@ -18,23 +18,27 @@
 
 import Foundation
 import Security
+import os.log
 
 class CryptMechanism: NSObject {  
   // This NSString will be used as the domain for the inter-mechanism context data
   let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
   
+  // Log Crypt Mechanism
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "CryptMechanism")
   // Define a pointer to the MechanismRecord. This will be used to get and set
   // all the inter-mechanism data. It is also used to allow or deny the login.
   var mechanism:UnsafePointer<MechanismRecord>
   
   // init the class with a MechanismRecord
   init(mechanism:UnsafePointer<MechanismRecord>) {
-    NSLog("Crypt:MechanismInvoke:Check:[+] initWithMechanismRecord");
+    os_log("initWithMechanismRecord", log: CryptMechanism.log, type: .default)
     self.mechanism = mechanism
   }
   
   var username: NSString? {
     get {
+      os_log("Requesting username...", log: CryptMechanism.log, type: .default)
       var value : UnsafePointer<AuthorizationValue>? = nil
       var flags = AuthorizationContextFlags()
       var err: OSStatus = noErr
@@ -53,6 +57,7 @@ class CryptMechanism: NSObject {
   
   var password: NSString? {
     get {
+      os_log("Requesting password...", log: CryptMechanism.log, type: .default)
       var value : UnsafePointer<AuthorizationValue>? = nil
       var flags = AuthorizationContextFlags()
       var err: OSStatus = noErr
@@ -71,6 +76,7 @@ class CryptMechanism: NSObject {
   
   var uid: uid_t {
     get {
+      os_log("Requesting uid", log: CryptMechanism.log, type: .default)
       var value : UnsafePointer<AuthorizationValue>? = nil
       var flags = AuthorizationContextFlags()
       var uid : uid_t = 0
@@ -87,9 +93,10 @@ class CryptMechanism: NSObject {
   func setBoolHintValue(_ encryptionWasEnabled : NSNumber) -> Bool {
     // Try and unwrap the optional NSData returned from archivedDataWithRootObject
     // This can be decoded on the other side with unarchiveObjectWithData
+    os_log("Called setBoolHintValue", log: CryptMechanism.log, type: .default)
     guard let data : Data = NSKeyedArchiver.archivedData(withRootObject: encryptionWasEnabled)
       else {
-        NSLog("Crypt:MechanismInvoke:Check:setHintValue:[+] Failed to unwrap data");
+        os_log("Crypt:MechanismInvoke:Check:setHintValue:[+] Failed to unwrap data", log: CryptMechanism.log, type: .error)
         return false
     }
     
@@ -107,17 +114,18 @@ class CryptMechanism: NSObject {
   
   // This is how we get the inter-mechanism context data
   func getBoolHintValue() -> Bool {
+    os_log("Called getBoolHintValue", log: CryptMechanism.log, type: .default)
     var value : UnsafePointer<AuthorizationValue>? = nil
     var err: OSStatus = noErr
     err = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetHintValue(mechanism.pointee.fEngine, contextCryptDomain.utf8String!, &value)
     if err != errSecSuccess {
-      NSLog("%@","couldn't retrieve hint value")
+      os_log("Error couldn't get Bool Hint Value", log: CryptMechanism.log, type: .error)
       return false
     }
     let outputdata = Data.init(bytes: value!.pointee.data, count: value!.pointee.length) //UnsafePointer<UInt8>(value!.pointee.data)
     guard let boolHint = NSKeyedUnarchiver.unarchiveObject(with: outputdata)
       else {
-        NSLog("couldn't unpack hint value")
+        os_log("couldn't unpack hint value", log: CryptMechanism.log, type: .error)
         return false
     }
     
@@ -125,12 +133,9 @@ class CryptMechanism: NSObject {
   }
   
   // Allow the login. End of the mechanism
-  func allowLogin() -> OSStatus {
-    NSLog("Crypt:MechanismInvoke:Check:[+] Done. Thanks and have a lovely day.");
-    var err: OSStatus = noErr
-    err = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
+  func allowLogin() {
+    os_log("called allowLogin", log: CryptMechanism.log, type: .default)
+    _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
       mechanism.pointee.fEngine, AuthorizationResult.allow)
-    NSLog("Crypt:MechanismInvoke:Check:[+] [%d]", Int(err));
-    return err
   }
 }

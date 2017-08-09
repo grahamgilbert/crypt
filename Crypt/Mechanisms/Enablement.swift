@@ -20,11 +20,13 @@
 import Foundation
 import Security
 import CoreFoundation
+import os.log
 
 class Enablement: CryptMechanism {
   
   fileprivate let bundleid = "com.grahamgilbert.crypt"
   
+  private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Enablement")
   // This is the only public function. It will be called from the
   // ObjC AuthorizationPlugin class
   func run() {
@@ -37,34 +39,35 @@ class Enablement: CryptMechanism {
     
     if getBoolHintValue() {
       
-      NSLog("Attempting to Enable FileVault 2")
+      os_log("Attempting to enable FileVault", log: Enablement.log, type: .default)
       
       do {
         let outputPlist = try enableFileVault(the_settings)
         let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
         outputPlist.write(toFile: filepath, atomically: true)
-        restartMac()
+        _ = restartMac()
       }
       catch let error as NSError {
-        NSLog("%@", error)
-        allowLogin()
+        os_log("Failed to Enable FileVault %{public}@", log: Enablement.log, type: .error, error.localizedDescription)
+        _ = allowLogin()
       }
       
     } else {
-      NSLog("Hint value wasn't set")
       // Allow to login. End of mechanism
-      NSLog("Crypt:MechanismInvoke:Enablement:run:[+] allowLogin");
-      allowLogin()
+      os_log("Hint Value not set Allowing Login...", log: Enablement.log, type: .default)
+      _ = allowLogin()
     }
   }
   
   // Restart
   fileprivate func restartMac() -> Bool {
     // Wait a couple of seconds for everything to finish
+    os_log("called restartMac()...", log: Enablement.log, type: .default)
     sleep(3)
     let task = Process();
-    NSLog("%@", "Restarting after enabling encryption")
-    task.launchPath = "/sbin/reboot"
+    os_log("Restarting Mac after enabling FileVault...", log: Enablement.log, type: .default)
+    task.launchPath = "/sbin/shutdown"
+    task.arguments = ["-r", "now"]
     task.launch()
     return true
   }
@@ -87,22 +90,24 @@ class Enablement: CryptMechanism {
     let outputData = outPipe.fileHandleForReading.availableData
     let outputString = String(data: outputData, encoding: String.Encoding.utf8) ?? ""
     if (outputString.range(of: "true") != nil) {
-      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart:[+] Authrestart capability is 'true', will authrestart as appropriate")
+      os_log("Authrestart capability is 'true', will authrestart as appropriate", log: Enablement.log, type: .default)
       return true
     }
     else {
-      NSLog("Crypt:MechanismInvoke:Enablement:checkAuthRestart:[+] Authrestart capability is 'false', reverting to standard reboot")
+      os_log("Authrestart capability is 'false', reverting to standard reboot", log: Enablement.log, type: .default)
       return false
     }
   }
   
   // check for Institutional Master keychain
   func checkInstitutionalRecoveryKey() -> Bool {
+    os_log("Checking for Institutional key...", log: Enablement.log, type: .default)
     let fileManager = FileManager.default
     if fileManager.fileExists(atPath: "/Library/Keychains/FileVaultMaster.keychain") {
-      NSLog("Found institutional recovery key")
+      os_log("Institutional key was found...", log: Enablement.log, type: .default)
       return true
     } else {
+      os_log("Institutional key NOT found...", log: Enablement.log, type: .default)
       return false
     }
   }
@@ -118,14 +123,17 @@ class Enablement: CryptMechanism {
     let task = Process.init()
     task.launchPath = "/usr/bin/fdesetup"
     if checkAuthRestart() {
+      os_log("Adding -authrestart to fdesetup arguments...", log: Enablement.log, type: .default)
       task.arguments = ["enable", "-authrestart", "-outputplist", "-inputplist"]
     }
     else {
+      os_log("Using normal arguments for fdesetup...", log: Enablement.log, type: .default)
       task.arguments = ["enable", "-outputplist", "-inputplist"]
     }
     
     // if there's an IRK, need to add the -keychain argument
     if checkInstitutionalRecoveryKey() {
+      os_log("Adding -keychain to list of fdesetup arguements since we found an Institutional key...", log: Enablement.log, type: .default)
       task.arguments?.append("-keychain")
     }
     
@@ -137,13 +145,19 @@ class Enablement: CryptMechanism {
     task.waitUntilExit()
     
     if task.terminationStatus != 0 {
+      let termstatus = String(describing: task.terminationStatus)
+      let termreason = String(describing: task.terminationReason)
+      os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: Enablement.log, type: .error, termstatus)
+      os_log("Termreason is: %{public}@", log: Enablement.log, type: .error, termreason)
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
+    os_log("Trying to get output data", log: Enablement.log, type: .default)
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
     
     if outputData.count == 0 {
+      os_log("Found nothing in output data", log: Enablement.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
     
