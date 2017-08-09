@@ -2,7 +2,8 @@ include /usr/local/share/luggage/luggage.make
 PB_EXTRA_ARGS+= --info "./PackageInfo"
 TITLE=Crypt
 GITVERSION=$(shell ./build_no.sh)
-PACKAGE_VERSION=2.3.0.${GITVERSION}
+BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "../Crypt/Info.plist")
+PACKAGE_VERSION=${BUNDLE_VERSION}.${GITVERSION}
 REVERSE_DOMAIN=com.grahamgilbert
 PAYLOAD=\
 			pack-plugin\
