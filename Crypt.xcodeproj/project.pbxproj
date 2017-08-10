@@ -201,13 +201,11 @@
 				TargetAttributes = {
 					C7AD38F21D22B049000FB736 = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = 6LJUSYJRZ2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
 					FCD4FD931BEE763C00CF7F48 = {
 						CreatedOnToolsVersion = 7.1;
-						DevelopmentTeam = 6LJUSYJRZ2;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
@@ -307,7 +305,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6LJUSYJRZ2;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -322,7 +320,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6LJUSYJRZ2;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = FDEAddUserService/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -425,7 +423,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6LJUSYJRZ2;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
@@ -448,7 +446,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = 6LJUSYJRZ2;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
