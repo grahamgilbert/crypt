@@ -34,65 +34,71 @@ class Check: CryptMechanism {
   func run() {
     os_log("executing run() in Crypt.Check", log: Check.log, type: .default)
     
-    let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-    os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
-    
+    // check for ServerUrl
     let serverURL : NSString? = getServerURL()
-    
-    if let url = serverURL {
-      os_log("ServerURL Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: url))
-    } else {
-      os_log("ServerURL is not set, Will NOT be able to encrypt.", log: Check.log, type: .error)
-    }
-    
-    let fvEnabled : Bool = getFVEnabled()
+ 
+    // check for SkipUsers Preference
     let skipUsers : Bool = getSkipUsers()
+    
+    // check for users to add that might not be enabled. Will probably no longer work on 10.13 APFS.
     let addUser : Bool = getAddUserPreference()
-    let rotateKey: Bool = getRotateUsedKeyPreference()
-    let removePlist: Bool = getRemovePlistKeyPreference()
-    let recoveryKeyExists: Bool = checkFileExists(path: filepath)
-    let decrypting: Bool = getDecryptionStatus()
-    //let usedKey: Bool = getUsedKey()
-    //let onPatchedVersion: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 12, patchVersion: 4))
-
-    skipUsers ? os_log("Found users to skip", log: Check.log, type: .default) : os_log("No Users to Skip", log: Check.log, type: .default)
-    rotateKey ? os_log("Set to rotate key", log: Check.log, type: .default) : os_log("Not set to rotate key", log: Check.log, type: .default)
-    recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .default) : os_log("Recovery Key was found on disk...", log: Check.log, type: .default)
-    removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .default) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .default)
-
+    
     guard let username = self.username
       else { _ = allowLogin(); return }
     guard let password = self.password
       else { _ = allowLogin(); return }
-
+    
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
     
+    //Get status on encryption.
+    let fdestatus = getFVEnabled()
+    let fvEnabled : Bool = fdestatus.encypted
+    let decrypting : Bool = fdestatus.decrypting
+    
+    if decrypting {
+      // If we are decrypting we can't do anything so we can just log in
+      os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .error)
+      _ = setBoolHintValue(false)
+      _ = allowLogin()
+      return;
+    }
+    
     if fvEnabled {
+      // Filevault is enabled need to do
       os_log("FileVault is On.", log: Check.log, type: .default)
       
-      // If we are decrypting we can't do anything
-      if decrypting {
-        // If we are decrypting we can't do anything so we can just log in
-        os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .error)
-        _ = allowLogin()
-        _ = setBoolHintValue(false)
-        return;
-      }
+      // Check if OutputPlist preference is defined.
+      let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
+      os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
       
-      os_log("Not Decrypting", log: Check.log, type: .default)
+      // Check for RotateUsedKey Preference
+      let rotateKey: Bool = getRotateUsedKeyPreference()
+      rotateKey ? os_log("Set to rotate key", log: Check.log, type: .default) : os_log("Not set to rotate key", log: Check.log, type: .default)
       
-      if !recoveryKeyExists && !removePlist {
+      // Check for RemovePlist Preferences
+      let removePlist: Bool = getRemovePlistKeyPreference()
+      removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .default) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .default)
+      
+      // Check to see if our recovery key exists at the OutputPath Preference.
+      let recoveryKeyExists: Bool = checkFileExists(path: filepath)
+      recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .default) : os_log("Recovery Key was found on disk...", log: Check.log, type: .default)
+      
+      if !recoveryKeyExists && !removePlist && rotateKey {
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
-        os_log("Key is missing at %{public}@, and RemovePlist is False. Attempting to generate a new one...", log: Check.log, type: .error, String(describing: filepath))
+        os_log("Key is missing at %{public}@, and RemovePlist is False. And RotateKey is True, Attempting to generate a new one...", log: Check.log, type: .error, String(describing: filepath))
         do {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
-          _ = allowLogin()
           _ = setBoolHintValue(false)
+          _ = allowLogin()
           return;
         }
       }
+
+      //let usedKey: Bool = getUsedKey()
+      //let onPatchedVersion: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 12, patchVersion: 4))
+
 
 //      // Feature was supposed to be fixed here "support.apple.com/en-us/HT207536" but it wasn't
 //      // Leaving code incase it gets fixed eventually
@@ -136,6 +142,7 @@ class Check: CryptMechanism {
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       _ = setBoolHintValue(false)
       _ = allowLogin()
+    // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
@@ -144,7 +151,7 @@ class Check: CryptMechanism {
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
-      os_log("Couldn't find ServerURL Pref choosing not to do enable FileVault", log: Check.log, type: .error)
+      os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
@@ -161,8 +168,8 @@ class Check: CryptMechanism {
     case outputPlistMalformed
   }
 
-  fileprivate func getFVEnabled() -> Bool {
-    os_log("Checking to see if FileVault is enabled..", log: Check.log, type: .default)
+  fileprivate func getFVEnabled() -> (encypted: Bool, decrypting: Bool) {
+    os_log("Checking the current status of FileVault..", log: Check.log, type: .default)
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["status"]
@@ -171,33 +178,19 @@ class Check: CryptMechanism {
     task.launch()
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return false }
+      else { return (false, false) }
     if ((output.range(of: "FileVault is On.")) != nil) {
-      os_log("Filevault is enabled...", log: Check.log, type: .default)
-      return true
+      os_log("Filevault is On...", log: Check.log, type: .default)
+      return (true, false)
     } else if (output.range(of: "Decryption in progress:") != nil) {
-      os_log("Decryption is in progress...", log: Check.log, type: .error)
-      return true
+      os_log("Decryption in progress.", log: Check.log, type: .error)
+      return (true, true)
     } else {
-      os_log("FileVault is not enabled...", log: Check.log, type: .error)
-      return false
+      os_log("FileVault is not enabled.", log: Check.log, type: .error)
+      return (false, false)
     }
   }
   
-  fileprivate func getDecryptionStatus() -> Bool {
-    os_log("Checking to see if Decrypting...", log: Check.log, type: .default)
-    let task = Process();
-    task.launchPath = "/usr/bin/fdesetup"
-    task.arguments = ["status"]
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    task.launch()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return false }
-    return (output.range(of: "Decryption in progress:") != nil)
-  }
-
   fileprivate func getUsedKey() -> Bool {
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
@@ -219,16 +212,19 @@ class Check: CryptMechanism {
   }
 
   fileprivate func getSkipUsers() -> Bool {
+    os_log("Checking for any SkipUsers...", log: Check.log, type: .default)
     guard let username = self.username
       else { return false }
     guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
       else { return false }
     for s in prefValue {
       if trim_string(s) == username as String {
+        os_log("Found %{public}@ in SkipUsers list...", log: Check.log, type: .error, String(describing: username))
         return true
       }
     }
     if username as String == "_mbsetupuser" {
+      os_log("User is _mbsetupuser... Need to Skip...", log: Check.log, type: .error)
       return true
     }
     return false
@@ -293,9 +289,7 @@ class Check: CryptMechanism {
     
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
-      let termreason = String(describing: task.terminationReason)
       os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
-      os_log("Termreason is: %{public}@", log: Check.log, type: .error, termreason)
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     

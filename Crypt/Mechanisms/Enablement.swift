@@ -30,16 +30,17 @@ class Enablement: CryptMechanism {
   // This is the only public function. It will be called from the
   // ObjC AuthorizationPlugin class
   func run() {
-    guard let username = self.username
-      else { allowLogin(); return }
-    guard let password = self.password
-      else { allowLogin(); return }
-    
-    let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
     
     if getBoolHintValue() {
       
       os_log("Attempting to enable FileVault", log: Enablement.log, type: .default)
+      
+      guard let username = self.username
+        else { allowLogin(); return }
+      guard let password = self.password
+        else { allowLogin(); return }
+      
+      let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
       
       do {
         let outputPlist = try enableFileVault(the_settings)
