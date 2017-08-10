@@ -27,8 +27,18 @@ def remove_old_app():
     if os.path.exists(old_install_dir):
         shutil.rmtree(old_install_dir)
 
+def remove_old_bundle():
+    '''Removes the old crypt plug-in in preparation for the new one, doing
+    so seems to resolve an issue where, it would still use the old auth plug-in
+    after the upgrade...'''
+    try:
+        shutil.rmtree('/Library/Security/SecurityAgentPlugins/Crypt.bundle')
+    except OSError:
+        pass
+
 def main():
     move_old_plist()
+    remove_old_bundle()
 
 if __name__ == '__main__':
     main()
