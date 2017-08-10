@@ -32,7 +32,7 @@ class Check: CryptMechanism {
   fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
   func run() {
-    os_log("executing run() in Crypt.Check", log: Check.log, type: .default)
+    os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
     
     // check for ServerUrl
     let serverURL : NSString? = getServerURL()
@@ -57,15 +57,14 @@ class Check: CryptMechanism {
     
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
-      os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .error)
+      os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
       return;
     }
     
     if fvEnabled {
-      // Filevault is enabled need to do
-      os_log("FileVault is On.", log: Check.log, type: .default)
+      //FileVault is enabled, checks for things to do if FileVault is enabled should be done here.
       
       // Check if OutputPlist preference is defined.
       let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
@@ -73,19 +72,18 @@ class Check: CryptMechanism {
       
       // Check for RotateUsedKey Preference
       let rotateKey: Bool = getRotateUsedKeyPreference()
-      rotateKey ? os_log("Set to rotate key", log: Check.log, type: .default) : os_log("Not set to rotate key", log: Check.log, type: .default)
+      os_log("RotateUsedKey Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: rotateKey))
       
       // Check for RemovePlist Preferences
       let removePlist: Bool = getRemovePlistKeyPreference()
-      removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .default) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .default)
+      os_log("RemovePlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: removePlist))
       
       // Check to see if our recovery key exists at the OutputPath Preference.
       let recoveryKeyExists: Bool = checkFileExists(path: filepath)
-      recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .default) : os_log("Recovery Key was found on disk...", log: Check.log, type: .default)
       
       if !recoveryKeyExists && !removePlist && rotateKey {
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
-        os_log("Key is missing at %{public}@, and RemovePlist is False. And RotateKey is True, Attempting to generate a new one...", log: Check.log, type: .error, String(describing: filepath))
+        os_log("Key is missing at %{public}@, and RemovePlist is False. And RotateKey is True, Attempting to generate a new key...", log: Check.log, type: .error, String(describing: filepath))
         do {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
@@ -135,7 +133,7 @@ class Check: CryptMechanism {
 //      }
 
       if addUser && !skipUsers {
-        os_log("Adding new User to FileVault", log: Check.log, type: .default)
+        os_log("Attempting to add user %{public}@ to FileVault...", log: Check.log, type: .default, String(describing: username))
         fdeAddUser(username: self.username! as String, password: self.password! as String)
       }
       
@@ -183,10 +181,10 @@ class Check: CryptMechanism {
       os_log("Filevault is On...", log: Check.log, type: .default)
       return (true, false)
     } else if (output.range(of: "Decryption in progress:") != nil) {
-      os_log("Decryption in progress.", log: Check.log, type: .error)
+      os_log("FileVault Decryption in progress...", log: Check.log, type: .error)
       return (true, true)
     } else {
-      os_log("FileVault is not enabled.", log: Check.log, type: .error)
+      os_log("FileVault is not enabled...", log: Check.log, type: .error)
       return (false, false)
     }
   }
@@ -270,7 +268,7 @@ class Check: CryptMechanism {
   }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
-    os_log("called rotateRecoveryKey()", log: Check.log, type: .default)
+    os_log("Attempting to Rotate Recovery Key...", log: Check.log, type: .default)
     let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
                                                         format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
 
@@ -289,7 +287,7 @@ class Check: CryptMechanism {
     
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
-      os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
+      os_log("Error: fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
@@ -298,7 +296,7 @@ class Check: CryptMechanism {
     outPipe.fileHandleForReading.closeFile()
     
     if outputData.count == 0 {
-      os_log("Found nothing in output data", log: Check.log, type: .error)
+      os_log("Error: Found nothing in output data", log: Check.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
     
@@ -311,7 +309,7 @@ class Check: CryptMechanism {
         os_log("Attempting to write key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
         _ = (outputPlist as! NSDictionary).write(toFile: filepath, atomically: true)
       }
-      
+      os_log("Successfully wrote key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
       return true
     } else {
       os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .error)
@@ -320,11 +318,13 @@ class Check: CryptMechanism {
   }
   
   func checkFileExists(path: String) -> Bool {
-    os_log("running checkFileExists()", log: Check.log, type: .default)
+    os_log("Checking to see if %{public}@ exists...", log: Check.log, type: .default, String(describing: path))
     let fm = FileManager.default
     if fm.fileExists(atPath: path) {
+      os_log("%{public}@ exists...", log: Check.log, type: .default, String(describing: path))
       return true
     } else {
+      os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
       return false
     }
   }
