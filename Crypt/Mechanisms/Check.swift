@@ -32,74 +32,81 @@ class Check: CryptMechanism {
   fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
   func run() {
-    os_log("executing run() in Crypt.Check", log: Check.log, type: .debug)
+    os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
     
-    let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-    os_log("OutPutPlist Prefences is set to %@", log: Check.log, type: .debug, filepath)
+    // check for ServerUrl
     let serverURL : NSString? = getServerURL()
-    if let url = serverURL {
-      os_log("ServerURL Prefences is set to %@", log: Check.log, type: .debug, url)
-    } else {
-      os_log("ServerURL is not set", log: Check.log, type: .debug)
-    }
-    let fvEnabled : Bool = getFVEnabled()
+ 
+    // check for SkipUsers Preference
     let skipUsers : Bool = getSkipUsers()
+    
+    // check for users to add that might not be enabled. Will probably no longer work on 10.13 APFS.
     let addUser : Bool = getAddUserPreference()
-    let rotateKey: Bool = getRotateUsedKeyPreference()
-    let removePlist: Bool = getRemovePlistKeyPreference()
-    let recoveryKeyExists: Bool = checkFileExists(path: filepath)
-    let decrypting: Bool = getDecryptionStatus()
-    //let usedKey: Bool = getUsedKey()
-    //let onPatchedVersion: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 12, patchVersion: 4))
-
-    skipUsers ? os_log("Found users to skip", log: Check.log, type: .debug) : os_log("No Users to Skip", log: Check.log, type: .debug)
-    rotateKey ? os_log("Set to rotate key", log: Check.log, type: .debug) : os_log("Not set to rotate key", log: Check.log, type: .debug)
-    recoveryKeyExists ? os_log("Recovery Key was found on disk...", log: Check.log, type: .debug) : os_log("Recovery Key was found on disk...", log: Check.log, type: .debug)
-    removePlist ? os_log("RemovePlist Pref is set to True...", log: Check.log, type: .debug) : os_log("RemovePlist Pref is set to False..", log: Check.log, type: .debug)
-
+    
     guard let username = self.username
       else { _ = allowLogin(); return }
     guard let password = self.password
       else { _ = allowLogin(); return }
-
+    
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
     
+    //Get status on encryption.
+    let fdestatus = getFVEnabled()
+    let fvEnabled : Bool = fdestatus.encypted
+    let decrypting : Bool = fdestatus.decrypting
+    
+    if decrypting {
+      // If we are decrypting we can't do anything so we can just log in
+      os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
+      _ = setBoolHintValue(false)
+      _ = allowLogin()
+      return;
+    }
+    
     if fvEnabled {
-      os_log("FileVault is On.", log: Check.log, type: .debug)
+      //FileVault is enabled, checks for things to do if FileVault is enabled should be done here.
       
-      // If we are decrypting we can't do anything
-      if decrypting {
-        // If we are decrypting we can't do anything so we can just log in
-        os_log("We are Decrypting! We are not wanted here...", log: Check.log, type: .debug)
-        _ = allowLogin()
-        _ = setBoolHintValue(false)
-        return;
-      }
+      // Check if OutputPlist preference is defined.
+      let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
+      os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
       
-      os_log("Not Decrypting", log: Check.log, type: .debug)
+      // Check for RotateUsedKey Preference
+      let rotateKey: Bool = getRotateUsedKeyPreference()
+      os_log("RotateUsedKey Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: rotateKey))
       
-      if !recoveryKeyExists && !removePlist {
+      // Check for RemovePlist Preferences
+      let removePlist: Bool = getRemovePlistKeyPreference()
+      os_log("RemovePlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: removePlist))
+      
+      // Check to see if our recovery key exists at the OutputPath Preference.
+      let recoveryKeyExists: Bool = checkFileExists(path: filepath)
+      
+      if !recoveryKeyExists && !removePlist && rotateKey {
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
-        os_log("Key is missing when its not supposed to present. Attempting to generate a new one...", log: Check.log, type: .debug)
+        os_log("Key is missing at %{public}@, and RemovePlist is False. And RotateKey is True, Attempting to generate a new key...", log: Check.log, type: .error, String(describing: filepath))
         do {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
-          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .debug, error)
-          _ = allowLogin()
+          os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
           _ = setBoolHintValue(false)
+          _ = allowLogin()
           return;
         }
       }
+
+      //let usedKey: Bool = getUsedKey()
+      //let onPatchedVersion: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 12, patchVersion: 4))
+
 
 //      // Feature was supposed to be fixed here "support.apple.com/en-us/HT207536" but it wasn't
 //      // Leaving code incase it gets fixed eventually
 //      // Check to see if we used the key to unlock the disk, rotate if configured to.
 //      if rotateKey && usedKey && onPatchedVersion {
-//        os_log("Used key to unlock, need to rotate", log: Check.log, type: .debug)
+//        os_log("Used key to unlock, need to rotate", log: Check.log, type: .default)
 //        do {
 //          try _ = rotateRecoveryKey(the_settings, filepath: filepath)
 //        } catch let error as NSError {
-//          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .debug, error)
+//          os_log("Caught error trying to rotate recovery key: %@", log: Check.log, type: .default, error)
 //          _ = allowLogin()
 //        }
 //      }
@@ -126,27 +133,28 @@ class Check: CryptMechanism {
 //      }
 
       if addUser && !skipUsers {
-        os_log("Adding new User to FileVault", log: Check.log, type: .debug)
-        fdeAddUser(self.username, password: self.password)
+        os_log("Attempting to add user %{public}@ to FileVault...", log: Check.log, type: .default, String(describing: username))
+        fdeAddUser(username: self.username! as String, password: self.password! as String)
       }
       
-      os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .debug)
+      os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       _ = setBoolHintValue(false)
       _ = allowLogin()
+    // end of fvEnabled
     }
     else if skipUsers {
-      os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .debug)
+      os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
-      os_log("Couldn't find ServerURL Pref choosing not to do enable FileVault", log: Check.log, type: .debug)
+      os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
     }
     else {
-      os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .debug)
+      os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .error)
       _ = setBoolHintValue(true)
     }
   }
@@ -158,8 +166,8 @@ class Check: CryptMechanism {
     case outputPlistMalformed
   }
 
-  fileprivate func getFVEnabled() -> Bool {
-    os_log("Checking to see if FileVault is enabled..", log: Check.log, type: .debug)
+  fileprivate func getFVEnabled() -> (encypted: Bool, decrypting: Bool) {
+    os_log("Checking the current status of FileVault..", log: Check.log, type: .default)
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["status"]
@@ -168,33 +176,19 @@ class Check: CryptMechanism {
     task.launch()
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
     guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return false }
+      else { return (false, false) }
     if ((output.range(of: "FileVault is On.")) != nil) {
-      os_log("Filevault is enabled", log: Check.log, type: .debug)
-      return true
+      os_log("Filevault is On...", log: Check.log, type: .default)
+      return (true, false)
     } else if (output.range(of: "Decryption in progress:") != nil) {
-      os_log("Decryption is in progress", log: Check.log, type: .debug)
-      return true
+      os_log("FileVault Decryption in progress...", log: Check.log, type: .error)
+      return (true, true)
     } else {
-      os_log("FileVault is not enabled", log: Check.log, type: .debug)
-      return false
+      os_log("FileVault is not enabled...", log: Check.log, type: .error)
+      return (false, false)
     }
   }
   
-  fileprivate func getDecryptionStatus() -> Bool {
-    os_log("Checking to see if Decrypting", log: Check.log, type: .debug)
-    let task = Process();
-    task.launchPath = "/usr/bin/fdesetup"
-    task.arguments = ["status"]
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    task.launch()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return false }
-    return (output.range(of: "Decryption in progress:") != nil)
-  }
-
   fileprivate func getUsedKey() -> Bool {
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
@@ -211,21 +205,24 @@ class Check: CryptMechanism {
   func trim_string(_ the_string:String) -> String {
     let output = the_string.trimmingCharacters(
                      in: CharacterSet.whitespacesAndNewlines)
-    NSLog("Trimming %@ to %@", the_string, output)
+    os_log("Trimming %{public}@ to %{public}@", log: Check.log, type: .default,  String(describing: the_string), String(describing: output))
     return output
   }
 
   fileprivate func getSkipUsers() -> Bool {
+    os_log("Checking for any SkipUsers...", log: Check.log, type: .default)
     guard let username = self.username
       else { return false }
     guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
       else { return false }
     for s in prefValue {
       if trim_string(s) == username as String {
+        os_log("Found %{public}@ in SkipUsers list...", log: Check.log, type: .error, String(describing: username))
         return true
       }
     }
     if username as String == "_mbsetupuser" {
+      os_log("User is _mbsetupuser... Need to Skip...", log: Check.log, type: .error)
       return true
     }
     return false
@@ -254,25 +251,24 @@ class Check: CryptMechanism {
     return removeplist
   }
   
-  fileprivate func fdeAddUser(_ username: NSString?, password: NSString?) {
-    guard let username = username as String?
+  private func fdeAddUser(username: String?, password: String?) {
+    guard let username = username
       else { return }
-    guard let password = password as String?
+    guard let password = password
       else { return }
     let connection = NSXPCConnection.init(serviceName: fdeAddUserService)
     connection.remoteObjectInterface = NSXPCInterface(with: FDEAddUserServiceProtocol.self)
     connection.resume()
-    let service = connection.remoteObjectProxyWithErrorHandler {  error in
-      NSLog("Crypt:MechanismInvoke: %@ Connection Error", self.fdeAddUserService);
-    } as! FDEAddUserServiceProtocol
-    
-    service.odfdeAddUser(username, withPassword: password, withReply: { ret in
-      NSLog("Crypt:MechanismInvoke: FDEAddUser %@", ret ? "Success" : "Fail")
-    })
+    let service = connection.remoteObjectProxyWithErrorHandler { (error: Error) -> Void in
+      os_log("Can not connect to FDEAddUserService", log: Check.log, type: .error)
+      } as! FDEAddUserServiceProtocol
+    service.odfdeAddUser(username, withPassword: password) { (ret: Bool) -> Void in
+      os_log("FDEAddUser %{public}@", log: Check.log, type: .error, ret ? "Success" : "Fail")
+      }
   }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
-    os_log("called rotateRecoveryKey()", log: Check.log, type: .debug)
+    os_log("Attempting to Rotate Recovery Key...", log: Check.log, type: .default)
     let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
                                                         format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
 
@@ -290,16 +286,17 @@ class Check: CryptMechanism {
     task.waitUntilExit()
     
     if task.terminationStatus != 0 {
-       os_log("rotate terminationStatus wasn't 0", log: Check.log, type: .debug)
+      let termstatus = String(describing: task.terminationStatus)
+      os_log("Error: fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
-    os_log("Trying to get output data", log: Check.log, type: .debug)
+    os_log("Trying to get output data", log: Check.log, type: .default)
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
     
     if outputData.count == 0 {
-      os_log("Found nothing in output data", log: Check.log, type: .error)
+      os_log("Error: Found nothing in output data", log: Check.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
     
@@ -309,23 +306,25 @@ class Check: CryptMechanism {
     
     if (format == PropertyListSerialization.PropertyListFormat.xml) {
       if outputPlist is NSDictionary {
-        os_log("Attempting to write key to: %@", log: Check.log, type: .debug, filepath)
+        os_log("Attempting to write key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
         _ = (outputPlist as! NSDictionary).write(toFile: filepath, atomically: true)
       }
-      
+      os_log("Successfully wrote key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
       return true
     } else {
-      os_log("format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .debug)
+      os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .error)
       throw FileVaultError.outputPlistMalformed
     }
   }
   
   func checkFileExists(path: String) -> Bool {
-    os_log("running checkFileExists()", log: Check.log, type: .debug)
+    os_log("Checking to see if %{public}@ exists...", log: Check.log, type: .default, String(describing: path))
     let fm = FileManager.default
     if fm.fileExists(atPath: path) {
+      os_log("%{public}@ exists...", log: Check.log, type: .default, String(describing: path))
       return true
     } else {
+      os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
       return false
     }
   }

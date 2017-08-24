@@ -27,6 +27,7 @@ def remove_old_app():
     if os.path.exists(old_install_dir):
         shutil.rmtree(old_install_dir)
 
+
 def main():
     move_old_plist()
 
