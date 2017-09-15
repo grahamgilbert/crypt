@@ -54,6 +54,9 @@ class Check: CryptMechanism {
     let fdestatus = getFVEnabled()
     let fvEnabled : Bool = fdestatus.encypted
     let decrypting : Bool = fdestatus.decrypting
+    let onHighSierraOrHigher: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 13, patchVersion: 0))
+    let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
+    os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
     
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
@@ -65,10 +68,6 @@ class Check: CryptMechanism {
     
     if fvEnabled {
       //FileVault is enabled, checks for things to do if FileVault is enabled should be done here.
-      
-      // Check if OutputPlist preference is defined.
-      let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-      os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
       
       // Check for RotateUsedKey Preference
       let rotateKey: Bool = getRotateUsedKeyPreference()
@@ -88,10 +87,10 @@ class Check: CryptMechanism {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
-          _ = setBoolHintValue(false)
-          _ = allowLogin()
-          return;
         }
+        _ = setBoolHintValue(false)
+        _ = allowLogin()
+        return;
       }
 
       //let usedKey: Bool = getUsedKey()
@@ -140,18 +139,33 @@ class Check: CryptMechanism {
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       _ = setBoolHintValue(false)
       _ = allowLogin()
+      return;
     // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
+      return;
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
       os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
       _ = setBoolHintValue(false)
       _ = allowLogin()
+      return;
+    }
+    else if onHighSierraOrHigher {
+      // we're on high sierra we can just enable
+      os_log("On High Sierra and not enabled. Starting Enablement...", log: Check.log, type: .default)
+      do {
+        try _ = enableHighSierraFileVault(the_settings, filepath: filepath)
+      } catch let error as NSError {
+        os_log("Caught error trying to Enable FileVault on High Sierra: %{public}@", log: Check.log, type: .error, error.localizedDescription)
+        _ = setBoolHintValue(false)
+        _ = allowLogin()
+        return;
+      }
     }
     else {
       os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .error)
@@ -326,6 +340,78 @@ class Check: CryptMechanism {
     } else {
       os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
       return false
+    }
+  }
+  
+  // check for Institutional Master keychain
+  func checkInstitutionalRecoveryKey() -> Bool {
+    os_log("Checking for Institutional key...", log: Check.log, type: .default)
+    let fileManager = FileManager.default
+    if fileManager.fileExists(atPath: "/Library/Keychains/FileVaultMaster.keychain") {
+      os_log("Institutional key was found...", log: Check.log, type: .default)
+      return true
+    } else {
+      os_log("Institutional key NOT found...", log: Check.log, type: .default)
+      return false
+    }
+  }
+  
+  func enableHighSierraFileVault(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
+    os_log("Attempting to enable FileVault for High Sierra", log: Check.log, type: .default)
+    let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
+                                                        format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
+    
+    let inPipe = Pipe.init()
+    let outPipe = Pipe.init()
+    
+    let task = Process.init()
+    task.launchPath = "/usr/bin/fdesetup"
+    os_log("Using normal arguments for fdesetup...", log: Check.log, type: .default)
+    task.arguments = ["enable", "-outputplist", "-inputplist"]
+    
+    // if there's an IRK, need to add the -keychain argument
+    if checkInstitutionalRecoveryKey() {
+      os_log("Adding -keychain to list of fdesetup arguements since we found an Institutional key...", log: Check.log, type: .default)
+      task.arguments?.append("-keychain")
+    }
+    
+    task.standardInput = inPipe
+    task.standardOutput = outPipe
+    task.launch()
+    inPipe.fileHandleForWriting.write(inputPlist)
+    inPipe.fileHandleForWriting.closeFile()
+    task.waitUntilExit()
+    
+    os_log("Trying to get output data", log: Check.log, type: .default)
+    let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
+    outPipe.fileHandleForReading.closeFile()
+    
+    if task.terminationStatus != 0 {
+      let termstatus = String(describing: task.terminationStatus)
+      os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
+      os_log("fdesetup Standard out: %{public}@", log: Check.log, type: .error, String(describing: outputData))
+      throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
+    }
+    
+    if outputData.count == 0 {
+      os_log("Found nothing in output data", log: Check.log, type: .error)
+      throw FileVaultError.outputPlistNull
+    }
+    
+    var format : PropertyListSerialization.PropertyListFormat = PropertyListSerialization.PropertyListFormat.xml
+    let outputPlist = try PropertyListSerialization.propertyList(from: outputData,
+                                                                 options: PropertyListSerialization.MutabilityOptions(), format: &format)
+    
+    if (format == PropertyListSerialization.PropertyListFormat.xml) {
+      if outputPlist is NSDictionary {
+        os_log("Attempting to write key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
+        _ = (outputPlist as! NSDictionary).write(toFile: filepath, atomically: true)
+      }
+      os_log("Successfully wrote key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
+      return true
+    } else {
+      os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .error)
+      throw FileVaultError.outputPlistMalformed
     }
   }
 }
