@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Crypt replace_version</title>
+    <pkg-ref id="com.grahamgilbert.Crypt"/>
+    <options rootVolumeOnly="true" />
+    <volume-check>
+    	<allowed-os-versions>
+    	    <os-version min="10.12.0" />
+    	</allowed-os-versions>
+    </volume-check>
+    <options customize="never" require-scripts="false"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="com.grahamgilbert.Crypt"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="com.grahamgilbert.Crypt" visible="false">
+        <pkg-ref id="com.grahamgilbert.Crypt"/>
+    </choice>
+    <pkg-ref id="com.grahamgilbert.Crypt" version="replace_version" onConclusion="RequireRestart">Crypt.pkg</pkg-ref>
+</installer-gui-script>
