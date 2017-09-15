@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 """
-Adds the OS check to a generated distribution file
+Sets the right version number and writes the Distribution file from the template
 """
 
 import plistlib
