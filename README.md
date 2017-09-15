@@ -4,14 +4,18 @@
 
 Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt 2 has been tested against 10.11 and 10.12 - it should in theory work down to 10.9, but test throughly to ensure it works as expected.
 
+Version 3.0.0 now supports 10.12 and above, previous macOS version support has been deprecated!
+
 ## Features
 
 * Uses native authorization plugin so FileVault enforcement cannot be skipped.
 * Escrow is delayed until there is an active user, so FileVault can be enforced when the Mac is offline.
 * Administrators can specify a series of username that should not have to enable FileVault (IT admin, for example).
 
-#### New in v2.3.0
-* Added support for the use of Institutional Keys along with the default Personal Recovery Key. Just add your master keychain file at '/Library/Keychains/FileVaultMaster.keychain' and Crypt2 will handle the rest during initial Enablement.
+#### New in v3.0.0
+* Deprecated Support for before 10.12. Please use version 2.2.0.
+* High Sierra Support.
+* Added support for the use of Institutional Keys along with the default Personal Recovery Key. Just add your master keychain file at '/Library/Keychains/FileVaultMaster.keychain' and Crypt will handle the rest during initial Enablement.
 * If the RotateUsedKey preference is True and RemovePlist is False and the file defined by OutputPath is missing from disk, a new Recovery key will be generated at login.
 * OutputPath Preference. More info below.
 * Local Recovery Key validation on 10.12.5+. More info below.
@@ -39,7 +43,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt SkipUsers -ar
 
 ### RemovePlist
 
-By default, the plist with the FileVault Key will be removed once it has been escrowed. In a future version of Crypt, there will be the possibility of verifying the escrowed key with the client. In preparation for this feature, you can now choose to leave the key on disk. 
+By default, the plist with the FileVault Key will be removed once it has been escrowed. In a future version of Crypt, there will be the possibility of verifying the escrowed key with the client. In preparation for this feature, you can now choose to leave the key on disk.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -bool FALSE
@@ -70,7 +74,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -b
 ```
 ### OutputPath
 
-As of version 2.3.0 you can now define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.
+As of version 3.0.0 you can now define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/path/to/different/location"
@@ -78,7 +82,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/
 
 ### KeyEscrowInterval
 
-As of version 2.3.0 you can now define the time interval in Hours for how often Crypt tries to re-escrow the key, after the first successful escrow. Default for this is `1` hour.
+As of version 3.0.0 you can now define the time interval in Hours for how often Crypt tries to re-escrow the key, after the first successful escrow. Default for this is `1` hour.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt KeyEscrowInterval -int 2
