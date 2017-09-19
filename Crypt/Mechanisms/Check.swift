@@ -52,9 +52,8 @@ class Check: CryptMechanism {
     
     //Get status on encryption.
     let fdestatus = getFVEnabled()
-    let fvEnabled : Bool = fdestatus.encypted
+    let fvEnabled : Bool = fdestatus.encrypted
     let decrypting : Bool = fdestatus.decrypting
-    let onHighSierraOrHigher: Bool = ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 13, patchVersion: 0))
     let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
     os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
     
@@ -155,17 +154,21 @@ class Check: CryptMechanism {
       _ = allowLogin()
       return;
     }
-    else if onHighSierraOrHigher {
+    else if onHighSierraOrNewer() {
       // we're on high sierra we can just enable
       os_log("On High Sierra and not enabled. Starting Enablement...", log: Check.log, type: .default)
       do {
-        try _ = enableHighSierraFileVault(the_settings, filepath: filepath)
+        try _ = enableFileVault(the_settings, filepath: filepath)
       } catch let error as NSError {
-        os_log("Caught error trying to Enable FileVault on High Sierra: %{public}@", log: Check.log, type: .error, error.localizedDescription)
-        _ = setBoolHintValue(false)
-        _ = allowLogin()
-        return;
+        os_log("Caught error trying to Enable FileVault on High Sierra: %{public}@", log: Check.log, type: .error, String(describing: error.localizedDescription))
       }
+      if needToRestart() {
+        _ = setBoolHintValue(true)
+        return
+      }
+      _ = setBoolHintValue(false)
+      _ = allowLogin()
+      return;
     }
     else {
       os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .error)
@@ -180,29 +183,6 @@ class Check: CryptMechanism {
     case outputPlistMalformed
   }
 
-  fileprivate func getFVEnabled() -> (encypted: Bool, decrypting: Bool) {
-    os_log("Checking the current status of FileVault..", log: Check.log, type: .default)
-    let task = Process();
-    task.launchPath = "/usr/bin/fdesetup"
-    task.arguments = ["status"]
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    task.launch()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return (false, false) }
-    if ((output.range(of: "FileVault is On.")) != nil) {
-      os_log("Filevault is On...", log: Check.log, type: .default)
-      return (true, false)
-    } else if (output.range(of: "Decryption in progress:") != nil) {
-      os_log("FileVault Decryption in progress...", log: Check.log, type: .error)
-      return (true, true)
-    } else {
-      os_log("FileVault is not enabled...", log: Check.log, type: .error)
-      return (false, false)
-    }
-  }
-  
   fileprivate func getUsedKey() -> Bool {
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
@@ -288,20 +268,27 @@ class Check: CryptMechanism {
 
     let inPipe = Pipe.init()
     let outPipe = Pipe.init()
+    let errorPipe = Pipe.init()
 
     let task = Process.init()
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["changerecovery", "-personal", "-outputplist", "-inputplist"]
     task.standardInput = inPipe
     task.standardOutput = outPipe
+    task.standardError = errorPipe
     task.launch()
     inPipe.fileHandleForWriting.write(inputPlist)
     inPipe.fileHandleForWriting.closeFile()
     task.waitUntilExit()
     
+    let errorOut = errorPipe.fileHandleForReading.readDataToEndOfFile()
+    let errorMessage = String(data: errorOut, encoding: .utf8)
+    errorPipe.fileHandleForReading.closeFile()
+    
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
       os_log("Error: fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
+      os_log("fdesetup Standard Error: %{public}@", log: Check.log, type: .error, String(describing: errorMessage))
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
@@ -311,90 +298,6 @@ class Check: CryptMechanism {
     
     if outputData.count == 0 {
       os_log("Error: Found nothing in output data", log: Check.log, type: .error)
-      throw FileVaultError.outputPlistNull
-    }
-    
-    var format : PropertyListSerialization.PropertyListFormat = PropertyListSerialization.PropertyListFormat.xml
-    let outputPlist = try PropertyListSerialization.propertyList(from: outputData,
-                                                                 options: PropertyListSerialization.MutabilityOptions(), format: &format)
-    
-    if (format == PropertyListSerialization.PropertyListFormat.xml) {
-      if outputPlist is NSDictionary {
-        os_log("Attempting to write key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
-        _ = (outputPlist as! NSDictionary).write(toFile: filepath, atomically: true)
-      }
-      os_log("Successfully wrote key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))
-      return true
-    } else {
-      os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .error)
-      throw FileVaultError.outputPlistMalformed
-    }
-  }
-  
-  func checkFileExists(path: String) -> Bool {
-    os_log("Checking to see if %{public}@ exists...", log: Check.log, type: .default, String(describing: path))
-    let fm = FileManager.default
-    if fm.fileExists(atPath: path) {
-      os_log("%{public}@ exists...", log: Check.log, type: .default, String(describing: path))
-      return true
-    } else {
-      os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
-      return false
-    }
-  }
-  
-  // check for Institutional Master keychain
-  func checkInstitutionalRecoveryKey() -> Bool {
-    os_log("Checking for Institutional key...", log: Check.log, type: .default)
-    let fileManager = FileManager.default
-    if fileManager.fileExists(atPath: "/Library/Keychains/FileVaultMaster.keychain") {
-      os_log("Institutional key was found...", log: Check.log, type: .default)
-      return true
-    } else {
-      os_log("Institutional key NOT found...", log: Check.log, type: .default)
-      return false
-    }
-  }
-  
-  func enableHighSierraFileVault(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
-    os_log("Attempting to enable FileVault for High Sierra", log: Check.log, type: .default)
-    let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
-                                                        format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
-    
-    let inPipe = Pipe.init()
-    let outPipe = Pipe.init()
-    
-    let task = Process.init()
-    task.launchPath = "/usr/bin/fdesetup"
-    os_log("Using normal arguments for fdesetup...", log: Check.log, type: .default)
-    task.arguments = ["enable", "-outputplist", "-inputplist"]
-    
-    // if there's an IRK, need to add the -keychain argument
-    if checkInstitutionalRecoveryKey() {
-      os_log("Adding -keychain to list of fdesetup arguements since we found an Institutional key...", log: Check.log, type: .default)
-      task.arguments?.append("-keychain")
-    }
-    
-    task.standardInput = inPipe
-    task.standardOutput = outPipe
-    task.launch()
-    inPipe.fileHandleForWriting.write(inputPlist)
-    inPipe.fileHandleForWriting.closeFile()
-    task.waitUntilExit()
-    
-    os_log("Trying to get output data", log: Check.log, type: .default)
-    let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
-    outPipe.fileHandleForReading.closeFile()
-    
-    if task.terminationStatus != 0 {
-      let termstatus = String(describing: task.terminationStatus)
-      os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
-      os_log("fdesetup Standard out: %{public}@", log: Check.log, type: .error, String(describing: outputData))
-      throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
-    }
-    
-    if outputData.count == 0 {
-      os_log("Found nothing in output data", log: Check.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
     
