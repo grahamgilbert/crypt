@@ -154,7 +154,7 @@ class Check: CryptMechanism {
       _ = allowLogin()
       return;
     }
-    else if onHighSierraOrNewer() {
+    else if onHighSierraOrNewer() && onAPFS() {
       // we're on high sierra we can just enable
       os_log("On High Sierra and not enabled. Starting Enablement...", log: Check.log, type: .default)
       do {

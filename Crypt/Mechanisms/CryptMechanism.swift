@@ -230,7 +230,7 @@ class CryptMechanism: NSObject {
     task.arguments = ["enable", "-outputplist", "-inputplist"]
     
     // check if we should do an authrestart on enablement
-    if checkAuthRestart() {
+    if checkAuthRestart() && !onAPFS(){
       os_log("adding -authrestart flag at index 1 of our task arguments...", log: CryptMechanism.log, type: .default)
       task.arguments?.insert("-authrestart", at: 1)
     }
@@ -286,6 +286,24 @@ class CryptMechanism: NSObject {
     } else {
       os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: CryptMechanism.log, type: .error)
       throw FileVaultError.outputPlistMalformed
+    }
+  }
+  
+  func onAPFS() -> Bool {
+    // checks to see if our boot drive is APFS
+    let ws = NSWorkspace.shared
+    
+    var myDes: NSString? = nil
+    var myType: NSString? = nil
+    
+    ws().getFileSystemInfo(forPath: "/", isRemovable: nil, isWritable: nil, isUnmountable: nil, description: &myDes, type: &myType)
+    
+    if myType == "apfs" {
+      os_log("Machine appears to be APFS", log: CryptMechanism.log, type: .default)
+      return true
+    } else {
+      os_log("Machine is not APFS we appear to be: %{public}@", log: CryptMechanism.log, type: .default, String(describing: myType))
+      return false
     }
   }
   
