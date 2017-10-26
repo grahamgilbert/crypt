@@ -9,10 +9,7 @@
 /* Begin PBXBuildFile section */
 		1A5C742E1F15554700D9792A /* PromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C742D1F15554700D9792A /* PromptWindowController.swift */; };
 		1A8643121F15292200108C19 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A8643111F15292200108C19 /* Preferences.swift */; };
-		C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F71D22B049000FB736 /* FDEAddUserService.m */; };
-		C7AD38FA1D22B049000FB736 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F91D22B049000FB736 /* main.m */; };
 		C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
-		C7AD39041D22C336000FB736 /* FDEAddUserService.xpc in CopyFiles */ = {isa = PBXBuildFile; fileRef = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
 		D2D31D5F1C2303F500839D93 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
 		D2D31D611C2303F500839D93 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
@@ -22,16 +19,6 @@
 		D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D661C2307D500839D93 /* CryptGUI.swift */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		C7AD39011D22C329000FB736 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C7AD38F21D22B049000FB736;
-			remoteInfo = FDEAddUserService;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXCopyFilesBuildPhase section */
 		C7AD39031D22C32F000FB736 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -39,7 +26,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
 			dstSubfolderSpec = 16;
 			files = (
-				C7AD39041D22C336000FB736 /* FDEAddUserService.xpc in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,12 +34,6 @@
 /* Begin PBXFileReference section */
 		1A5C742D1F15554700D9792A /* PromptWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptWindowController.swift; sourceTree = "<group>"; };
 		1A8643111F15292200108C19 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */ = {isa = PBXFileReference; explicitFileType = "wrapper.xpc-service"; includeInIndex = 0; path = FDEAddUserService.xpc; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7AD38F51D22B049000FB736 /* FDEAddUserServiceProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserServiceProtocol.h; sourceTree = "<group>"; };
-		C7AD38F61D22B049000FB736 /* FDEAddUserService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FDEAddUserService.h; sourceTree = "<group>"; };
-		C7AD38F71D22B049000FB736 /* FDEAddUserService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FDEAddUserService.m; sourceTree = "<group>"; };
-		C7AD38F91D22B049000FB736 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		C7AD38FB1D22B049000FB736 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = CryptMechanism.swift; sourceTree = "<group>"; tabWidth = 2; };
 		D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Crypt-Bridging-Header.h"; path = "Crypt/Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptAuthPlugin.h; path = Crypt/CryptAuthPlugin.h; sourceTree = "<group>"; };
@@ -70,13 +50,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		C7AD38F01D22B049000FB736 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FCD4FD911BEE763C00CF7F48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -93,18 +66,6 @@
 				1A8643111F15292200108C19 /* Preferences.swift */,
 			);
 			name = Utility;
-			sourceTree = "<group>";
-		};
-		C7AD38F41D22B049000FB736 /* FDEAddUserService */ = {
-			isa = PBXGroup;
-			children = (
-				C7AD38F51D22B049000FB736 /* FDEAddUserServiceProtocol.h */,
-				C7AD38F61D22B049000FB736 /* FDEAddUserService.h */,
-				C7AD38F71D22B049000FB736 /* FDEAddUserService.m */,
-				C7AD38F91D22B049000FB736 /* main.m */,
-				C7AD38FB1D22B049000FB736 /* Info.plist */,
-			);
-			path = FDEAddUserService;
 			sourceTree = "<group>";
 		};
 		D2D31D531C2303F500839D93 /* Mechanisms */ = {
@@ -143,8 +104,6 @@
 				D2D31D531C2303F500839D93 /* Mechanisms */,
 				D2D31D581C2303F500839D93 /* Views */,
 				D2D31D651C23042A00839D93 /* Crypt.bundle */,
-				C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */,
-				C7AD38F41D22B049000FB736 /* FDEAddUserService */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -153,23 +112,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		C7AD38F21D22B049000FB736 /* FDEAddUserService */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C7AD38FC1D22B049000FB736 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */;
-			buildPhases = (
-				C7AD38EF1D22B049000FB736 /* Sources */,
-				C7AD38F01D22B049000FB736 /* Frameworks */,
-				C7AD38F11D22B049000FB736 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = FDEAddUserService;
-			productName = FDEAddUserService;
-			productReference = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */;
-			productType = "com.apple.product-type.xpc-service";
-		};
 		FCD4FD931BEE763C00CF7F48 /* Crypt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */;
@@ -183,7 +125,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				C7AD39021D22C329000FB736 /* PBXTargetDependency */,
 			);
 			name = Crypt;
 			productName = Crypt;
@@ -224,19 +165,11 @@
 			projectRoot = "";
 			targets = (
 				FCD4FD931BEE763C00CF7F48 /* Crypt */,
-				C7AD38F21D22B049000FB736 /* FDEAddUserService */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		C7AD38F11D22B049000FB736 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FCD4FD921BEE763C00CF7F48 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -265,15 +198,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		C7AD38EF1D22B049000FB736 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C7AD38FA1D22B049000FB736 /* main.m in Sources */,
-				C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		FCD4FD901BEE763C00CF7F48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -291,45 +215,7 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		C7AD39021D22C329000FB736 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = C7AD38F21D22B049000FB736 /* FDEAddUserService */;
-			targetProxy = C7AD39011D22C329000FB736 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		C7AD38FD1D22B049000FB736 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = FDEAddUserService/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Debug;
-		};
-		C7AD38FE1D22B049000FB736 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_IDENTITY = "Mac Developer";
-				COMBINE_HIDPI_IMAGES = YES;
-				DEVELOPMENT_TEAM = "";
-				INFOPLIST_FILE = FDEAddUserService/Info.plist;
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.FDEAddUserService;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
 		FCD4FD981BEE763C00CF7F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -464,15 +350,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C7AD38FC1D22B049000FB736 /* Build configuration list for PBXNativeTarget "FDEAddUserService" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C7AD38FD1D22B049000FB736 /* Debug */,
-				C7AD38FE1D22B049000FB736 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

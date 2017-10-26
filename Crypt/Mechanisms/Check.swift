@@ -27,9 +27,6 @@ class Check: CryptMechanism {
 
   // Preference bundle id
   fileprivate let bundleid = "com.grahamgilbert.crypt"
-  
-  // XPC service name
-  fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
   func run() {
     os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
@@ -39,9 +36,6 @@ class Check: CryptMechanism {
  
     // check for SkipUsers Preference
     let skipUsers : Bool = getSkipUsers()
-    
-    // check for users to add that might not be enabled. Will probably no longer work on 10.13 APFS.
-    let addUser : Bool = getAddUserPreference()
     
     guard let username = self.username
       else { _ = allowLogin(); return }
@@ -131,11 +125,6 @@ class Check: CryptMechanism {
 //          }
 //        }
 //      }
-
-      if addUser && !skipUsers {
-        os_log("Attempting to add user %{public}@ to FileVault...", log: Check.log, type: .default, String(describing: username))
-        fdeAddUser(username: self.username! as String, password: self.password! as String)
-      }
       
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       _ = setBoolHintValue(false)
@@ -233,12 +222,6 @@ class Check: CryptMechanism {
     return (preference != nil) ? preference : nil
   }
 
-  fileprivate func getAddUserPreference() -> Bool {
-    guard let addUser : Bool = CFPreferencesCopyAppValue("FDEAddUser" as CFString, bundleid as CFString) as? Bool
-      else { return false }
-    return addUser
-  }
-
   fileprivate func getRotateUsedKeyPreference() -> Bool {
     guard let rotatekey : Bool = CFPreferencesCopyAppValue("RotateUsedKey" as CFString, bundleid as CFString) as? Bool
       else { return false }
@@ -249,22 +232,6 @@ class Check: CryptMechanism {
     guard let removeplist : Bool = CFPreferencesCopyAppValue(Preferences.removePlist as CFString, bundleid as CFString) as? Bool
       else { return true }
     return removeplist
-  }
-  
-  private func fdeAddUser(username: String?, password: String?) {
-    guard let username = username
-      else { return }
-    guard let password = password
-      else { return }
-    let connection = NSXPCConnection.init(serviceName: fdeAddUserService)
-    connection.remoteObjectInterface = NSXPCInterface(with: FDEAddUserServiceProtocol.self)
-    connection.resume()
-    let service = connection.remoteObjectProxyWithErrorHandler { (error: Error) -> Void in
-      os_log("Can not connect to FDEAddUserService", log: Check.log, type: .error)
-      } as! FDEAddUserServiceProtocol
-    service.odfdeAddUser(username, withPassword: password) { (ret: Bool) -> Void in
-      os_log("FDEAddUser %{public}@", log: Check.log, type: .error, ret ? "Success" : "Fail")
-      }
   }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
