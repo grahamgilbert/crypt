@@ -60,7 +60,7 @@ class Check: CryptMechanism {
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
       os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     }
@@ -87,7 +87,7 @@ class Check: CryptMechanism {
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
         }
-        _ = setBoolHintValue(false)
+        self.needsEncryption = false
         _ = allowLogin()
         return;
       }
@@ -136,21 +136,21 @@ class Check: CryptMechanism {
       }
       
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
       os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     }
@@ -163,16 +163,16 @@ class Check: CryptMechanism {
         os_log("Caught error trying to Enable FileVault on High Sierra: %{public}@", log: Check.log, type: .error, String(describing: error.localizedDescription))
       }
       if needToRestart() {
-        _ = setBoolHintValue(true)
+        self.needsEncryption = true
         return
       }
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     }
     else {
       os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .error)
-      _ = setBoolHintValue(true)
+      self.needsEncryption = true
     }
   }
 

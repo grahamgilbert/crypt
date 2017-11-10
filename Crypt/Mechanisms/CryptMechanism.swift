@@ -23,6 +23,9 @@ import os.log
 class CryptMechanism: NSObject {  
   // This NSString will be used as the domain for the inter-mechanism context data
   let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
+
+  // Key for hint data
+  private let needsEncryptionHintKey = "com.grahamgilbert.crypt.needsEncryption"
   
   // Log Crypt Mechanism
   private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "CryptMechanism")
@@ -35,108 +38,134 @@ class CryptMechanism: NSObject {
     os_log("initWithMechanismRecord", log: CryptMechanism.log, type: .default)
     self.mechanism = mechanism
   }
+
+  // Allow the login. End of the mechanism
+  func allowLogin() {
+    os_log("called allowLogin", log: CryptMechanism.log, type: .default)
+    _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
+      mechanism.pointee.fEngine, AuthorizationResult.allow)
+  }
+
+  private func getContextData(key: AuthorizationString) -> NSData? {
+    os_log("getContextData called", log: CryptMechanism.log, type: .default)
+    var value: UnsafePointer<AuthorizationValue>?
+    let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> NSData? in
+      var flags = AuthorizationContextFlags()
+      if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
+        self.mechanism.pointee.fEngine, key, &flags, ptr) != errAuthorizationSuccess) {
+        os_log("GetContextValue failed", log: CryptMechanism.log, type: .error)
+        return nil;
+      }
+      guard let length = ptr.pointee?.pointee.length else {
+        os_log("length failed to unwrap", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      guard let buffer = ptr.pointee?.pointee.data else {
+        os_log("data failed to unwrap", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      if (length == 0) {
+        os_log("length is 0", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      return NSData.init(bytes: buffer, length: length)
+    }
+    os_log("getContextData success", log: CryptMechanism.log, type: .default)
+    return data
+  }
+
+  private func getHintData(key: AuthorizationString) -> NSData? {
+    os_log("getHintData called", log: CryptMechanism.log, type: .default)
+    var value: UnsafePointer<AuthorizationValue>?
+    let data = withUnsafeMutablePointer(to: &value) { (ptr: UnsafeMutablePointer) -> NSData? in
+      if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetHintValue(
+        self.mechanism.pointee.fEngine, key, ptr) != errAuthorizationSuccess) {
+        os_log("GetHintValue failed", log: CryptMechanism.log, type: .error)
+        return nil;
+      }
+      guard let length = ptr.pointee?.pointee.length else {
+        os_log("length failed to unwrap", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      guard let buffer = ptr.pointee?.pointee.data else {
+        os_log("data failed to unwrap", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      if (length == 0) {
+        os_log("length is 0", log: CryptMechanism.log, type: .error)
+        return nil
+      }
+      return NSData.init(bytes: buffer, length: length)
+    }
+    os_log("getHintData success", log: CryptMechanism.log, type: .default)
+    return data
+  }
+
+  private func setHintData(key: AuthorizationString, data: NSData) -> Bool {
+    os_log("setHintData called", log: CryptMechanism.log, type: .default)
+    var value = AuthorizationValue(length: data.length ,
+                                   data: UnsafeMutableRawPointer(mutating: data.bytes))
+    return (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetHintValue(
+      self.mechanism.pointee.fEngine, key, &value) != errAuthorizationSuccess)
+  }
   
   var username: NSString? {
     get {
       os_log("Requesting username...", log: CryptMechanism.log, type: .default)
-      var value : UnsafePointer<AuthorizationValue>? = nil
-      var flags = AuthorizationContextFlags()
-      var err: OSStatus = noErr
-      err = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
-        mechanism.pointee.fEngine, kAuthorizationEnvironmentUsername, &flags, &value)
-      if err != errSecSuccess {
+      guard let data = getContextData(key: kAuthorizationEnvironmentUsername) else {
         return nil
       }
-      guard let username = NSString.init(bytes: value!.pointee.data,
-        length: value!.pointee.length, encoding: String.Encoding.utf8.rawValue)
+      guard let s = NSString.init(bytes: data.bytes,
+                                  length: data.length,
+                                  encoding: String.Encoding.utf8.rawValue)
         else { return nil }
-      
-      return username.replacingOccurrences(of: "\0", with: "") as NSString
+      return s.replacingOccurrences(of: "\0", with: "") as NSString
     }
   }
   
   var password: NSString? {
     get {
       os_log("Requesting password...", log: CryptMechanism.log, type: .default)
-      var value : UnsafePointer<AuthorizationValue>? = nil
-      var flags = AuthorizationContextFlags()
-      var err: OSStatus = noErr
-      err = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
-        mechanism.pointee.fEngine, kAuthorizationEnvironmentPassword, &flags, &value)
-      if err != errSecSuccess {
+      guard let data = getContextData(key: kAuthorizationEnvironmentPassword) else {
         return nil
       }
-      guard let pass = NSString.init(bytes: value!.pointee.data,
-        length: value!.pointee.length, encoding: String.Encoding.utf8.rawValue)
+      guard let s = NSString.init(bytes: data.bytes,
+                                  length: data.length,
+                                  encoding: String.Encoding.utf8.rawValue)
         else { return nil }
-      
-      return pass.replacingOccurrences(of: "\0", with: "") as NSString
+      return s.replacingOccurrences(of: "\0", with: "") as NSString
     }
   }
   
   var uid: uid_t {
     get {
-      os_log("Requesting uid", log: CryptMechanism.log, type: .default)
-      var value : UnsafePointer<AuthorizationValue>? = nil
-      var flags = AuthorizationContextFlags()
-      var uid : uid_t = 0
-      if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
-              mechanism.pointee.fEngine, ("uid" as NSString).utf8String!, &flags, &value)
-              == errSecSuccess) {
-        let uidData = Data.init(bytes: value!.pointee.data, count: MemoryLayout<uid_t>.size) //UnsafePointer<UInt8>(value!.pointee.data)
-          (uidData as NSData).getBytes(&uid, length: MemoryLayout<uid_t>.size)
-            }
+      os_log("Requesting uid...", log: CryptMechanism.log, type: .default)
+      var uid: UInt32 = UInt32.max - 1 // nobody
+      guard let data = getContextData(key: kAuthorizationEnvironmentUID) else {
+        return uid
+      }
+      data.getBytes(&uid, length: MemoryLayout<UInt32>.size)
       return uid
     }
   }
   
-  func setBoolHintValue(_ encryptionWasEnabled : NSNumber) -> Bool {
-    // Try and unwrap the optional NSData returned from archivedDataWithRootObject
-    // This can be decoded on the other side with unarchiveObjectWithData
-    os_log("Called setBoolHintValue", log: CryptMechanism.log, type: .default)
-    guard let data : Data = NSKeyedArchiver.archivedData(withRootObject: encryptionWasEnabled)
-      else {
-        os_log("Crypt:MechanismInvoke:Check:setHintValue:[+] Failed to unwrap data", log: CryptMechanism.log, type: .error)
+  var needsEncryption: Bool {
+    set {
+      os_log("needsEncryption set to %@", log: CryptMechanism.log, type: .default, newValue as CVarArg)
+      let data = NSKeyedArchiver.archivedData(withRootObject: NSNumber.init(value: newValue))
+      _ = setHintData(key: needsEncryptionHintKey, data: data as NSData)
+    }
+
+    get {
+      os_log("Requesting needsEncryption...", log: CryptMechanism.log, type: .default)
+      guard let data = getHintData(key: needsEncryptionHintKey) else {
         return false
-    }
-    
-    // Fill the AuthorizationValue struct with our data
-    var value = AuthorizationValue(length: data.count,
-      data: UnsafeMutableRawPointer(mutating: (data as NSData).bytes.bindMemory(to: Void.self, capacity: data.count)))
-    
-    // Use the MechanismRecord SetHintValue callback to set the
-    // inter-mechanism context data
-    let err : OSStatus = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetHintValue(
-      self.mechanism.pointee.fEngine, contextCryptDomain.utf8String!, &value)
-    
-    return (err == errSecSuccess)
-  }
-  
-  // This is how we get the inter-mechanism context data
-  func getBoolHintValue() -> Bool {
-    os_log("Called getBoolHintValue", log: CryptMechanism.log, type: .default)
-    var value : UnsafePointer<AuthorizationValue>? = nil
-    var err: OSStatus = noErr
-    err = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetHintValue(mechanism.pointee.fEngine, contextCryptDomain.utf8String!, &value)
-    if err != errSecSuccess {
-      os_log("Error couldn't get Bool Hint Value", log: CryptMechanism.log, type: .error)
-      return false
-    }
-    let outputdata = Data.init(bytes: value!.pointee.data, count: value!.pointee.length) //UnsafePointer<UInt8>(value!.pointee.data)
-    guard let boolHint = NSKeyedUnarchiver.unarchiveObject(with: outputdata)
-      else {
-        os_log("couldn't unpack hint value", log: CryptMechanism.log, type: .error)
+      }
+      guard let value = NSKeyedUnarchiver.unarchiveObject(with: data as Data) else {
         return false
+      }
+      return (value as! NSNumber).boolValue
     }
-    
-    return (boolHint as AnyObject).boolValue
-  }
-  
-  // Allow the login. End of the mechanism
-  func allowLogin() {
-    os_log("called allowLogin", log: CryptMechanism.log, type: .default)
-    _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
-      mechanism.pointee.fEngine, AuthorizationResult.allow)
   }
 
   func needToRestart() -> Bool {

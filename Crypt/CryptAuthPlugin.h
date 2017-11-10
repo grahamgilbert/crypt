@@ -23,6 +23,11 @@
 #include <Security/AuthorizationTags.h>
 
 #pragma mark
+#pragma mark Context & Hint Keys
+
+#define kAuthorizationEnvironmentUID "uid"
+
+#pragma mark
 #pragma mark Core Data Structures
 
 #pragma mark - Plugin

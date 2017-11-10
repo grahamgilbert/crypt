@@ -31,7 +31,7 @@ class Enablement: CryptMechanism {
   // ObjC AuthorizationPlugin class
   func run() {
     
-    if getBoolHintValue() {
+    if self.needsEncryption {
       
       os_log("Attempting to enable FileVault", log: Enablement.log, type: .default)
       
