@@ -31,7 +31,7 @@ class Check: CryptMechanism {
   // XPC service name
   fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
-  func run() {
+  @objc func run() {
     os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
     
     // check for ServerUrl

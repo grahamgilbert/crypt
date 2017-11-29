@@ -46,6 +46,7 @@ struct MechanismRecord {
   Boolean                         fCheck;
   Boolean                         fCryptGUI;
   Boolean                         fEnablement;
+  Boolean                         fNoRootGate;
 };
 typedef struct MechanismRecord MechanismRecord;
 

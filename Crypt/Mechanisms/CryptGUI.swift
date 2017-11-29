@@ -19,7 +19,7 @@
 import Foundation
 
 class CryptGUI: CryptMechanism {
-  func run() {
+  @objc  func run() {
     if (getBoolHintValue()) {
       let promptWindowController = PromptWindowController.init()
       promptWindowController.mechanism = self.mechanism
