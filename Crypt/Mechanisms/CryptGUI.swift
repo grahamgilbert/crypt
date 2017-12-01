@@ -20,7 +20,7 @@ import Foundation
 
 class CryptGUI: CryptMechanism {
   func run() {
-    if (getBoolHintValue()) {
+    if (self.needsEncryption) {
       let promptWindowController = PromptWindowController.init()
       promptWindowController.mechanism = self.mechanism
       guard let promptWindow = promptWindowController.window
