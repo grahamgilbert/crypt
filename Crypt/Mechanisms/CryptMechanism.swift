@@ -47,7 +47,7 @@ class CryptMechanism: NSObject {
       if err != errSecSuccess {
         return nil
       }
-      guard let username = NSString.init(bytes: value!.pointee.data,
+      guard let username = NSString.init(bytes: value!.pointee.data!,
         length: value!.pointee.length, encoding: String.Encoding.utf8.rawValue)
         else { return nil }
       
@@ -66,7 +66,7 @@ class CryptMechanism: NSObject {
       if err != errSecSuccess {
         return nil
       }
-      guard let pass = NSString.init(bytes: value!.pointee.data,
+      guard let pass = NSString.init(bytes: value!.pointee.data!,
         length: value!.pointee.length, encoding: String.Encoding.utf8.rawValue)
         else { return nil }
       
@@ -83,7 +83,7 @@ class CryptMechanism: NSObject {
       if (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.GetContextValue(
               mechanism.pointee.fEngine, ("uid" as NSString).utf8String!, &flags, &value)
               == errSecSuccess) {
-        let uidData = Data.init(bytes: value!.pointee.data, count: MemoryLayout<uid_t>.size) //UnsafePointer<UInt8>(value!.pointee.data)
+        let uidData = Data.init(bytes: value!.pointee.data!, count: MemoryLayout<uid_t>.size) //UnsafePointer<UInt8>(value!.pointee.data)
           (uidData as NSData).getBytes(&uid, length: MemoryLayout<uid_t>.size)
             }
       return uid
@@ -122,7 +122,7 @@ class CryptMechanism: NSObject {
       os_log("Error couldn't get Bool Hint Value", log: CryptMechanism.log, type: .error)
       return false
     }
-    let outputdata = Data.init(bytes: value!.pointee.data, count: value!.pointee.length) //UnsafePointer<UInt8>(value!.pointee.data)
+    let outputdata = Data.init(bytes: value!.pointee.data!, count: value!.pointee.length) //UnsafePointer<UInt8>(value!.pointee.data)
     guard let boolHint = NSKeyedUnarchiver.unarchiveObject(with: outputdata)
       else {
         os_log("couldn't unpack hint value", log: CryptMechanism.log, type: .error)
@@ -137,5 +137,12 @@ class CryptMechanism: NSObject {
     os_log("called allowLogin", log: CryptMechanism.log, type: .default)
     _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
       mechanism.pointee.fEngine, AuthorizationResult.allow)
+  }
+  
+  // Deny the login. End of the mechanism
+  func denyLogin() {
+    os_log("called denyLogin", log: CryptMechanism.log, type: .default)
+    _ = self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetResult(
+      mechanism.pointee.fEngine, AuthorizationResult.deny)
   }
 }

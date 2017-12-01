@@ -17,7 +17,7 @@
 */
 
 #import "CryptAuthPlugin.h"
-#import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
+//#import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
 #import "PromptWindowController.h"
 
 #pragma mark
@@ -117,6 +117,9 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
   } else if (mechanism->fEnablement) {
     Enablement *enablement = [[Enablement alloc] initWithMechanism:mechanism];
     [enablement run];
+  } else if (mechanism->fNoRootGate) {
+    NoRootGate *noRootGate = [[NoRootGate alloc] initWithMechanism:mechanism];
+    [noRootGate run];
   }
   
   // Default "Allow Login". Used if none of the mechanisms above are called or don't make
