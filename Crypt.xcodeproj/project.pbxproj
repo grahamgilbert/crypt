@@ -13,17 +13,6 @@
 		C7AD38FA1D22B049000FB736 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38F91D22B049000FB736 /* main.m */; };
 		C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
 		C7AD39041D22C336000FB736 /* FDEAddUserService.xpc in CopyFiles */ = {isa = PBXBuildFile; fileRef = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		C7FCA7C51FB609920001BC1F /* CryptTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C7FCA7C41FB609920001BC1F /* CryptTests.m */; };
-		C7FCA7CC1FB609E10001BC1F /* CryptCallbackEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = C7FCA7CB1FB609E10001BC1F /* CryptCallbackEngine.m */; };
-		C7FCA7CD1FB60B050001BC1F /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
-		C7FCA7CE1FB60B290001BC1F /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
-		C7FCA7CF1FB60B2C0001BC1F /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
-		C7FCA7D01FB60B2F0001BC1F /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D661C2307D500839D93 /* CryptGUI.swift */; };
-		C7FCA7D11FB60B310001BC1F /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
-		C7FCA7D21FB60B360001BC1F /* PromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C742D1F15554700D9792A /* PromptWindowController.swift */; };
-		C7FCA7D31FB60B390001BC1F /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D5B1C2303F500839D93 /* PromptWindowController.m */; };
-		C7FCA7D41FB60B400001BC1F /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */; };
-		C7FCA7D51FB60D190001BC1F /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A8643111F15292200108C19 /* Preferences.swift */; };
 		D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
 		D2D31D5F1C2303F500839D93 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
 		D2D31D611C2303F500839D93 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
@@ -66,11 +55,6 @@
 		C7AD38F91D22B049000FB736 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		C7AD38FB1D22B049000FB736 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = CryptMechanism.swift; sourceTree = "<group>"; tabWidth = 2; };
-		C7FCA7C21FB609920001BC1F /* CryptTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CryptTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		C7FCA7C41FB609920001BC1F /* CryptTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CryptTests.m; sourceTree = "<group>"; };
-		C7FCA7C61FB609920001BC1F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		C7FCA7CA1FB609E10001BC1F /* CryptCallbackEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CryptCallbackEngine.h; sourceTree = "<group>"; };
-		C7FCA7CB1FB609E10001BC1F /* CryptCallbackEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CryptCallbackEngine.m; sourceTree = "<group>"; };
 		D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Crypt-Bridging-Header.h"; path = "Crypt/Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptAuthPlugin.h; path = Crypt/CryptAuthPlugin.h; sourceTree = "<group>"; };
 		D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CryptAuthPlugin.m; path = Crypt/CryptAuthPlugin.m; sourceTree = "<group>"; };
@@ -87,13 +71,6 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		C7AD38F01D22B049000FB736 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C7FCA7BF1FB609920001BC1F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -128,17 +105,6 @@
 				C7AD38FB1D22B049000FB736 /* Info.plist */,
 			);
 			path = FDEAddUserService;
-			sourceTree = "<group>";
-		};
-		C7FCA7C31FB609920001BC1F /* CryptTests */ = {
-			isa = PBXGroup;
-			children = (
-				C7FCA7CA1FB609E10001BC1F /* CryptCallbackEngine.h */,
-				C7FCA7CB1FB609E10001BC1F /* CryptCallbackEngine.m */,
-				C7FCA7C41FB609920001BC1F /* CryptTests.m */,
-				C7FCA7C61FB609920001BC1F /* Info.plist */,
-			);
-			path = CryptTests;
 			sourceTree = "<group>";
 		};
 		D2D31D531C2303F500839D93 /* Mechanisms */ = {
@@ -179,8 +145,6 @@
 				D2D31D651C23042A00839D93 /* Crypt.bundle */,
 				C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */,
 				C7AD38F41D22B049000FB736 /* FDEAddUserService */,
-				C7FCA7C21FB609920001BC1F /* CryptTests.xctest */,
-				C7FCA7C31FB609920001BC1F /* CryptTests */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -205,23 +169,6 @@
 			productName = FDEAddUserService;
 			productReference = C7AD38F31D22B049000FB736 /* FDEAddUserService.xpc */;
 			productType = "com.apple.product-type.xpc-service";
-		};
-		C7FCA7C11FB609920001BC1F /* CryptTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = C7FCA7C71FB609920001BC1F /* Build configuration list for PBXNativeTarget "CryptTests" */;
-			buildPhases = (
-				C7FCA7BE1FB609920001BC1F /* Sources */,
-				C7FCA7BF1FB609920001BC1F /* Frameworks */,
-				C7FCA7C01FB609920001BC1F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = CryptTests;
-			productName = CryptTests;
-			productReference = C7FCA7C21FB609920001BC1F /* CryptTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		FCD4FD931BEE763C00CF7F48 /* Crypt */ = {
 			isa = PBXNativeTarget;
@@ -257,10 +204,6 @@
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 					};
-					C7FCA7C11FB609920001BC1F = {
-						CreatedOnToolsVersion = 8.3.3;
-						ProvisioningStyle = Automatic;
-					};
 					FCD4FD931BEE763C00CF7F48 = {
 						CreatedOnToolsVersion = 7.1;
 						LastSwiftMigration = 0830;
@@ -282,7 +225,6 @@
 			targets = (
 				FCD4FD931BEE763C00CF7F48 /* Crypt */,
 				C7AD38F21D22B049000FB736 /* FDEAddUserService */,
-				C7FCA7C11FB609920001BC1F /* CryptTests */,
 			);
 		};
 /* End PBXProject section */
@@ -292,14 +234,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C7FCA7C01FB609920001BC1F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C7FCA7D41FB60B400001BC1F /* PromptWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,23 +271,6 @@
 			files = (
 				C7AD38FA1D22B049000FB736 /* main.m in Sources */,
 				C7AD38F81D22B049000FB736 /* FDEAddUserService.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		C7FCA7BE1FB609920001BC1F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C7FCA7CD1FB60B050001BC1F /* CryptAuthPlugin.m in Sources */,
-				C7FCA7D11FB60B310001BC1F /* Enablement.swift in Sources */,
-				C7FCA7D51FB60D190001BC1F /* Preferences.swift in Sources */,
-				C7FCA7C51FB609920001BC1F /* CryptTests.m in Sources */,
-				C7FCA7CF1FB60B2C0001BC1F /* Check.swift in Sources */,
-				C7FCA7CE1FB60B290001BC1F /* CryptMechanism.swift in Sources */,
-				C7FCA7D21FB60B360001BC1F /* PromptWindowController.swift in Sources */,
-				C7FCA7D31FB60B390001BC1F /* PromptWindowController.m in Sources */,
-				C7FCA7D01FB60B2F0001BC1F /* CryptGUI.swift in Sources */,
-				C7FCA7CC1FB609E10001BC1F /* CryptCallbackEngine.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,42 +326,6 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 3.0;
-			};
-			name = Release;
-		};
-		C7FCA7C81FB609920001BC1F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = CryptTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.crypt.CryptTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
-				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Crypt-Swift.h";
-				SWIFT_VERSION = 3.0;
-			};
-			name = Debug;
-		};
-		C7FCA7C91FB609920001BC1F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				INFOPLIST_FILE = CryptTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.crypt.CryptTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "Crypt/Crypt-Bridging-Header.h";
-				SWIFT_OBJC_INTERFACE_HEADER_NAME = "Crypt-Swift.h";
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -591,14 +472,6 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
-		};
-		C7FCA7C71FB609920001BC1F /* Build configuration list for PBXNativeTarget "CryptTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				C7FCA7C81FB609920001BC1F /* Debug */,
-				C7FCA7C91FB609920001BC1F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
 		};
 		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
 			isa = XCConfigurationList;
