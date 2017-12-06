@@ -1,8 +1,8 @@
-# Crypt 2
+# Crypt
 
 **WARNING:** As this has the potential for stopping users from logging in, extensive testing should take place before deploying into production.
 
-Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt 2 has been tested against 10.11 and 10.12 - it should in theory work down to 10.9, but test throughly to ensure it works as expected.
+Crypt 2 is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt has been tested against 10.12 and 10.13 - for versions below 10.12 please use version 2 and below.
 
 Version 3.0.0 now supports 10.12 and above, previous macOS version support has been deprecated!
 
