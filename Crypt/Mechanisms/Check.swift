@@ -27,9 +27,6 @@ class Check: CryptMechanism {
 
   // Preference bundle id
   fileprivate let bundleid = "com.grahamgilbert.crypt"
-  
-  // XPC service name
-  fileprivate let fdeAddUserService = "com.grahamgilbert.FDEAddUserService"
 
   func run() {
     os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
@@ -40,9 +37,6 @@ class Check: CryptMechanism {
     // check for SkipUsers Preference
     let skipUsers : Bool = getSkipUsers()
     
-    // check for users to add that might not be enabled. Will probably no longer work on 10.13 APFS.
-    let addUser : Bool = getAddUserPreference()
-    
     guard let username = self.username
       else { _ = allowLogin(); return }
     guard let password = self.password
@@ -52,23 +46,21 @@ class Check: CryptMechanism {
     
     //Get status on encryption.
     let fdestatus = getFVEnabled()
-    let fvEnabled : Bool = fdestatus.encypted
+    let fvEnabled : Bool = fdestatus.encrypted
     let decrypting : Bool = fdestatus.decrypting
+    let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
+    os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
     
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
       os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
       return;
     }
     
     if fvEnabled {
       //FileVault is enabled, checks for things to do if FileVault is enabled should be done here.
-      
-      // Check if OutputPlist preference is defined.
-      let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-      os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
       
       // Check for RotateUsedKey Preference
       let rotateKey: Bool = getRotateUsedKeyPreference()
@@ -88,10 +80,10 @@ class Check: CryptMechanism {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
-          _ = setBoolHintValue(false)
-          _ = allowLogin()
-          return;
         }
+        self.needsEncryption = false
+        _ = allowLogin()
+        return;
       }
 
       //let usedKey: Bool = getUsedKey()
@@ -131,31 +123,45 @@ class Check: CryptMechanism {
 //          }
 //        }
 //      }
-
-      if addUser && !skipUsers {
-        os_log("Attempting to add user %{public}@ to FileVault...", log: Check.log, type: .default, String(describing: username))
-        fdeAddUser(username: self.username! as String, password: self.password! as String)
-      }
       
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
+      return;
     // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
+      return;
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
       os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
-      _ = setBoolHintValue(false)
+      self.needsEncryption = false
       _ = allowLogin()
+      return;
+    }
+    else if onHighSierraOrNewer() && onAPFS() {
+      // we're on high sierra we can just enable
+      os_log("On High Sierra and not enabled. Starting Enablement...", log: Check.log, type: .default)
+      do {
+        try _ = enableFileVault(the_settings, filepath: filepath)
+      } catch let error as NSError {
+        os_log("Caught error trying to Enable FileVault on High Sierra: %{public}@", log: Check.log, type: .error, String(describing: error.localizedDescription))
+      }
+      if needToRestart() {
+        self.needsEncryption = true
+        return
+      }
+      self.needsEncryption = false
+      _ = allowLogin()
+      return;
     }
     else {
       os_log("FileVault is not enabled, Setting to enable...", log: Check.log, type: .error)
-      _ = setBoolHintValue(true)
+      self.needsEncryption = true
     }
   }
 
@@ -166,29 +172,6 @@ class Check: CryptMechanism {
     case outputPlistMalformed
   }
 
-  fileprivate func getFVEnabled() -> (encypted: Bool, decrypting: Bool) {
-    os_log("Checking the current status of FileVault..", log: Check.log, type: .default)
-    let task = Process();
-    task.launchPath = "/usr/bin/fdesetup"
-    task.arguments = ["status"]
-    let pipe = Pipe()
-    task.standardOutput = pipe
-    task.launch()
-    let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    guard let output: String = String(data: data, encoding: String.Encoding.utf8)
-      else { return (false, false) }
-    if ((output.range(of: "FileVault is On.")) != nil) {
-      os_log("Filevault is On...", log: Check.log, type: .default)
-      return (true, false)
-    } else if (output.range(of: "Decryption in progress:") != nil) {
-      os_log("FileVault Decryption in progress...", log: Check.log, type: .error)
-      return (true, true)
-    } else {
-      os_log("FileVault is not enabled...", log: Check.log, type: .error)
-      return (false, false)
-    }
-  }
-  
   fileprivate func getUsedKey() -> Bool {
     let task = Process();
     task.launchPath = "/usr/bin/fdesetup"
@@ -233,12 +216,6 @@ class Check: CryptMechanism {
     return (preference != nil) ? preference : nil
   }
 
-  fileprivate func getAddUserPreference() -> Bool {
-    guard let addUser : Bool = CFPreferencesCopyAppValue("FDEAddUser" as CFString, bundleid as CFString) as? Bool
-      else { return false }
-    return addUser
-  }
-
   fileprivate func getRotateUsedKeyPreference() -> Bool {
     guard let rotatekey : Bool = CFPreferencesCopyAppValue("RotateUsedKey" as CFString, bundleid as CFString) as? Bool
       else { return false }
@@ -250,22 +227,6 @@ class Check: CryptMechanism {
       else { return true }
     return removeplist
   }
-  
-  private func fdeAddUser(username: String?, password: String?) {
-    guard let username = username
-      else { return }
-    guard let password = password
-      else { return }
-    let connection = NSXPCConnection.init(serviceName: fdeAddUserService)
-    connection.remoteObjectInterface = NSXPCInterface(with: FDEAddUserServiceProtocol.self)
-    connection.resume()
-    let service = connection.remoteObjectProxyWithErrorHandler { (error: Error) -> Void in
-      os_log("Can not connect to FDEAddUserService", log: Check.log, type: .error)
-      } as! FDEAddUserServiceProtocol
-    service.odfdeAddUser(username, withPassword: password) { (ret: Bool) -> Void in
-      os_log("FDEAddUser %{public}@", log: Check.log, type: .error, ret ? "Success" : "Fail")
-      }
-  }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
     os_log("Attempting to Rotate Recovery Key...", log: Check.log, type: .default)
@@ -274,20 +235,27 @@ class Check: CryptMechanism {
 
     let inPipe = Pipe.init()
     let outPipe = Pipe.init()
+    let errorPipe = Pipe.init()
 
     let task = Process.init()
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["changerecovery", "-personal", "-outputplist", "-inputplist"]
     task.standardInput = inPipe
     task.standardOutput = outPipe
+    task.standardError = errorPipe
     task.launch()
     inPipe.fileHandleForWriting.write(inputPlist)
     inPipe.fileHandleForWriting.closeFile()
     task.waitUntilExit()
     
+    let errorOut = errorPipe.fileHandleForReading.readDataToEndOfFile()
+    let errorMessage = String(data: errorOut, encoding: .utf8)
+    errorPipe.fileHandleForReading.closeFile()
+    
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
       os_log("Error: fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
+      os_log("fdesetup Standard Error: %{public}@", log: Check.log, type: .error, String(describing: errorMessage))
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
     
@@ -314,18 +282,6 @@ class Check: CryptMechanism {
     } else {
       os_log("rotateRecoveryKey() Error. Format does not equal 'PropertyListSerialization.PropertyListFormat.xml'", log: Check.log, type: .error)
       throw FileVaultError.outputPlistMalformed
-    }
-  }
-  
-  func checkFileExists(path: String) -> Bool {
-    os_log("Checking to see if %{public}@ exists...", log: Check.log, type: .default, String(describing: path))
-    let fm = FileManager.default
-    if fm.fileExists(atPath: path) {
-      os_log("%{public}@ exists...", log: Check.log, type: .default, String(describing: path))
-      return true
-    } else {
-      os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
-      return false
     }
   }
 }
