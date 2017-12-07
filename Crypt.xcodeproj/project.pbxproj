@@ -140,11 +140,6 @@
 				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Graham Gilbert";
 				TargetAttributes = {
-					C7AD38F21D22B049000FB736 = {
-						CreatedOnToolsVersion = 7.2;
-						LastSwiftMigration = 0830;
-						ProvisioningStyle = Automatic;
-					};
 					FCD4FD931BEE763C00CF7F48 = {
 						CreatedOnToolsVersion = 7.1;
 						LastSwiftMigration = 0830;
