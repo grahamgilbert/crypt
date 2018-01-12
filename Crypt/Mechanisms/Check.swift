@@ -218,7 +218,7 @@ class Check: CryptMechanism {
 
   fileprivate func getRotateUsedKeyPreference() -> Bool {
     guard let rotatekey : Bool = CFPreferencesCopyAppValue("RotateUsedKey" as CFString, bundleid as CFString) as? Bool
-      else { return false }
+      else { return true }
     return rotatekey
   }
 
