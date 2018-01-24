@@ -32,10 +32,12 @@ stdout_logging = logging.StreamHandler()
 stdout_logging.setFormatter(logging.Formatter())
 logging.getLogger().addHandler(stdout_logging)
 
+
 def get_console_user():
     """returns the current console user via PyObjc"""
     cfuser = SCDynamicStoreCopyConsoleUser(None, None, None)
     return cfuser[0]
+
 
 def get_os_version(only_major_minor=True, as_tuple=False):
     """Returns an OS version.
@@ -51,6 +53,7 @@ def get_os_version(only_major_minor=True, as_tuple=False):
         return tuple(map(int, os_version_tuple))
     else:
         return '.'.join(os_version_tuple)
+
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
@@ -137,6 +140,7 @@ def escrow_key(plist):
         logging.error('Key escrow unsuccessful.')
         return False
 
+
 def using_recovery_key():
     """Check if FileVault is currently unlocked using
     the recovery key.
@@ -171,6 +175,7 @@ def get_recovery_key(key_location):
             'Problem with Key: "RecoveryKey" in {0}...'.format(key_location))
         return False
 
+
 def rotate_invalid_key(plist_path):
     """
     Will send the key (if present) for validation. If validation fails,
@@ -178,6 +183,9 @@ def rotate_invalid_key(plist_path):
     Due to the bug that restricts the number of validations before reboot
     in versions of macOS prior to 10.12.5, this will only run there.
     """
+    # a work aroud for https://github.com/grahamgilbert/crypt/issues/68
+    if not get_console_user():
+        logging.info('Skipping Validation, no user is logged in.')
 
     macos_version = get_os_version(only_major_minor=False, as_tuple=False)
 
@@ -205,9 +213,11 @@ def rotate_invalid_key(plist_path):
     logging.info('Stored recovery key is valid.')
     return True
 
+
 def validate_key(current_key):
     """Validates the given recovery key against FileVault, returns True
     or False accordingly"""
+
     key = {'Password': current_key}
     input_plist = FoundationPlist.writePlistToString(key)
     cmd = subprocess.Popen(['/usr/bin/fdesetup', 'validaterecovery',
@@ -220,8 +230,9 @@ def validate_key(current_key):
     if stdout_data.strip() == 'true':
         return True
     else:
+        logging.error('Recovery Key could not be validated.')
+        logging.error('Failed with Error: {}'.format(stdout_data))
         return False
-        logging.info('Recovery Key could not be validated.')
 
 
 def rotate_key(current_key, plist):
@@ -259,6 +270,7 @@ def get_enabled_user():
             cryptuser = user.split(',')[0]
             break
     return cryptuser
+
 
 def rotate_if_used(key_path):
     """Checks to see if the recovery key was used to unlock the machine
@@ -321,6 +333,7 @@ def main():
             if remove_plist is True:
                 os.remove(plist_path)
                 logging.info('Removing plist due to configuration.')
+
 
 if __name__ == '__main__':
     main()
