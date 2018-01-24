@@ -49,7 +49,7 @@ class Check: CryptMechanism {
     let fvEnabled : Bool = fdestatus.encrypted
     let decrypting : Bool = fdestatus.decrypting
     let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
-    os_log("OutPutPlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
+    os_log("OutPutPlist Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
     
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
@@ -64,11 +64,11 @@ class Check: CryptMechanism {
       
       // Check for RotateUsedKey Preference
       let rotateKey: Bool = getRotateUsedKeyPreference()
-      os_log("RotateUsedKey Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: rotateKey))
+      os_log("RotateUsedKey Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: rotateKey))
       
       // Check for RemovePlist Preferences
       let removePlist: Bool = getRemovePlistKeyPreference()
-      os_log("RemovePlist Prefences is set to %{public}@", log: Check.log, type: .default, String(describing: removePlist))
+      os_log("RemovePlist Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: removePlist))
       
       // Check to see if our recovery key exists at the OutputPath Preference.
       let recoveryKeyExists: Bool = checkFileExists(path: filepath)

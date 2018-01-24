@@ -343,7 +343,7 @@ class CryptMechanism: NSObject {
       os_log("%{public}@ exists...", log: Check.log, type: .default, String(describing: path))
       return true
     } else {
-      os_log("%{public}@ doen NOT exists...", log: Check.log, type: .default, String(describing: path))
+      os_log("%{public}@ does NOT exist...", log: Check.log, type: .default, String(describing: path))
       return false
     }
   }
