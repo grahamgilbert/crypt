@@ -1,0 +1,56 @@
+#!/usr/bin/python
+
+import datetime
+import logging
+import os
+import subprocess
+
+from Foundation import *
+import FoundationPlist
+
+BUNDLE_ID = 'com.grahamgilbert.crypt'
+PLIST_PATH = '/private/var/root/crypt_output.plist'
+LOG_FILE = '/var/log/crypt.log'
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s: %(message)s',
+                    datefmt='%Y-%m-%d %I:%M:%S %p',
+                    level=logging.DEBUG,
+                    filename=LOG_FILE)
+stdout_logging = logging.StreamHandler()
+stdout_logging.setFormatter(logging.Formatter())
+logging.getLogger().addHandler(stdout_logging)
+
+
+def using_recovery_key():
+    """Check if FileVault is currently unlocked using
+    the recovery key.
+    """
+    cmd = ['/usr/bin/fdesetup', 'usingrecoverykey']
+    using_key = subprocess.check_output(cmd).strip()
+    if using_key == 'true':
+        return True
+        logging.warning('Detected Recovery Key use.')
+    else:
+        return False
+
+
+def main():
+    if os.path.isfile(PLIST_PATH):
+        plist = FoundationPlist.readPlist(PLIST_PATH)
+    else:
+        # Create blank plist and warn
+        plist = {}
+        logging.warning(
+            'Plist file missing, possibly due to administrative preference.')
+    if using_recovery_key() is True:
+        plist['RKBoot'] = True
+        plist['RKLastBootTime'] = datetime.datetime.now()
+        FoundationPlist.writePlist(plist, PLIST_PATH)
+        logging.info('Machine booted with recovery key.')
+    else:
+        plist['RKBoot'] = False
+        FoundationPlist.writePlist(plist, PLIST_PATH)
+        logging.info('Machine booted without recovery key.')
+
+if __name__ == '__main__':
+    main()

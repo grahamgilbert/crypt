@@ -9,6 +9,7 @@ PACKAGE_NAME=${TITLE}
 PAYLOAD=\
 			pack-plugin\
 			pack-script-postinstall\
+			pack-Library-LaunchDaemons-com.grahamgilbert.crypt-boot.plist \
 			pack-Library-LaunchDaemons-com.grahamgilbert.crypt.plist \
 			pack-checkin \
 			pack-script-preinstall
@@ -27,6 +28,7 @@ pack-plugin: build
 
 pack-checkin: l_Library
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
+	@sudo ${CP} boot ${WORK_D}/Library/Crypt/boot
 	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo ${CP} FoundationPlist.py ${WORK_D}/Library/Crypt/FoundationPlist.py
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
