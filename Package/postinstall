@@ -14,14 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import  os,     \
-        sys,     \
-        plistlib,  \
-        platform,   \
-        subprocess
-from    subprocess import Popen, \
-                          PIPE,   \
-                          STDOUT
+import os
+import platform
+import plistlib
+import subprocess
+import sys
+from subprocess import PIPE, STDOUT, Popen
 
 ##
 ## mech_list: A list of strings. The list of mechs to add
@@ -114,10 +112,73 @@ def check_os():
     if OSVersion < 9:
         sys.exit("\nOnly OS X 10.9 and above can run this script\n")
 
+def find_processes(user=None, exe=None):
+    """Find processes in process list.
+    Args:
+        user: str, optional, username owning process
+        exe: str, optional, executable name of process
+    Returns:
+        dictionary of pids = {
+                pid: {
+                        'user': str, username owning process,
+                        'exe': str, string executable of process,
+                }
+        }
+        list of pids, or {} if none
+    Code from munki: https://github.com/munki/munki
+    """
+    argv = ['/bin/ps', '-x', '-w', '-w', '-a', '-o', 'pid=,user=,comm=']
+    ps_proc = subprocess.Popen(
+        argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    (stdout, dummy_stderr) = ps_proc.communicate()
+
+    pids = {}
+
+    if not stdout or ps_proc.returncode != 0:
+        return pids
+
+    try:
+        lines = stdout.splitlines()
+        for proc in lines:
+            (p_pid, p_user, p_comm) = proc.split(None, 2)
+
+            if exe is not None:
+                if not p_comm.startswith(exe):
+                    continue
+            if user is not None:
+                if p_user != user:
+                    continue
+            pids[int(p_pid)] = {
+                'user': p_user,
+                'exe': p_comm,
+            }
+
+    except (ValueError, TypeError, IndexError):
+        return pids
+
+    return pids
+
+def restart_loginwindow():
+    """Restart the loginwindow service if the process is owned by root.
+
+    The loginwindow needs to be restarted to recognize the authorization
+    plugin when the install happens at the loginwindow.
+    """
+    pids = find_processes(user='root')
+    for pid in pids:
+        if 'loginwindow' in pids[pid].get('exe'):
+            cmd = ['/bin/kill', '-9', str(pid)]
+            proc = subprocess.Popen(cmd,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE)
+            (stdout, dummy_stderr) = proc.communicate()
+
+
 def main(argv):
     check_root()
     check_os()
     edit_authdb()
+    restart_loginwindow()
 
 if __name__ == '__main__':
     main(sys.argv)
