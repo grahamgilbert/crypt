@@ -23,7 +23,7 @@ Version 3.0.0 now supports 10.12 and above, previous macOS version support has b
 
 ## Configuration
 
-Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles.
+Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles. An example profile can be found at (link to profile here).
 
 ### ServerURL
 
@@ -65,13 +65,6 @@ Crypt2 can validate the recovery key if it is stored on disk. If the key fails v
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ValidateKey -bool FALSE
 ```
 
-### FDEAddUser
-
-Crypt 2 can optionally add new users to be able to unlock FileVault 2 volumes (when the disk is unlocked). This feature works up until macOS 10.12. The default for this is `FALSE`.
-
-``` bash
-$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt FDEAddUser -bool TRUE
-```
 ### OutputPath
 
 As of version 3.0.0 you can now define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.

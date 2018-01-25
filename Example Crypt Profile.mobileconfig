@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>PayloadOrganization</key>
+        <string>Your Org Name</string>
+        <key>PayloadDisplayName</key>
+        <string>Crypt Settings</string>
+        <key>PayloadScope</key>
+        <string>System</string>
+        <key>PayloadType</key>
+        <string>Configuration</string>
+        <key>PayloadRemovalDisallowed</key>
+        <true/>
+        <key>PayloadIdentifier</key>
+        <string>0fb741b3-309d-56ed-880b-f836bb383416</string>
+        <key>PayloadContent</key>
+        <array>
+            <dict>
+                <key>PayloadOrganization</key>
+                <string>Your Org Name</string>
+                <key>PayloadDisplayName</key>
+                <string>Crypt Settings</string>
+                <key>PayloadIdentifier</key>
+                <string>F9A5E8E1-3C08-4D32-94A5-325009F9C999</string>
+                <key>PayloadType</key>
+                <string>com.grahamgilbert.crypt</string>
+                <key>PayloadUUID</key>
+                <string>F9A5E8E1-3C08-4D32-94A5-325009F9C999</string>
+                <key>ServerURL</key>
+                <string>https://crypt.example.com</string>
+                <key>SkipUsers</key>
+                <array>
+                    <string>admin</string>
+                </array>
+                <key>RemovePlist</key>
+                <true/>
+                <key>RotateUsedKey</key>
+                <true/>
+                <key>ValidateKey</key>
+                <true/>
+                <key>OutputPath</key>
+                <string>/var/root/crypt_output.plist</string>
+                <key>KeyEscrowInterval</key>
+                <integer>1</integer>
+                <key>PayloadEnabled</key>
+                <true/>
+                <key>PayloadDescription</key>
+                <string>Crypt Settings</string>
+                <key>PayloadVersion</key>
+                <integer>1</integer>
+            </dict>
+        </array>
+        <key>PayloadUUID</key>
+        <string>0fb741b3-309d-56ed-880b-f836bb383416</string>
+        <key>PayloadEnabled</key>
+        <true/>
+        <key>PayloadDescription</key>
+        <string></string>
+        <key>PayloadVersion</key>
+        <integer>1</integer>
+    </dict>
+</plist>
