@@ -23,7 +23,7 @@ Version 3.0.0 now supports 10.12 and above, previous macOS version support has b
 
 ## Configuration
 
-Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles. An example profile can be found at (link to profile here).
+Preferences can be set either in `/Library/Preferences/com.grahamgilbert.crypt.plist` or via MCX / Profiles. An example profile can be found [here](https://github.com/grahamgilbert/crypt/blob/master/Example%20Crypt%20Profile.mobileconfig).
 
 ### ServerURL
 
