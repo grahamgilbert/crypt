@@ -18,5 +18,5 @@
     <choice id="com.grahamgilbert.Crypt" visible="false">
         <pkg-ref id="com.grahamgilbert.Crypt"/>
     </choice>
-    <pkg-ref id="com.grahamgilbert.Crypt" version="replace_version">Crypt.pkg</pkg-ref>
+    <pkg-ref id="com.grahamgilbert.Crypt" version="replace_version" onConclusion="RequireRestart">Crypt.pkg</pkg-ref>
 </installer-gui-script>
