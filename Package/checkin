@@ -186,6 +186,7 @@ def rotate_invalid_key(plist_path):
     # a work aroud for https://github.com/grahamgilbert/crypt/issues/68
     if not get_console_user():
         logging.info('Skipping Validation, no user is logged in.')
+        return True
 
     macos_version = get_os_version(only_major_minor=False, as_tuple=False)
 
