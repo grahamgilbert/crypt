@@ -325,7 +325,7 @@ class CryptMechanism: NSObject {
     var myDes: NSString? = nil
     var myType: NSString? = nil
     
-    ws().getFileSystemInfo(forPath: "/", isRemovable: nil, isWritable: nil, isUnmountable: nil, description: &myDes, type: &myType)
+    ws.getFileSystemInfo(forPath: "/", isRemovable: nil, isWritable: nil, isUnmountable: nil, description: &myDes, type: &myType)
     
     if myType == "apfs" {
       os_log("Machine appears to be APFS", log: CryptMechanism.log, type: .default)
