@@ -29,7 +29,7 @@ class Enablement: CryptMechanism {
   private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Enablement")
   // This is the only public function. It will be called from the
   // ObjC AuthorizationPlugin class
-  func run() {
+  @objc func run() {
     
     if self.needsEncryption {
       
