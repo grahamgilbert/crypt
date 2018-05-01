@@ -165,7 +165,8 @@ def server_initiated_rotation(output):
         return ''
 
     if json_output.get('rotation_required', False):
-        os.path.remove(output_plist)
+        logging.info('Removing output plist for rotation at next login.')
+        os.remove(output_plist)
 
 
 def using_recovery_key():
@@ -361,6 +362,9 @@ def main():
             if remove_plist is True:
                 os.remove(plist_path)
                 logging.info('Removing plist due to configuration.')
+            else:
+                os.chmod(plist_path, 0600)
+                logging.info('Ensuring permissions on plist.')
 
 
 if __name__ == '__main__':
