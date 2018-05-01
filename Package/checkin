@@ -135,7 +135,6 @@ def escrow_key(plist):
                             stderr=subprocess.PIPE)
     (output, error) = task.communicate()
 
-
     if task.returncode == 0:
         logging.info('Key escrow successful.')
         server_initiated_rotation(output)
@@ -160,13 +159,23 @@ def server_initiated_rotation(output):
         return ''
 
     output_plist = pref('OutputPath')
-    if not os.path.exists(output_plist):
+    if not os.path.isfile(output_plist):
         # Need this to be here too (which it should, but you never know..)
         return ''
 
     if json_output.get('rotation_required', False):
         logging.info('Removing output plist for rotation at next login.')
         os.remove(output_plist)
+
+
+    run_command = pref('PostRunCommand')
+    if run_command and not os.path.isfile(output_plist):
+        logging.info('Running {}'.format(run_command))
+            try:
+                output = subprocess.check_output(run_command)
+                logging.info(output)
+            except subprocess.CalledProcessError as e:
+                logging.error('Failed to run PostRunCommand: {}'.format(e))
 
 
 def using_recovery_key():
@@ -222,7 +231,7 @@ def rotate_invalid_key(plist_path):
         logging.warning('macOS version is too old to run reliably')
         return False
 
-    if os.path.exists(plist_path):
+    if os.path.isfile(plist_path):
         recovery_key = get_recovery_key(plist_path)
     else:
         logging.warning('Recovery key is not present on disk')
@@ -354,7 +363,7 @@ def main():
                         escrow_interval))
                 sys.exit(0)
         escrow_result = escrow_key(plist=plist)
-        if escrow_result:
+        if escrow_result and os.path.isfile(plsit_path):
             remove_plist = pref('RemovePlist')
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
