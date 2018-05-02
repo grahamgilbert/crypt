@@ -167,15 +167,7 @@ def server_initiated_rotation(output):
         logging.info('Removing output plist for rotation at next login.')
         os.remove(output_plist)
 
-
-    run_command = pref('PostRunCommand')
-    if run_command and not os.path.isfile(output_plist):
-        logging.info('Running {}'.format(run_command))
-            try:
-                output = subprocess.check_output(run_command)
-                logging.info(output)
-            except subprocess.CalledProcessError as e:
-                logging.error('Failed to run PostRunCommand: {}'.format(e))
+    post_run_command()
 
 
 def using_recovery_key():
@@ -193,6 +185,18 @@ def using_recovery_key():
         return True
     else:
         return False
+
+
+def post_run_command():
+    run_command = pref('PostRunCommand')
+    output_plist = pref('OutputPath')
+    if run_command and not os.path.isfile(output_plist):
+        logging.info('Running {}'.format(run_command))
+        try:
+            output = subprocess.check_output(run_command)
+            logging.info(output)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to run PostRunCommand: {}'.format(e))
 
 
 def get_recovery_key(key_location):
@@ -336,6 +340,7 @@ def main():
     if pref('RotateUsedKey') and pref('ValidateKey') and \
     not pref('RemovePlist'):
         rotate_invalid_key(plist_path)
+        post_run_command()
 
     if os.path.isfile(plist_path):
         plist = FoundationPlist.readPlist(plist_path)
@@ -363,7 +368,7 @@ def main():
                         escrow_interval))
                 sys.exit(0)
         escrow_result = escrow_key(plist=plist)
-        if escrow_result and os.path.isfile(plsit_path):
+        if escrow_result and os.path.isfile(plist_path):
             remove_plist = pref('RemovePlist')
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
