@@ -72,10 +72,19 @@ class Check: CryptMechanism {
       
       // Check to see if our recovery key exists at the OutputPath Preference.
       let recoveryKeyExists: Bool = checkFileExists(path: filepath)
+      let genKey = getGenerateNewKey()
+      let generateKey : Bool = genKey.generateKey
+      let forcedKey : Bool = genKey.forcedKey
       
-      if !recoveryKeyExists && !removePlist && rotateKey {
+      if !recoveryKeyExists && !removePlist && rotateKey || generateKey {
+        if forcedKey {
+          os_log("GenerateKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
+          self.needsEncryption = false
+          _ = allowLogin()
+          return;
+        }
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
-        os_log("Key is missing at %{public}@, and RemovePlist is False. And RotateKey is True, Attempting to generate a new key...", log: Check.log, type: .error, String(describing: filepath))
+        os_log("Conditions for making a new key have been met. Attempting to generate a new key...", log: Check.log, type: .default)
         do {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
@@ -226,6 +235,13 @@ class Check: CryptMechanism {
     guard let removeplist : Bool = CFPreferencesCopyAppValue(Preferences.removePlist as CFString, bundleid as CFString) as? Bool
       else { return true }
     return removeplist
+  }
+
+  fileprivate func getGenerateNewKey() -> (generateKey: Bool, forcedKey: Bool) {
+    let forcedKey : Bool = CFPreferencesAppValueIsForced("GenerateNewKey" as CFString, bundleid as CFString)
+    guard let genkey : Bool = CFPreferencesCopyAppValue("GenerateNewKey" as CFString, bundleid as CFString) as? Bool
+      else {return (false, forcedKey)}
+    return (genkey, forcedKey)
   }
 
   func rotateRecoveryKey(_ theSettings : NSDictionary, filepath : String) throws -> Bool {
