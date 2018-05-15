@@ -78,7 +78,7 @@ class Check: CryptMechanism {
       
       if !recoveryKeyExists && !removePlist && rotateKey || generateKey {
         if forcedKey {
-          os_log("GenerateKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
+          os_log("WARNING!!!!!! GenerateNewKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
           self.needsEncryption = false
           _ = allowLogin()
           return;
@@ -89,6 +89,14 @@ class Check: CryptMechanism {
           try _ = rotateRecoveryKey(the_settings, filepath: filepath)
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
+        }
+        
+        if generateKey {
+          os_log("We've rotated the key and GenerateNewKey was True, setting to False to avoid multiple generations", log: Check.log, type: .default)
+          // set to false for house keeping
+          _ = CFPreferencesSetValue("GenerateNewKey" as CFString, false as CFPropertyList, bundleid as CFString, kCFPreferencesAnyUser, kCFPreferencesAnyHost)
+          // delete from root if set there.
+          _ = CFPreferencesSetAppValue("GenerateNewKey" as CFString, nil, bundleid as CFString)
         }
         self.needsEncryption = false
         _ = allowLogin()
