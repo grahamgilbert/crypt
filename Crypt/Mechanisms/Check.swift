@@ -76,7 +76,7 @@ class Check: CryptMechanism {
       let generateKey : Bool = genKey.generateKey
       let forcedKey : Bool = genKey.forcedKey
       
-      if !recoveryKeyExists && !removePlist && rotateKey || generateKey {
+      if (!recoveryKeyExists && !removePlist && rotateKey) || generateKey {
         if forcedKey {
           os_log("WARNING!!!!!! GenerateNewKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
           self.needsEncryption = false
