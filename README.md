@@ -81,6 +81,10 @@ As of version 3.0.0 you can now define the time interval in Hours for how often 
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt KeyEscrowInterval -int 2
 ```
 
+### PostRunCommand
+
+(Introduced in version 3.2.0) This is a command that is run after Crypt has detected an error condition with a stored key that cannot be resolved silently - either it has failed validation or the server has instructed the client to rotate the key. These cannot be resolved silently on APFS volumes, so the user will need to log in again. If you have a tool that can enforce a logout or a reboot, you can run it here. This preference can either be a string if your command has no spaces, or an array if there are spaces in the command.
+
 
 ## Uninstalling
 

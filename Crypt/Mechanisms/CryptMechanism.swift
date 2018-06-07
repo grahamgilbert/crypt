@@ -34,7 +34,7 @@ class CryptMechanism: NSObject {
   var mechanism:UnsafePointer<MechanismRecord>
   
   // init the class with a MechanismRecord
-  init(mechanism:UnsafePointer<MechanismRecord>) {
+  @objc init(mechanism:UnsafePointer<MechanismRecord>) {
     os_log("initWithMechanismRecord", log: CryptMechanism.log, type: .default)
     self.mechanism = mechanism
   }

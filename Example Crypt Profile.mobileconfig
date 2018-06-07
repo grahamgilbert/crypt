@@ -41,6 +41,11 @@
                 <true/>
                 <key>OutputPath</key>
                 <string>/var/root/crypt_output.plist</string>
+                <key>PostRunCommand</key>
+                <array>
+                    <string>/usr/local/munki/managedsoftwareupdate</string>
+                    <string>--auto</string>
+                </array>
                 <key>KeyEscrowInterval</key>
                 <integer>1</integer>
                 <key>PayloadEnabled</key>
