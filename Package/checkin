@@ -8,6 +8,7 @@ import sys
 import datetime
 import syslog
 import platform
+import json
 from distutils.version import LooseVersion
 
 import FoundationPlist
@@ -133,12 +134,40 @@ def escrow_key(plist):
     task = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE)
     (output, error) = task.communicate()
+
     if task.returncode == 0:
         logging.info('Key escrow successful.')
+        server_initiated_rotation(output)
         return True
     else:
         logging.error('Key escrow unsuccessful.')
         return False
+
+
+def server_initiated_rotation(output):
+    """
+    Rotate the key if the server tells us to.
+    We need the old key to be present on disk and RotateUsedKey to be True
+    """
+    try:
+        json_output = json.loads(output)
+    except ValueError:
+        return ''
+
+    if not pref('RotateUsedKey') or pref('RemovePlist'):
+        # Don't do anything if we don't care about the good stuff
+        return ''
+
+    output_plist = pref('OutputPath')
+    if not os.path.isfile(output_plist):
+        # Need this to be here too (which it should, but you never know..)
+        return ''
+
+    if json_output.get('rotation_required', False):
+        logging.info('Removing output plist for rotation at next login.')
+        os.remove(output_plist)
+
+    post_run_command()
 
 
 def using_recovery_key():
@@ -156,6 +185,18 @@ def using_recovery_key():
         return True
     else:
         return False
+
+
+def post_run_command():
+    run_command = pref('PostRunCommand')
+    output_plist = pref('OutputPath')
+    if run_command and not os.path.isfile(output_plist):
+        logging.info('Running {}'.format(run_command))
+        try:
+            output = subprocess.check_output(run_command)
+            logging.info(output)
+        except subprocess.CalledProcessError as e:
+            logging.error('Failed to run PostRunCommand: {}'.format(e))
 
 
 def get_recovery_key(key_location):
@@ -194,7 +235,7 @@ def rotate_invalid_key(plist_path):
         logging.warning('macOS version is too old to run reliably')
         return False
 
-    if os.path.exists(plist_path):
+    if os.path.isfile(plist_path):
         recovery_key = get_recovery_key(plist_path)
     else:
         logging.warning('Recovery key is not present on disk')
@@ -299,6 +340,7 @@ def main():
     if pref('RotateUsedKey') and pref('ValidateKey') and \
     not pref('RemovePlist'):
         rotate_invalid_key(plist_path)
+        post_run_command()
 
     if os.path.isfile(plist_path):
         plist = FoundationPlist.readPlist(plist_path)
@@ -326,7 +368,7 @@ def main():
                         escrow_interval))
                 sys.exit(0)
         escrow_result = escrow_key(plist=plist)
-        if escrow_result:
+        if escrow_result and os.path.isfile(plist_path):
             remove_plist = pref('RemovePlist')
             plist['escrow_success'] = True
             plist['last_run'] = datetime.datetime.now()
@@ -334,6 +376,9 @@ def main():
             if remove_plist is True:
                 os.remove(plist_path)
                 logging.info('Removing plist due to configuration.')
+            else:
+                os.chmod(plist_path, 0600)
+                logging.info('Ensuring permissions on plist.')
 
 
 if __name__ == '__main__':
