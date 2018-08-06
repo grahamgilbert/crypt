@@ -92,7 +92,7 @@ The install package will modify the Authorization DB - you need to remove these 
 
 ## Building from source
 
-You will need to configure Xcode to sign the bundle before building. Instructions for this are out of the scope of this readme, and [are available on Apple's site](https://developer.apple.com/support/code-signing/).
+You will need to configure Xcode 9.3 (requires 10.13 or later) to sign the bundle before building. Instructions for this are out of the scope of this readme, and [are available on Apple's site](https://developer.apple.com/support/code-signing/).
 
 * Install [The Luggage](https://github.com/unixorn/luggage)
 * ``cd Package``
