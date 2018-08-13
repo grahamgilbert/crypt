@@ -212,7 +212,21 @@ class Check: CryptMechanism {
   fileprivate func getSkipUsers() -> Bool {
     os_log("Checking for any SkipUsers...", log: Check.log, type: .default)
     guard let username = self.username
-      else { return false }
+      else { 
+        os_log("Cannot get username", log: Check.log, type: .error)
+        return false 
+      }
+    os_log("Username is %{public}@...", log: Check.log, type: .error, String(describing: username))
+
+    if username as String == "_mbsetupuser" {
+      os_log("User is _mbsetupuser... Need to Skip...", log: Check.log, type: .error)
+      return true
+    }
+
+    if username as String == "root" {
+      os_log("User is root... Need to Skip...", log: Check.log, type: .error)
+      return true
+    }
     guard let prefValue = CFPreferencesCopyAppValue("SkipUsers" as CFString, bundleid as CFString) as? [String]
       else { return false }
     for s in prefValue {
@@ -220,10 +234,6 @@ class Check: CryptMechanism {
         os_log("Found %{public}@ in SkipUsers list...", log: Check.log, type: .error, String(describing: username))
         return true
       }
-    }
-    if username as String == "_mbsetupuser" {
-      os_log("User is _mbsetupuser... Need to Skip...", log: Check.log, type: .error)
-      return true
     }
     return false
   }
