@@ -22,6 +22,7 @@ clean-crypt:
 	rm -rf ../build
 
 pack-plugin: build
+	@sudo ${RM} -rf ${WORK_D}
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
 	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
 
