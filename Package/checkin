@@ -110,6 +110,17 @@ def GetMacName():
     return thename
 
 
+def curl_escape(s):
+    return s.encode('utf-8').encode('string_escape').replace('"', '\\"')
+
+
+def build_k_file(d):
+    lines = []
+    for k, v in d.items():
+        lines.append('%s = "%s"' % (k, curl_escape(v)))
+    return '\n'.join(lines)
+
+
 def escrow_key(plist):
     logging.info('Attempting to Escrow Key...')
     server_url = pref('ServerURL')
@@ -130,10 +141,12 @@ def escrow_key(plist):
         ('username', username), ('macname', macname)
     ]
     mydata = urllib.urlencode(mydata)
-    cmd = ['/usr/bin/curl', '-fsSL', '--data', mydata, theurl]
+    k_file = build_k_file({'url': theurl, 'data': mydata})
+    cmd = ['/usr/bin/curl', '-fsSL', '-K', '-']
     task = subprocess.Popen(cmd, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE)
-    (output, error) = task.communicate()
+                            stderr=subprocess.PIPE,
+                            stdin=subprocess.PIPE)
+    (output, error) = task.communicate(input=k_file)
 
     if task.returncode == 0:
         logging.info('Key escrow successful.')
@@ -338,7 +351,7 @@ def main():
         rotate_if_used(plist_path)
 
     if pref('RotateUsedKey') and pref('ValidateKey') and \
-    not pref('RemovePlist'):
+            not pref('RemovePlist'):
         rotate_invalid_key(plist_path)
         post_run_command()
 
