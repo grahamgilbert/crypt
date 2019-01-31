@@ -141,12 +141,19 @@ def escrow_key(plist):
         ('username', username), ('macname', macname)
     ]
     mydata = urllib.urlencode(mydata)
-    k_file = build_k_file({'url': theurl, 'data': mydata})
-    cmd = ['/usr/bin/curl', '-fsSL', '-K', '-']
+    # --fail: Fail silently (no output at all) on server errors.
+    # --silent: Silent mode. Don't show progress meter or error messages.
+    # --show-error: When used with silent, it makes curl show an error message
+    # if it fails.
+    # --location: This option  will  make  curl  redo  the request on the
+    # new location if the server responds with a 3xx code.
+    # --data: Sends  the  specified data in a POST request to the HTTP server
+    cmd = ['/usr/bin/curl', theurl, '--fail', '--silent',
+           '--show-error', '--location', '--data', mydata]
     task = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
-    (output, error) = task.communicate(input=k_file)
+    (output, error) = task.communicate()
 
     if task.returncode == 0:
         logging.info('Key escrow successful.')
