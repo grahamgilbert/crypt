@@ -114,7 +114,7 @@ def curl_escape(s):
     return s.encode('utf-8').encode('string_escape').replace('"', '\\"')
 
 
-def build_k_file(d):
+def build_curl_config_file(d):
     lines = []
     for k, v in d.items():
         lines.append('%s = "%s"' % (k, curl_escape(v)))
@@ -141,12 +141,23 @@ def escrow_key(plist):
         ('username', username), ('macname', macname)
     ]
     mydata = urllib.urlencode(mydata)
-    k_file = build_k_file({'url': theurl, 'data': mydata})
-    cmd = ['/usr/bin/curl', '-fsSL', '-K', '-']
+    config_file = build_curl_config_file({'url': theurl, 'data': mydata})
+    # --fail: Fail silently (no output at all) on server errors.
+    # --silent: Silent mode. Don't show progress meter or error messages.
+    # --show-error: When used with silent, it makes curl show an error message
+    # if it fails.
+    # --location: This option will make curl redo the request on the new
+    # location if the server responds with a 3xx code.
+    # --config: Specify which config file to read curl arguments from.
+    # The config file is a text file in which command line arguments can be
+    # written which then will be used as if they were written on the actual
+    # command line.
+    cmd = ['/usr/bin/curl', '--fail', '--silent',
+           '--show-error', '--location', '--config', '-']
     task = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
-    (output, error) = task.communicate(input=k_file)
+    (output, error) = task.communicate(input=config_file)
 
     if task.returncode == 0:
         logging.info('Key escrow successful.')
