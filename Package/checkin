@@ -14,6 +14,7 @@ from distutils.version import LooseVersion
 import FoundationPlist
 
 from Foundation import NSDate
+from Foundation import NSArray
 from Foundation import CFPreferencesAppSynchronize
 from Foundation import CFPreferencesCopyAppValue
 from Foundation import CFPreferencesSetValue
@@ -84,7 +85,8 @@ def pref(pref_name):
         'RotateUsedKey': True,
         'OutputPath': '/private/var/root/crypt_output.plist',
         'ValidateKey': True,
-        'KeyEscrowInterval': 1
+        'KeyEscrowInterval': 1,
+        'AdditionalCurlOpts': []
     }
     pref_value = CFPreferencesCopyAppValue(pref_name, BUNDLE_ID)
     if pref_value is None:
@@ -96,6 +98,8 @@ def pref(pref_name):
     if isinstance(pref_value, NSDate):
         # convert NSDate/CFDates to strings
         pref_value = str(pref_value)
+    elif isinstance(pref_value, NSArray):
+        pref_value = list(pref_value)
     return pref_value
 
 
@@ -153,7 +157,11 @@ def escrow_key(plist):
     # written which then will be used as if they were written on the actual
     # command line.
     cmd = ['/usr/bin/curl', '--fail', '--silent',
-           '--show-error', '--location', '--config', '-']
+           '--show-error', '--location']
+    if pref('AdditionalCurlOpts') and isinstance(pref('AdditionalCurlOpts'), list):
+        for curl_opt in pref('AdditionalCurlOpts'):
+            cmd.append(curl_opt)
+    cmd.extend(['--config', '-'])
     task = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                             stderr=subprocess.PIPE,
                             stdin=subprocess.PIPE)
