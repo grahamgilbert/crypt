@@ -206,6 +206,13 @@ def using_recovery_key():
     """Check if FileVault is currently unlocked using
     the recovery key.
     """
+    macos_version = get_os_version(only_major_minor=False, as_tuple=False)
+
+    if LooseVersion(macos_version) >= LooseVersion('10.15'):
+        logging.info('Checking if using a recovery key is unstable on 10.15. '
+                     'Skipping.')
+        return False
+
     cmd = ['/usr/bin/fdesetup', 'usingrecoverykey']
     try:
         using_key = subprocess.check_output(cmd).strip()
