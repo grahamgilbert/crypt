@@ -1,7 +1,7 @@
 ## [v3.3.1](https://github.com/grahamgilbert/crypt/compare/3.3.0...3.3.1)
 
 ### Fixed in this release:
-* Skip local checking of `usingrecoverykey` on Catalina after using recovery key to prevent lockout of changing user password (#99 @weswhet)
+* On Catalina, skip local checking of `usingrecoverykey` after using recovery key to prevent lockout of changing user password (#99 @weswhet)
 
 ### Enhancements:
 * Added documentation on `AdditionalCurlOpts` (#97, #98 @asyiu)
