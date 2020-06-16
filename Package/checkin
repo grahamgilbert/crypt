@@ -230,7 +230,7 @@ def post_run_command():
     run_command = pref("PostRunCommand")
     output_plist = pref("OutputPath")
     if run_command and not os.path.isfile(output_plist):
-        logging.info(f"Running {run}")
+        logging.info(f"Running {run_command}")
         try:
             output = subprocess.check_output(run_command)
             logging.info(output)
@@ -338,7 +338,7 @@ def rotate_key(current_key, plist):
     try:
         output_plist = plistlib.loads(stdout_data)
         with open(plist, "wb") as fp:
-            keyplist = plistlib.dump(output_plist, fp)
+            plistlib.dump(output_plist, fp)
         logging.info("Recovery Key rotated.")
     except Exception:
         if err:
@@ -422,7 +422,7 @@ def main():
             plist["escrow_success"] = True
             plist["last_run"] = datetime.datetime.now()
             with open(plist_path, "wb") as fp:
-                keyplist = plistlib.dump(plist, fp)
+                plistlib.dump(plist, fp)
             if remove_plist is True:
                 logging.info("Removing plist due to configuration.")
                 os.remove(plist_path)
