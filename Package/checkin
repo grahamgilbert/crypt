@@ -119,7 +119,7 @@ def curl_escape(s):
 def build_curl_config_file(d):
     lines = []
     for k, v in d.items():
-        lines.append('%s = "%s"' % (k, curl_escape(v)))
+        lines.append(f'{k} = "{curl_escape(v)}"')
     return "\n".join(lines)
 
 
@@ -366,7 +366,7 @@ def rotate_if_used(key_path):
     if not using_recovery_key():
         return ""
     if not os.path.isfile(key_path):
-        logging.warning("Could not locate {0}".format(key_path))
+        logging.warning(f"Could not locate {key_path}")
         return ""
     logging.info("Recovery Key has been used.. Attempting to Rotate.")
     current_key = get_recovery_key(key_path)
@@ -408,16 +408,12 @@ def main():
                 escrow_interval = int(pref("KeyEscrowInterval"))
             except Exception:
                 escrow_interval = 1
-            logging.info(
-                "KeyEscrowInterval set to: {} hour(s)...".format(escrow_interval)
-            )
+            logging.info(f"KeyEscrowInterval set to: {escrow_interval} hour(s)...")
             now = datetime.datetime.now()
             hour_ago = now - datetime.timedelta(hours=escrow_interval)
             if plist["last_run"] > hour_ago:
                 logging.info(
-                    "We escrowed less than {} hour(s) ago. Skipping...".format(
-                        escrow_interval
-                    )
+                    f"We escrowed less than {escrow_interval} hour(s) ago. Skipping..."
                 )
                 sys.exit(0)
         escrow_result = escrow_key(plist=plist)
