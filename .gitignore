@@ -39,3 +39,4 @@ Carthage/Build
 
 *.pkg
 *.pyc
+Package/Python.framework/
