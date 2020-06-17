@@ -4,9 +4,9 @@
     <pkg-ref id="com.grahamgilbert.Crypt"/>
     <options rootVolumeOnly="true" />
     <volume-check>
-    	<allowed-os-versions>
-    	    <os-version min="10.12.0" />
-    	</allowed-os-versions>
+        <allowed-os-versions>
+            <os-version min="10.14.0" />
+        </allowed-os-versions>
     </volume-check>
     <options customize="never" require-scripts="false"/>
     <choices-outline>
