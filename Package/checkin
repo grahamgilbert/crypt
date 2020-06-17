@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/Library/Crypt/python
 
 import datetime
 import json
