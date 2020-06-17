@@ -50,7 +50,7 @@ build-python:
 	# Why not just run the make_relocatable_python.py here?
 	# It can't find the temp folder that the python pkg is expanded into
 	# if issued directly from Make, so we're currently shelling out until
-	# we grok the GNU better.
+	# we grok the GNU better. PS THANKS SHEA
 	@rm -rf "${PYTHONTOOLDIR}"
 	@git clone https://github.com/gregneagle/relocatable-python.git "${PYTHONTOOLDIR}"
 	@./build_python_framework.sh
