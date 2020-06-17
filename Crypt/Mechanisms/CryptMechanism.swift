@@ -152,7 +152,7 @@ class CryptMechanism: NSObject {
   var needsEncryption: Bool {
     set {
       os_log("needsEncryption set to %@", log: CryptMechanism.log, type: .default, newValue as CVarArg)
-      let data = try! NSKeyedArchiver.archivedData(withRootObject: NSNumber.init(value: newValue), requiringSecureCoding: false)
+      guard let data = try? NSKeyedArchiver.archivedData(withRootObject: NSNumber.init(value: newValue), requiringSecureCoding: false) else { return }
       _ = setHintData(key: needsEncryptionHintKey, data: data as NSData)
     }
 
@@ -161,10 +161,10 @@ class CryptMechanism: NSObject {
       guard let data = getHintData(key: needsEncryptionHintKey) else {
         return false
       }
-      guard let value = try! NSKeyedUnarchiver.unarchivedObject(ofClass: NSNumber.self, from: data as Data) else {
+      guard let value = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSNumber.self, from: data as Data) else {
         return false
       }
-      return (value ).boolValue
+      return (value).boolValue
     }
   }
 

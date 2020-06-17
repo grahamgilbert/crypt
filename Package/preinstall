@@ -13,7 +13,7 @@ if [[ -d "$OLD_CRYPT" ]]; then
     /bin/rm -r $OLD_CRYPT
 fi
 
-# remove old foundationplist, thanks for memories.
+# remove old foundationplist, thanks for the memories.
 if [[ -f "/Library/Crypt/FoundationPlist.py" ]]; then
     /bin/rm -r /Library/Crypt/FoundationPlist.py
     /bin/rm -r /Library/Crypt/FoundationPlist.pyc
