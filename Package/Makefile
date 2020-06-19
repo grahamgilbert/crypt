@@ -1,5 +1,6 @@
 include /usr/local/share/luggage/luggage.make
-PB_EXTRA_ARGS+= --info "./PackageInfo"
+include config.mk
+PB_EXTRA_ARGS+= --info "./PackageInfo" --sign "${DEV_INSTALL_CERT}"
 TITLE=Crypt
 GITVERSION=$(shell ./build_no.sh)
 BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "../Crypt/Info.plist")
@@ -16,16 +17,19 @@ PAYLOAD=\
 
 #################################################
 
-build: clean-crypt
+build: check_variables clean-crypt
 	xcodebuild -project ../Crypt.xcodeproj -configuration Release
 
 clean-crypt:
 	rm -rf ../build
+	@rm -rf Crypt.pkg
 
 pack-plugin: build
 	@sudo ${RM} -rf ${WORK_D}
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
 	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
+	@sudo codesign --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*
+	@sudo codesign --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/MacOS/*
 
 pack-checkin: clean-python build-python l_Library
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
@@ -42,9 +46,13 @@ dist: pkg
 	@sudo rm -f Crypt.pkg
 	@sudo rm -f Distribution
 
+notarize:
+	@./notarize.sh "${APPLE_ACC_USER}" "${APPLE_ACC_PWD}"
+
 clean-python:
 	@rm -rf Python.framework
 	@rm -rf ${WORK_D}/Library/Crypt/Python.framework
+	@rm -rf entitlements.plist
 
 build-python:
 	# Why not just run the make_relocatable_python.py here?
@@ -53,5 +61,18 @@ build-python:
 	# we grok the GNU better. PS THANKS SHEA
 	@rm -rf "${PYTHONTOOLDIR}"
 	@git clone https://github.com/gregneagle/relocatable-python.git "${PYTHONTOOLDIR}"
-	@./build_python_framework.sh
-	@find ./Python.framework -name '*.pyc' -delete
+	@./build_python_framework.sh "${DEV_APP_CERT}"
+
+check_variables:
+ifndef DEV_INSTALL_CERT
+$(error "DEV_INSTALL_CERT" is not set)
+endif
+ifndef DEV_APP_CERT
+$(error "DEV_APP_CERT" is not set)
+endif
+ifndef APPLE_ACC_USER
+$(error "APPLE_ACC_USER" is not set)
+endif
+ifndef APPLE_ACC_PWD
+$(error "APPLE_ACC_PWD" is not set)
+endif

@@ -40,3 +40,5 @@ Carthage/Build
 *.pkg
 *.pyc
 Package/Python.framework/
+Package/entitlements.plist
+Package/config.mk
