@@ -121,16 +121,8 @@ def check_root():
         sys.exit("\nOnly root can run this script\n")
 
 
-def check_os():
-    OSVersion, _, _ = platform.mac_ver()
-    OSVersion = int(OSVersion.split(".")[1])
-    if OSVersion < 9:
-        sys.exit("\nOnly OS X 10.9 and above can run this script\n")
-
-
 def main(argv):
     check_root()
-    check_os()
     edit_authdb()
 
 
