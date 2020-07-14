@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/Library/Crypt/python
 
 # Copyright 2015 Crypt Project.
 #
@@ -38,84 +38,93 @@ from subprocess import PIPE, STDOUT, Popen
 system_login_console_plist = "/private/var/tmp/system.login.console.plist"
 
 ## Path to authenticate.plist
-#authenticate_plist = "/private/var/tmp/authenticate.plist"
+# authenticate_plist = "/private/var/tmp/authenticate.plist"
 
 ## Mechs that support FV2AuthPlugin
-fv2_mechs = ["Crypt:Check,privileged","Crypt:CryptGUI","Crypt:Enablement,privileged"]
+fv2_mechs = ["Crypt:Check,privileged", "Crypt:CryptGUI", "Crypt:Enablement,privileged"]
 fv2_index_mech = "loginwindow:done"
 fv2_index_offset = 0
+
 
 def bash_command(script):
     try:
         return subprocess.check_output(script)
-    except (subprocess.CalledProcessError, OSError), err:
-        sys.exit("[* Error] **%s** [%s]" % (err, str(script)))
+    except (subprocess.CalledProcessError, OSError) as err:
+        sys.exit(f"[* Error] **{err}** [{str(script)}]")
+
 
 def remove_mechs_in_db(db, mech_list):
     for mech in mech_list:
-        for old_mech in filter(lambda x: mech in x, db['mechanisms']):
-            db['mechanisms'].remove(old_mech)
+        for old_mech in filter(lambda x: mech in x, db["mechanisms"]):
+            db["mechanisms"].remove(old_mech)
     return db
+
 
 def set_mechs_in_db(db, mech_list, index_mech, index_offset):
     ## Clear away any previous configs
     db = remove_mechs_in_db(db, mech_list)
 
     ## Add mech_list to db
-    i = int(db['mechanisms'].index(index_mech)) + index_offset
+    i = int(db["mechanisms"].index(index_mech)) + index_offset
     for mech in mech_list:
-        db['mechanisms'].insert(i, mech)
+        db["mechanisms"].insert(i, mech)
         i += 1
     return db
 
+
 def edit_authdb():
     ## Export "system.login.console"
-    system_login_console = bash_command(["/usr/bin/security", "authorizationdb", "read", "system.login.console"])
-    f_c = open(system_login_console_plist, 'w')
-    f_c.write(system_login_console)
+    system_login_console = bash_command(
+        ["/usr/bin/security", "authorizationdb", "read", "system.login.console"]
+    )
+    f_c = open(system_login_console_plist, "w")
+    f_c.write(system_login_console.decode())
     f_c.close()
 
     ## Export "authenticate"
-    #authenticate = bash_command(["/usr/bin/security", "authorizationdb", "read", "authenticate"])
-    #f_a = open(authenticate_plist, 'w')
-    #f_a.write(authenticate)
-    #f_a.close()
+    # authenticate = bash_command(["/usr/bin/security", "authorizationdb", "read", "authenticate"])
+    # f_a = open(authenticate_plist, 'w')
+    # f_a.write(authenticate)
+    # f_a.close()
 
     ## Leave the for loop. Possible support for ScreenSaver unlock
     for p in [system_login_console_plist]:
         ## Parse the plist
-        d = plistlib.readPlist(p)
+        with open(p, "rb") as fp:
+            d = plistlib.load(fp)
 
         ## Add FV2 mechs
         d = set_mechs_in_db(d, fv2_mechs, fv2_index_mech, fv2_index_offset)
 
         ## Write out the changes
-        plistlib.writePlist(d, p)
+        with open(p, "wb") as fp:
+            plistlib.dump(d, fp)
 
     f_c = open(system_login_console_plist, "r")
-    p = Popen(["/usr/bin/security", "authorizationdb", "write", "system.login.console"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    stdout_data = p.communicate(input=f_c.read())
+    p = Popen(
+        ["/usr/bin/security", "authorizationdb", "write", "system.login.console"],
+        stdout=PIPE,
+        stdin=PIPE,
+        stderr=PIPE,
+    )
+    stdout_data = p.communicate(input=f_c.read().encode())
     f_c.close()
 
-    #f_a = open(authenticate_plist, "r")
-    #p = Popen(["/usr/bin/security", "authorizationdb", "write", "authenticate"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
-    #stdout_data = p.communicate(input=f_a.read())
-    #f_a.close()
+    # f_a = open(authenticate_plist, "r")
+    # p = Popen(["/usr/bin/security", "authorizationdb", "write", "authenticate"], stdout=PIPE, stdin=PIPE, stderr=PIPE)
+    # stdout_data = p.communicate(input=f_a.read())
+    # f_a.close()
+
 
 def check_root():
     if not os.geteuid() == 0:
         sys.exit("\nOnly root can run this script\n")
 
-def check_os():
-    OSVersion, _, _ = platform.mac_ver()
-    OSVersion = int(OSVersion.split('.')[1])
-    if OSVersion < 9:
-        sys.exit("\nOnly OS X 10.9 and above can run this script\n")
 
 def main(argv):
     check_root()
-    check_os()
     edit_authdb()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main(sys.argv)
