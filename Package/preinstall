@@ -15,6 +15,9 @@ fi
 
 # remove old foundationplist, thanks for the memories.
 if [[ -f "/Library/Crypt/FoundationPlist.py" ]]; then
-    /bin/rm -r /Library/Crypt/FoundationPlist.py
-    /bin/rm -r /Library/Crypt/FoundationPlist.pyc
+    /bin/rm /Library/Crypt/FoundationPlist.py
+fi
+
+if [[ -f "/Library/Crypt/FoundationPlist.pyc" ]]; then
+    /bin/rm /Library/Crypt/FoundationPlist.pyc
 fi
