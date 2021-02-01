@@ -53,11 +53,12 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RemovePlist -
 
 ### RotateUsedKey
 
-Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default.
+For macOS 10.14 and below, Crypt2 can rotate the recovery key, if the key is used to unlock the disk. There is a small caveat that this feature only works if the key is still present on the disk. This is set to `TRUE` by default.
 
 ``` bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt RotateUsedKey -bool FALSE
 ```
+For macOS 10.15 and above, you may want to use the `ROTATE_VIEWED_SECRETS` key in [Crypt Server](https://github.com/grahamgilbert/Crypt-Server#settings) if you want the client to get instructions to rotate the key.
 
 ### ValidateKey
 
