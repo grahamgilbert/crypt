@@ -40,15 +40,30 @@ def get_os_version(only_major_minor=True, as_tuple=False):
     Args:
       only_major_minor: Boolean. If True, only include major/minor versions.
       as_tuple: Boolean. If True, return a tuple of ints, otherwise a string.
-    100%, completely stolen from Munki.
     """
-    os_version_tuple = platform.mac_ver()[0].split(".")
+    # platform.mac_ver() returns 10.16-style version info on Big Sur
+    # and is likely to do so until Python is compiled with the macOS 11 SDK
+    # which may not happen for a while. And Apple's odd tricks mean that even
+    # reading /System/Library/CoreServices/SystemVersion.plist is unreliable.
+    # So let's use a different method.
+    try:
+        os_version_tuple = subprocess.check_output(
+            ('/usr/bin/sw_vers', '-productVersion'),
+            env={'SYSTEM_VERSION_COMPAT': '0'}
+        ).decode('UTF-8').rstrip().split('.')
+    except subprocess.CalledProcessError:
+        os_version_tuple = platform.mac_ver()[0].split(".")
     if only_major_minor:
-        os_version_tuple = os_version_tuple[0:2]
+        if int(os_version_tuple[0]) > 10:
+            # return something like (11,)
+            os_version_tuple = (os_version_tuple[0],)
+        else:
+            # return something like (10,15)
+            os_version_tuple = os_version_tuple[0:2]
     if as_tuple:
         return tuple(map(int, os_version_tuple))
-    else:
-        return ".".join(os_version_tuple)
+    # default
+    return '.'.join(os_version_tuple)
 
 
 def set_pref(pref_name, pref_value):
@@ -207,9 +222,10 @@ def using_recovery_key():
     """
     macos_version = get_os_version(only_major_minor=False, as_tuple=False)
 
+    logging.info(f"macOS version is {LooseVersion(macos_version)}")
     if LooseVersion(macos_version) >= LooseVersion("10.15"):
         logging.info(
-            "Checking if using a recovery key is unstable on 10.15. " "Skipping."
+            f"Checking usingrecoverykey is unstable on {macos_version}. " "Skipping."
         )
         return False
 
