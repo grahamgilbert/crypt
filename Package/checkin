@@ -34,7 +34,7 @@ def get_console_user():
     cfuser = SystemConfiguration.SCDynamicStoreCopyConsoleUser(None, None, None)
     return cfuser[0]
 
-
+# Stolen with love from Munki: https://github.com/munki/munki/blob/main/code/client/munkilib/osutils.py#L47
 def get_os_version(only_major_minor=True, as_tuple=False):
     """Returns an OS version.
     Args:
