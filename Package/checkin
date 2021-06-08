@@ -34,6 +34,7 @@ def get_console_user():
     cfuser = SystemConfiguration.SCDynamicStoreCopyConsoleUser(None, None, None)
     return cfuser[0]
 
+
 # Stolen with love from Munki: https://github.com/munki/munki/blob/main/code/client/munkilib/osutils.py#L47
 def get_os_version(only_major_minor=True, as_tuple=False):
     """Returns an OS version.
@@ -47,10 +48,15 @@ def get_os_version(only_major_minor=True, as_tuple=False):
     # reading /System/Library/CoreServices/SystemVersion.plist is unreliable.
     # So let's use a different method.
     try:
-        os_version_tuple = subprocess.check_output(
-            ('/usr/bin/sw_vers', '-productVersion'),
-            env={'SYSTEM_VERSION_COMPAT': '0'}
-        ).decode('UTF-8').rstrip().split('.')
+        os_version_tuple = (
+            subprocess.check_output(
+                ("/usr/bin/sw_vers", "-productVersion"),
+                env={"SYSTEM_VERSION_COMPAT": "0"},
+            )
+            .decode("UTF-8")
+            .rstrip()
+            .split(".")
+        )
     except subprocess.CalledProcessError:
         os_version_tuple = platform.mac_ver()[0].split(".")
     if only_major_minor:
@@ -63,15 +69,15 @@ def get_os_version(only_major_minor=True, as_tuple=False):
     if as_tuple:
         return tuple(map(int, os_version_tuple))
     # default
-    return '.'.join(os_version_tuple)
+    return ".".join(os_version_tuple)
 
 
 def set_pref(pref_name, pref_value):
     """Sets a preference, writing it to
-        /Library/Preferences/com.grahamgilbert.crypt.plist.
-        This should normally be used only for 'bookkeeping' values;
-        values that control the behavior of crypt may be overridden
-        elsewhere (by MCX, for example)"""
+    /Library/Preferences/com.grahamgilbert.crypt.plist.
+    This should normally be used only for 'bookkeeping' values;
+    values that control the behavior of crypt may be overridden
+    elsewhere (by MCX, for example)"""
     try:
         Foundation.CFPreferencesSetValue(
             pref_name,
