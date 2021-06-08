@@ -221,8 +221,6 @@ def using_recovery_key():
     the recovery key.
     """
     macos_version = get_os_version(only_major_minor=False, as_tuple=False)
-
-    logging.info(f"macOS version is {LooseVersion(macos_version)}")
     if LooseVersion(macos_version) >= LooseVersion("10.15"):
         logging.info(
             f"Checking usingrecoverykey is unstable on {macos_version}. " "Skipping."
