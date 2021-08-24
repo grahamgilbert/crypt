@@ -53,12 +53,12 @@ class Enablement: CryptMechanism {
       }
       catch let error as NSError {
         os_log("Failed to Enable FileVault %{public}@", log: Enablement.log, type: .error, error.localizedDescription)
-        _ = allowLogin()
+        allowLogin()
       }
     } else {
       // Allow to login. End of mechanism
       os_log("Hint Value not set Allowing Login...", log: Enablement.log, type: .default)
-      _ = allowLogin()
+      allowLogin()
     }
   }
   
