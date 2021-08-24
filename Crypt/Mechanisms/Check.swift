@@ -38,9 +38,9 @@ class Check: CryptMechanism {
     let skipUsers : Bool = getSkipUsers()
     
     guard let username = self.username
-      else { _ = allowLogin(); return }
+    else { allowLogin(); return }
     guard let password = self.password
-      else { _ = allowLogin(); return }
+    else { allowLogin(); return }
     
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
     
@@ -55,7 +55,7 @@ class Check: CryptMechanism {
       // If we are decrypting we can't do anything so we can just log in
       os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     
@@ -80,7 +80,7 @@ class Check: CryptMechanism {
         if forcedKey {
           os_log("WARNING!!!!!! GenerateNewKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
           self.needsEncryption = false
-          _ = allowLogin()
+          allowLogin()
           return;
         }
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
@@ -94,12 +94,12 @@ class Check: CryptMechanism {
         if generateKey {
           os_log("We've rotated the key and GenerateNewKey was True, setting to False to avoid multiple generations", log: Check.log, type: .default)
           // set to false for house keeping
-          _ = CFPreferencesSetValue("GenerateNewKey" as CFString, false as CFPropertyList, bundleid as CFString, kCFPreferencesAnyUser, kCFPreferencesAnyHost)
+          CFPreferencesSetValue("GenerateNewKey" as CFString, false as CFPropertyList, bundleid as CFString, kCFPreferencesAnyUser, kCFPreferencesAnyHost)
           // delete from root if set there.
-          _ = CFPreferencesSetAppValue("GenerateNewKey" as CFString, nil, bundleid as CFString)
+          CFPreferencesSetAppValue("GenerateNewKey" as CFString, nil, bundleid as CFString)
         }
         self.needsEncryption = false
-        _ = allowLogin()
+        allowLogin()
         return;
       }
 
@@ -143,21 +143,21 @@ class Check: CryptMechanism {
       
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
       os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else if onHighSierraOrNewer() && onAPFS() {
@@ -173,7 +173,7 @@ class Check: CryptMechanism {
         return
       }
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else {
