@@ -21,21 +21,21 @@ build: check_variables clean-crypt
 	xcodebuild -project ../Crypt.xcodeproj -configuration Release
 
 clean-crypt:
-	rm -rf ../build
-	@rm -rf Crypt.pkg
+	@sudo rm -rf ../build
+	@sudo rm -rf Crypt.pkg
 
 pack-plugin: build
 	@sudo ${RM} -rf ${WORK_D}
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
 	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
-	@sudo codesign --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*
-	@sudo codesign --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/MacOS/*
+	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*
+	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/MacOS/*
 
 pack-checkin: clean-python build-python l_Library
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo ${CP} -R Python.framework ${WORK_D}/Library/Crypt/Python.framework
-	@sudo /bin/ln -s /Library/Crypt/Python.framework/Versions/3.8/bin/python3 ${WORK_D}/Library/Crypt/python
+	@sudo /bin/ln -s /Library/Crypt/Python.framework/Versions/Current/bin/python3 ${WORK_D}/Library/Crypt/python
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
 	@sudo chmod 755 ${WORK_D}/Library/Crypt/checkin
 
@@ -47,21 +47,25 @@ dist: pkg
 	@sudo rm -f Distribution
 
 notarize:
-	@./notarize.sh "${APPLE_ACC_USER}" "${APPLE_ACC_PWD}"
+	@./notarize.sh "${APPLE_ACC_USER}" "${APPLE_ACC_PWD}" "./Crypt.pkg"
 
 clean-python:
-	@rm -rf Python.framework
-	@rm -rf ${WORK_D}/Library/Crypt/Python.framework
-	@rm -rf entitlements.plist
+	@sudo rm -rf Python.framework
+	@sudo rm -rf ${WORK_D}/Library/Crypt/Python.framework
+	@sudo rm -rf entitlements.plist
 
 build-python:
 	# Why not just run the make_relocatable_python.py here?
 	# It can't find the temp folder that the python pkg is expanded into
 	# if issued directly from Make, so we're currently shelling out until
 	# we grok the GNU better. PS THANKS SHEA
-	@rm -rf "${PYTHONTOOLDIR}"
+	@sudo rm -rf "${PYTHONTOOLDIR}"
+	@sudo rm -rf /Library/Crypt/Python.framework
+	@sudo chmod 777 /Library/Crypt
 	@git clone https://github.com/gregneagle/relocatable-python.git "${PYTHONTOOLDIR}"
-	@./build_python_framework.sh "${DEV_APP_CERT}"
+	@./download_python_framework.sh
+	@sudo ./sign_python_framework.py -v -S "${DEV_APP_CERT}"
+	@sudo mv /Library/Crypt/Python.framework Python.framework
 
 check_variables:
 ifndef DEV_INSTALL_CERT
