@@ -1,7 +1,7 @@
 /*
   Crypt
 
-  Copyright 2016 The Crypt Project.
+  Copyright 2021 The Crypt Project.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -30,57 +30,57 @@ class Check: CryptMechanism {
 
   @objc func run() {
     os_log("Starting run of Crypt.Check...", log: Check.log, type: .default)
-    
+
     // check for ServerUrl
     let serverURL : NSString? = getServerURL()
- 
+
     // check for SkipUsers Preference
     let skipUsers : Bool = getSkipUsers()
-    
+
     guard let username = self.username
-      else { _ = allowLogin(); return }
+      else { allowLogin(); return }
     guard let password = self.password
-      else { _ = allowLogin(); return }
-    
+      else { allowLogin(); return }
+
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
-    
+
     //Get status on encryption.
     let fdestatus = getFVEnabled()
     let fvEnabled : Bool = fdestatus.encrypted
     let decrypting : Bool = fdestatus.decrypting
     let filepath = CFPreferencesCopyAppValue(Preferences.outputPath as CFString, bundleid as CFString) as? String ?? "/private/var/root/crypt_output.plist"
     os_log("OutPutPlist Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: filepath))
-    
+
     if decrypting {
       // If we are decrypting we can't do anything so we can just log in
       os_log("We are Decrypting! Not much we can do, exiting for safety...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
-    
+
     if fvEnabled {
       //FileVault is enabled, checks for things to do if FileVault is enabled should be done here.
-      
+
       // Check for RotateUsedKey Preference
       let rotateKey: Bool = getRotateUsedKeyPreference()
       os_log("RotateUsedKey Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: rotateKey))
-      
+
       // Check for RemovePlist Preferences
       let removePlist: Bool = getRemovePlistKeyPreference()
       os_log("RemovePlist Preferences is set to %{public}@", log: Check.log, type: .default, String(describing: removePlist))
-      
+
       // Check to see if our recovery key exists at the OutputPath Preference.
       let recoveryKeyExists: Bool = checkFileExists(path: filepath)
       let genKey = getGenerateNewKey()
       let generateKey : Bool = genKey.generateKey
       let forcedKey : Bool = genKey.forcedKey
-      
+
       if (!recoveryKeyExists && !removePlist && rotateKey) || generateKey {
         if forcedKey {
           os_log("WARNING!!!!!! GenerateNewKey is set to True, but it's a Managed Preference, you probably don't want to do this. Please change to a non Managed value.", log: Check.log, type: .error)
           self.needsEncryption = false
-          _ = allowLogin()
+          allowLogin()
           return;
         }
         // If key is missing from disk and we aren't supposed to remove it we should generate a new key...
@@ -90,16 +90,16 @@ class Check: CryptMechanism {
         } catch let error as NSError {
           os_log("Caught error trying to rotate recovery key: %{public}@", log: Check.log, type: .error, error.localizedDescription)
         }
-        
+
         if generateKey {
           os_log("We've rotated the key and GenerateNewKey was True, setting to False to avoid multiple generations", log: Check.log, type: .default)
           // set to false for house keeping
-          _ = CFPreferencesSetValue("GenerateNewKey" as CFString, false as CFPropertyList, bundleid as CFString, kCFPreferencesAnyUser, kCFPreferencesAnyHost)
+          CFPreferencesSetValue("GenerateNewKey" as CFString, false as CFPropertyList, bundleid as CFString, kCFPreferencesAnyUser, kCFPreferencesAnyHost)
           // delete from root if set there.
-          _ = CFPreferencesSetAppValue("GenerateNewKey" as CFString, nil, bundleid as CFString)
+          CFPreferencesSetAppValue("GenerateNewKey" as CFString, nil, bundleid as CFString)
         }
         self.needsEncryption = false
-        _ = allowLogin()
+        allowLogin()
         return;
       }
 
@@ -120,7 +120,7 @@ class Check: CryptMechanism {
 //        }
 //      }
 
-      
+
 
 //      if let keyRotateDays = CFPreferencesCopyAppValue(Preferences.keyRotateDays as CFString, bundleid as CFString) {
 //
@@ -140,24 +140,24 @@ class Check: CryptMechanism {
 //          }
 //        }
 //      }
-      
+
       os_log("All checks for an encypted machine have passed, Allowing Login...", log: Check.log, type: .default)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     // end of fvEnabled
     }
     else if skipUsers {
       os_log("Logged in User is in the Skip List... Not enforcing FileVault...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else if (serverURL == nil) {
       //Should we acutally do this?
       os_log("Couldn't find ServerURL Pref choosing not to enable FileVault...", log: Check.log, type: .error)
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else if onHighSierraOrNewer() && onAPFS() {
@@ -173,7 +173,7 @@ class Check: CryptMechanism {
         return
       }
       self.needsEncryption = false
-      _ = allowLogin()
+      allowLogin()
       return;
     }
     else {
@@ -212,9 +212,9 @@ class Check: CryptMechanism {
   fileprivate func getSkipUsers() -> Bool {
     os_log("Checking for any SkipUsers...", log: Check.log, type: .default)
     guard let username = self.username
-      else { 
+      else {
         os_log("Cannot get username", log: Check.log, type: .error)
-        return false 
+        return false
       }
     os_log("Username is %{public}@...", log: Check.log, type: .error, String(describing: username))
 
@@ -281,31 +281,31 @@ class Check: CryptMechanism {
     inPipe.fileHandleForWriting.write(inputPlist)
     inPipe.fileHandleForWriting.closeFile()
     task.waitUntilExit()
-    
+
     let errorOut = errorPipe.fileHandleForReading.readDataToEndOfFile()
     let errorMessage = String(data: errorOut, encoding: .utf8)
     errorPipe.fileHandleForReading.closeFile()
-    
+
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
       os_log("Error: fdesetup terminated with a NON-Zero exit status: %{public}@", log: Check.log, type: .error, termstatus)
       os_log("fdesetup Standard Error: %{public}@", log: Check.log, type: .error, String(describing: errorMessage))
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
-    
+
     os_log("Trying to get output data", log: Check.log, type: .default)
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
-    
+
     if outputData.count == 0 {
       os_log("Error: Found nothing in output data", log: Check.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
-    
+
     var format : PropertyListSerialization.PropertyListFormat = PropertyListSerialization.PropertyListFormat.xml
     let outputPlist = try PropertyListSerialization.propertyList(from: outputData,
                                                                  options: PropertyListSerialization.MutabilityOptions(), format: &format)
-    
+
     if (format == PropertyListSerialization.PropertyListFormat.xml) {
       if outputPlist is NSDictionary {
         os_log("Attempting to write key to: %{public}@", log: Check.log, type: .default, String(describing: filepath))

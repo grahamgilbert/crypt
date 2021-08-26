@@ -1,7 +1,7 @@
 /*
   Crypt
 
-  Copyright 2016 The Crypt Project.
+  Copyright 2021 The Crypt Project.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -23,23 +23,23 @@ import CoreFoundation
 import os.log
 
 class Enablement: CryptMechanism {
-  
+
   fileprivate let bundleid = "com.grahamgilbert.crypt"
-  
+
   private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "Enablement")
   // This is the only public function. It will be called from the
   // ObjC AuthorizationPlugin class
   @objc func run() {
-    
+
     if self.needsEncryption {
-      
+
       os_log("Attempting to enable FileVault", log: Enablement.log, type: .default)
-      
+
       guard let username = self.username
         else { allowLogin(); return }
       guard let password = self.password
         else { allowLogin(); return }
-      
+
       if getFVEnabled().encrypted && needToRestart() {
         // This is a catch for if we are on 10.13+ but on HFS.
         os_log("FileVault is enabled already and `fdesetup status` requests a restart", log: Enablement.log, type: .default)
@@ -53,15 +53,15 @@ class Enablement: CryptMechanism {
       }
       catch let error as NSError {
         os_log("Failed to Enable FileVault %{public}@", log: Enablement.log, type: .error, error.localizedDescription)
-        _ = allowLogin()
+        allowLogin()
       }
     } else {
       // Allow to login. End of mechanism
       os_log("Hint Value not set Allowing Login...", log: Enablement.log, type: .default)
-      _ = allowLogin()
+      allowLogin()
     }
   }
-  
+
   // Restart
   fileprivate func restartMac() -> Bool {
     // Wait a couple of seconds for everything to finish

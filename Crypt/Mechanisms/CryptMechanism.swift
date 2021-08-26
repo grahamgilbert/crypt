@@ -1,7 +1,7 @@
 /*
   Crypt
 
-  Copyright 2016 The Crypt Project.
+  Copyright 2021 The Crypt Project.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -20,19 +20,19 @@ import Foundation
 import Security
 import os.log
 
-class CryptMechanism: NSObject {  
+class CryptMechanism: NSObject {
   // This NSString will be used as the domain for the inter-mechanism context data
   let contextCryptDomain : NSString = "com.grahamgilbert.crypt"
 
   // Key for hint data
   private let needsEncryptionHintKey = "com.grahamgilbert.crypt.needsEncryption"
-  
+
   // Log Crypt Mechanism
   private static let log = OSLog(subsystem: "com.grahamgilbert.crypt", category: "CryptMechanism")
   // Define a pointer to the MechanismRecord. This will be used to get and set
   // all the inter-mechanism data. It is also used to allow or deny the login.
   var mechanism:UnsafePointer<MechanismRecord>
-  
+
   // init the class with a MechanismRecord
   @objc init(mechanism:UnsafePointer<MechanismRecord>) {
     os_log("initWithMechanismRecord", log: CryptMechanism.log, type: .default)
@@ -108,7 +108,7 @@ class CryptMechanism: NSObject {
     return (self.mechanism.pointee.fPlugin.pointee.fCallbacks.pointee.SetHintValue(
       self.mechanism.pointee.fEngine, key, &value) != errAuthorizationSuccess)
   }
-  
+
   var username: NSString? {
     get {
       os_log("Requesting username...", log: CryptMechanism.log, type: .default)
@@ -122,7 +122,7 @@ class CryptMechanism: NSObject {
       return s.replacingOccurrences(of: "\0", with: "") as NSString
     }
   }
-  
+
   var password: NSString? {
     get {
       os_log("Requesting password...", log: CryptMechanism.log, type: .default)
@@ -136,7 +136,7 @@ class CryptMechanism: NSObject {
       return s.replacingOccurrences(of: "\0", with: "") as NSString
     }
   }
-  
+
   var uid: uid_t {
     get {
       os_log("Requesting uid...", log: CryptMechanism.log, type: .default)
@@ -148,7 +148,7 @@ class CryptMechanism: NSObject {
       return uid
     }
   }
-  
+
   var needsEncryption: Bool {
     set {
       os_log("needsEncryption set to %@", log: CryptMechanism.log, type: .default, newValue as CVarArg)
@@ -187,13 +187,13 @@ class CryptMechanism: NSObject {
       return false
     }
   }
-  
+
   // check if on 10.13+
   func onHighSierraOrNewer() -> Bool {
     os_log("Checking to see if on 10.13+", log: CryptMechanism.log, type: .default)
     return ProcessInfo().isOperatingSystemAtLeast(OperatingSystemVersion.init(majorVersion: 10, minorVersion: 13, patchVersion: 0))
   }
-  
+
   // check authrestart capability
   func checkAuthRestart() -> Bool {
     let outPipe = Pipe.init()
@@ -213,14 +213,14 @@ class CryptMechanism: NSObject {
       return false
     }
   }
-  
+
   // fdesetup Errors
   private enum FileVaultError: Error {
     case fdeSetupFailed(retCode: Int32)
     case outputPlistNull
     case outputPlistMalformed
   }
-  
+
   // Check if some information on filevault whether it's encrypted and if decrypting.
   func getFVEnabled() -> (encrypted: Bool, decrypting: Bool) {
     os_log("Checking the current status of FileVault..", log: CryptMechanism.log, type: .default)
@@ -249,30 +249,30 @@ class CryptMechanism: NSObject {
     os_log("Attempting to enable FileVault", log: CryptMechanism.log, type: .default)
     let inputPlist = try PropertyListSerialization.data(fromPropertyList: theSettings,
                                                         format: PropertyListSerialization.PropertyListFormat.xml, options: 0)
-    
+
     let inPipe = Pipe.init()
     let outPipe = Pipe.init()
     let errorPipe = Pipe.init()
-    
+
     let task = Process.init()
     task.launchPath = "/usr/bin/fdesetup"
     task.arguments = ["enable", "-outputplist", "-inputplist"]
-    
+
     // check if we should do an authrestart on enablement
     if checkAuthRestart() && !onAPFS(){
       os_log("adding -authrestart flag at index 1 of our task arguments...", log: CryptMechanism.log, type: .default)
       task.arguments?.insert("-authrestart", at: 1)
     }
-    
+
     // if there's an IRK, need to add the -keychain argument to keep us from failing.
     let instKeyPath = "/Library/Keychains/FileVaultMaster.keychain"
     if checkFileExists(path: instKeyPath) {
       os_log("Appending -keychain to the end of our task arguments...", log: CryptMechanism.log, type: .default)
       task.arguments?.append("-keychain")
     }
-    
+
     os_log("Running /usr/bin/fdesetup %{public}@", log: CryptMechanism.log, type: .default, String(describing: task.arguments))
-    
+
     task.standardInput = inPipe
     task.standardOutput = outPipe
     task.standardError = errorPipe
@@ -280,31 +280,31 @@ class CryptMechanism: NSObject {
     inPipe.fileHandleForWriting.write(inputPlist)
     inPipe.fileHandleForWriting.closeFile()
     task.waitUntilExit()
-    
+
     os_log("Trying to get output data", log: CryptMechanism.log, type: .default)
     let outputData = outPipe.fileHandleForReading.readDataToEndOfFile()
     outPipe.fileHandleForReading.closeFile()
-    
+
     let errorData = errorPipe.fileHandleForReading.readDataToEndOfFile()
     let errorMessage = String(data: errorData, encoding: .utf8)
     errorPipe.fileHandleForReading.closeFile()
-    
+
     if task.terminationStatus != 0 {
       let termstatus = String(describing: task.terminationStatus)
       os_log("fdesetup terminated with a NON-Zero exit status: %{public}@", log: CryptMechanism.log, type: .error, termstatus)
       os_log("fdesetup Standard Error: %{public}@", log: CryptMechanism.log, type: .error, String(describing: errorMessage))
       throw FileVaultError.fdeSetupFailed(retCode: task.terminationStatus)
     }
-    
+
     if outputData.count == 0 {
       os_log("Found nothing in output data", log: CryptMechanism.log, type: .error)
       throw FileVaultError.outputPlistNull
     }
-    
+
     var format : PropertyListSerialization.PropertyListFormat = PropertyListSerialization.PropertyListFormat.xml
     let outputPlist = try PropertyListSerialization.propertyList(from: outputData,
                                                                  options: PropertyListSerialization.MutabilityOptions(), format: &format)
-    
+
     if (format == PropertyListSerialization.PropertyListFormat.xml) {
       if outputPlist is NSDictionary {
         os_log("Attempting to write key to: %{public}@", log: CryptMechanism.log, type: .default, String(describing: filepath))
@@ -317,16 +317,16 @@ class CryptMechanism: NSObject {
       throw FileVaultError.outputPlistMalformed
     }
   }
-  
+
   func onAPFS() -> Bool {
     // checks to see if our boot drive is APFS
     let ws = NSWorkspace.shared
-    
+
     var myDes: NSString? = nil
     var myType: NSString? = nil
-    
+
     ws.getFileSystemInfo(forPath: "/", isRemovable: nil, isWritable: nil, isUnmountable: nil, description: &myDes, type: &myType)
-    
+
     if myType == "apfs" {
       os_log("Machine appears to be APFS", log: CryptMechanism.log, type: .default)
       return true
@@ -335,7 +335,7 @@ class CryptMechanism: NSObject {
       return false
     }
   }
-  
+
   func checkFileExists(path: String) -> Bool {
     os_log("Checking to see if %{public}@ exists...", log: Check.log, type: .default, String(describing: path))
     let fm = FileManager.default
