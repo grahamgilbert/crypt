@@ -2,7 +2,7 @@
 
 ## [v4.1.0](https://github.com/grahamgilbert/crypt/compare/4.0.0...4.1.0)
 
-Crupt 4.1.0 only supports macOS 11 and up. Older versions are not supported.
+Crypt 4.1.0 only supports macOS 11 and up. Older versions are not supported.
 
 ### Fixed in this release
 
