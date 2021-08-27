@@ -24,8 +24,10 @@ clean-crypt:
 	@sudo rm -rf ../build
 	@sudo rm -rf Crypt.pkg
 
-pack-plugin: build
+pack-plugin: build l_private_etc
 	@sudo ${RM} -rf ${WORK_D}
+	@sudo mkdir -p ${WORK_D}/private/etc/newsyslog.d
+	@sudo ${CP} newsyslog.d/crypt.conf ${WORK_D}/private/etc/newsyslog.d/crypt.conf
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
 	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*

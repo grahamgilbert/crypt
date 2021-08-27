@@ -138,8 +138,7 @@ def main():
         "--sign-binaries",
         action="store",
         default=None,
-        help="Optionally sign the munki app binaries with a "
-        "Developer ID Application certificate from keychain. "
+        help="A Developer ID Application certificate from keychain. "
         "Provide the certificate's Common Name. e.g.: "
         "'Developer ID Application  Munki (U8PN57A5N2)'",
     ),
@@ -174,7 +173,7 @@ def main():
         "com.apple.security.cs.allow-unsigned-executable-memory": True,
         "com.apple.security.cs.allow-jit": True,
         "com.apple.security.cs.allow-dyld-environment-variables": True,
-        " com.apple.security.cs.disable-library-validation": True,
+        "com.apple.security.cs.disable-library-validation": True,
     }
 
     ent_file = os.path.join(tmp_dir, "entitlements.plist")

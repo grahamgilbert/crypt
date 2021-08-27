@@ -13,6 +13,7 @@ Crypt 4.1.0 only supports macOS 11 and up. Older versions are not supported.
 
 - All of Crypt is now distributed as Universal2 (No Rosetta required!)
 - Python is updated to 3.9.X
+- The log file will rotate when it reaches 5MB
 
 ## [v4.0.0](https://github.com/grahamgilbert/crypt/compare/3.3.1...4.0.0)
 
