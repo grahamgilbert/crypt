@@ -41,7 +41,6 @@ class Check: CryptMechanism {
       else { allowLogin(); return }
     guard let password = self.password
       else { allowLogin(); return }
-
     let the_settings = NSDictionary.init(dictionary: ["Username" : username, "Password" : password])
 
     //Get status on encryption.
