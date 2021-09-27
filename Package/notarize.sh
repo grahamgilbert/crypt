@@ -8,7 +8,7 @@
 # Go to Apple.developer.com and sign in with the account you are trying to notarize the app with and agree to the updated license agreement.
 
 BUNDLE_ID="com.grahamgilbert.Crypt"
-BUNDLE_PKG="./Crypt.pkg"
+BUNDLE_PKG=$3
 
 if [[ "$1" == "" ]]; then
     echo "Couldn't find a 'Apple Developer account e-mail' as argument 1"
@@ -46,7 +46,7 @@ RequestUUID=$(awk -F ' = ' '/RequestUUID/ {print $2}' "$NOTARIZE_APP_LOG")
 
 # check status periodically
 while sleep 30 && date; do
-echo "Waiting on Apple too approve the notarization so it can be stapled. This can take a few minutes or more. Script auto checks every 30 sec"
+echo "Waiting on Apple to approve the notarization so it can be stapled. This can take a few minutes or more. Script auto checks every 30 sec"
 	# check notarization status
 
 	if ! xcrun altool --notarization-info "$RequestUUID" --username "$AppleAcc" --password "$AppleAccPwd" > "$NOTARIZE_INFO_LOG" 2>&1; then

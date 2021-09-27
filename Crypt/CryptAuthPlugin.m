@@ -1,7 +1,7 @@
 /*
   Crypt
 
-  Copyright 2016 The Crypt Project.
+  Copyright 2021 The Crypt Project.
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
   if (authorizationPlugin == nil) {
     authorizationPlugin = [[CryptAuthPlugin alloc] init];
   }
-  
+
   return [authorizationPlugin AuthorizationPluginCreate:callbacks
                                               PluginRef:outPlugin
                                         PluginInterface:outPluginInterface];
@@ -107,7 +107,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
 - (OSStatus)MechanismInvoke:(AuthorizationMechanismRef)inMechanism {
   OSStatus err;
   MechanismRecord *mechanism = (MechanismRecord *)inMechanism;
-  
+
   if (mechanism->fCheck) {
     Check *check = [[Check alloc] initWithMechanism:mechanism];
     [check run];
@@ -118,7 +118,7 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
     Enablement *enablement = [[Enablement alloc] initWithMechanism:mechanism];
     [enablement run];
   }
-  
+
   // Default "Allow Login". Used if none of the mechanisms above are called or don't make
   // a decision
   err = mechanism->fPlugin->fCallbacks->SetResult(mechanism->fEngine, kAuthorizationResultAllow);

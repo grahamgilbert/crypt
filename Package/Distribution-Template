@@ -5,7 +5,7 @@
     <options rootVolumeOnly="true" />
     <volume-check>
         <allowed-os-versions>
-            <os-version min="10.14.0" />
+            <os-version min="11.0.0" />
         </allowed-os-versions>
     </volume-check>
     <options customize="never" require-scripts="false"/>
