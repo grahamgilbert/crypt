@@ -2,7 +2,7 @@
 <installer-gui-script minSpecVersion="1">
     <title>Crypt replace_version</title>
     <pkg-ref id="com.grahamgilbert.Crypt"/>
-    <options rootVolumeOnly="true" />
+    <options rootVolumeOnly="true" hostArchitectures="x86_64,arm64" />
     <volume-check>
         <allowed-os-versions>
             <os-version min="11.0.0" />
