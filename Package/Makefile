@@ -13,7 +13,8 @@ PAYLOAD=\
 	pack-script-postinstall\
 	pack-Library-LaunchDaemons-com.grahamgilbert.crypt.plist \
 	pack-checkin \
-	pack-script-preinstall
+	pack-script-preinstall \
+	remove-xattrs
 
 #################################################
 
@@ -68,6 +69,18 @@ build-python:
 	@./download_python_framework.sh
 	@sudo ./sign_python_framework.py -v -S "${DEV_APP_CERT}"
 	@sudo mv /Library/Crypt/Python.framework Python.framework
+
+remove-xattrs:
+	@sudo xattr -rd com.dropbox.attributes ${WORK_D}
+	@sudo xattr -rd com.dropbox.internal ${WORK_D}
+	@sudo xattr -rd com.apple.ResourceFork ${WORK_D}
+	@sudo xattr -rd com.apple.FinderInfo ${WORK_D}
+	@sudo xattr -rd com.apple.metadata:_kMDItemUserTags ${WORK_D}
+	@sudo xattr -rd com.apple.metadata:kMDItemFinderComment ${WORK_D}
+	@sudo xattr -rd com.apple.metadata:kMDItemOMUserTagTime ${WORK_D}
+	@sudo xattr -rd com.apple.metadata:kMDItemOMUserTags ${WORK_D}
+	@sudo xattr -rd com.apple.metadata:kMDItemStarRating ${WORK_D}
+	@sudo xattr -rd com.dropbox.ignored ${WORK_D}
 
 check_variables:
 ifndef DEV_INSTALL_CERT
