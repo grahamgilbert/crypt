@@ -448,7 +448,7 @@ def main():
                 os.remove(plist_path)
             else:
                 logging.info("Ensuring permissions on plist.")
-                os.chmod(plist_path, 600)
+                os.chmod(plist_path, 0o600)
 
 
 if __name__ == "__main__":
