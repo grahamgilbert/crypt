@@ -192,7 +192,7 @@ def escrow_key(plist):
         server_initiated_rotation(output)
         return True
     else:
-        logging.error("Key escrow unsuccessful.")
+        logging.error("Key escrow unsuccessful. Reason: %s" % error.decode().strip())
         return False
 
 
