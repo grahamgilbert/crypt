@@ -100,6 +100,10 @@ You will need to configure Xcode 9.3 (requires 10.13.2 or later) to sign the bun
 - `cd Package`
 - `make pkg`
 
+## Recommended additional configuration profiles
+
+It is recommended that you deploy a configuration profile along-side Crypt that prevents users from disabling FileVault. See the `dontAllowFDEDisable` preference at https://developer.apple.com/documentation/devicemanagement/fdefilevaultoptions for more info.
+
 ## Credits
 
 Crypt 2 couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.
