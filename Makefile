@@ -1,5 +1,6 @@
 include /usr/local/share/luggage/luggage.make
 include config.mk
+USE_PKGBUILD=1
 PB_EXTRA_ARGS+= --info "./PackageInfo" --sign "${DEV_INSTALL_CERT}"
 TITLE=Crypt
 GITVERSION=$(shell ./build_no.sh)
@@ -7,68 +8,76 @@ BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionSt
 PACKAGE_VERSION=${BUNDLE_VERSION}.${GITVERSION}
 REVERSE_DOMAIN=com.grahamgilbert
 PACKAGE_NAME=${TITLE}
-PYTHONTOOLDIR=/tmp/relocatable-python
 PAYLOAD=\
 	pack-plugin\
-	pack-script-postinstall\
-	pack-Library-LaunchDaemons-com.grahamgilbert.crypt.plist \
 	pack-checkin \
-	pack-script-preinstall \
+	pack-scripts \
 	remove-xattrs
 
 #################################################
 
+gazelle:
+	bazel run //:gazelle
+
+update-repos:
+	bazel run //:gazelle-update-repos -- -from_file=go.mod
+
+test:
+	bazel test --test_output=errors //...
+
+coverage:
+	rm -rf coverage
+	mkdir -p coverage
+	bazel coverage --combined_report=lcov //...
+	mv $(BAZEL_OUTPUT_PATH)/_coverage/_coverage_report.dat coverage/lcov.info
+
 build: check_variables clean-crypt
-	xcodebuild -project ../Crypt.xcodeproj -configuration Release
+	xcodebuild -project Crypt.xcodeproj -configuration Release
 
 clean-crypt:
-	@sudo rm -rf ../build
+	@sudo rm -rf build
 	@sudo rm -rf Crypt.pkg
 
 pack-plugin: build l_private_etc
 	@sudo ${RM} -rf ${WORK_D}
 	@sudo mkdir -p ${WORK_D}/private/etc/newsyslog.d
-	@sudo ${CP} newsyslog.d/crypt.conf ${WORK_D}/private/etc/newsyslog.d/crypt.conf
+	@sudo ${CP} Package/newsyslog.d/crypt.conf ${WORK_D}/private/etc/newsyslog.d/crypt.conf
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
-	@sudo ${CP} -R ../build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
+	@sudo ${CP} -R build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/MacOS/*
 
-pack-checkin: clean-python build-python l_Library
+pack-scripts:
+	@sudo ${INSTALL} -o root -g wheel -m 755 Package/postinstall ${SCRIPT_D}
+	@sudo ${INSTALL} -o root -g wheel -m 755 Package/preinstall ${SCRIPT_D}
+
+build_binary:
+	bazel build //cmd:crypt-amd
+	bazel build //cmd:crypt-arm
+	tools/bazel_to_builddir.sh
+	/usr/bin/lipo -create -output build/checkin build/checkin.arm64 build/checkin.amd64
+	/bin/rm build/checkin.arm64
+	/bin/rm build/checkin.amd64
+	@sudo chown root:wheel build/checkin
+	@sudo chmod 755 build/checkin
+	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
+
+pack-checkin: l_Library build_binary
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
-	@sudo ${CP} -R Python.framework ${WORK_D}/Library/Crypt/Python.framework
-	@sudo /bin/ln -s /Library/Crypt/Python.framework/Versions/Current/bin/python3 ${WORK_D}/Library/Crypt/python
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
 	@sudo chmod 755 ${WORK_D}/Library/Crypt/checkin
+	@sudo ${INSTALL} -m 644 -g wheel -o root Package/com.grahamgilbert.crypt.plist ${WORK_D}/Library/LaunchDaemons
 
 dist: pkg
 	@sudo rm -f Distribution
-	python generate_dist.py
+	python3 generate_dist.py
 	@sudo productbuild --distribution Distribution Crypt-${BUNDLE_VERSION}.pkg
 	@sudo rm -f Crypt.pkg
 	@sudo rm -f Distribution
 
 notarize:
 	@./notarize.sh "${APPLE_ACC_USER}" "${APPLE_ACC_PWD}" "./Crypt.pkg"
-
-clean-python:
-	@sudo rm -rf Python.framework
-	@sudo rm -rf ${WORK_D}/Library/Crypt/Python.framework
-	@sudo rm -rf entitlements.plist
-
-build-python:
-	# Why not just run the make_relocatable_python.py here?
-	# It can't find the temp folder that the python pkg is expanded into
-	# if issued directly from Make, so we're currently shelling out until
-	# we grok the GNU better. PS THANKS SHEA
-	@sudo rm -rf "${PYTHONTOOLDIR}"
-	@sudo rm -rf /Library/Crypt/Python.framework
-	@sudo chmod 777 /Library/Crypt
-	@git clone https://github.com/gregneagle/relocatable-python.git "${PYTHONTOOLDIR}"
-	@./download_python_framework.sh
-	@sudo ./sign_python_framework.py -v -S "${DEV_APP_CERT}"
-	@sudo mv /Library/Crypt/Python.framework Python.framework
 
 remove-xattrs:
 	@sudo xattr -rd com.dropbox.attributes ${WORK_D}

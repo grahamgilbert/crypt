@@ -1,5 +1,3 @@
-#!/usr/bin/python
-
 """
 Sets the right version number and writes the Distribution file from the template
 """
@@ -12,7 +10,9 @@ def main():
     FINAL COUNTDOWN
     """
     crypt_plist = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'Crypt','Info.plist')
-    version = plistlib.readPlist(crypt_plist)['CFBundleShortVersionString']
+    with open(crypt_plist, 'rb') as fp:
+        pl = plistlib.load(fp)
+    version = pl['CFBundleShortVersionString']
 
     with open('Distribution-Template', 'r') as the_file:
         filedata = the_file.read()
