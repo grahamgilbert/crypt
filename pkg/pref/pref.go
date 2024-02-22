@@ -31,6 +31,7 @@ Boolean Go_CFStringGetCString(CFStringRef str, char *buffer, CFIndex bufferSize,
 import "C"
 import (
 	"fmt"
+	"os/user"
 	"unsafe"
 
 	"github.com/pkg/errors"
@@ -123,11 +124,33 @@ func (p *Pref) Get(prefName string) (interface{}, error) {
 	}
 }
 
+func isRoot() (bool, error) {
+	currentUser, err := user.Current()
+	if err != nil {
+		return false, err
+	}
+
+	if currentUser.Uid == "0" {
+		return true, nil
+	}
+	return false, nil
+}
+
 // Set sets the value of a preference
 // Why use defaults over cgo? It's simpler, and more reliable.
 func (p *Pref) Set(prefName string, prefValue interface{}) error {
+	isRoot, err := isRoot()
+	if err != nil {
+		return errors.Wrap(err, "failed to determine if running as root")
+	}
 	cmd := "/usr/bin/defaults"
-	path := fmt.Sprintf("/Library/Preferences/%s", BundleID)
+	var path string
+	if isRoot {
+		path = fmt.Sprintf("/Library/Preferences/%s", BundleID)
+	} else {
+		path = BundleID
+	}
+
 	args := []string{"write", path, prefName}
 	switch v := prefValue.(type) {
 	case string:
@@ -149,7 +172,7 @@ func (p *Pref) Set(prefName string, prefValue interface{}) error {
 		return fmt.Errorf("unsupported preference type for %s", prefName)
 	}
 
-	_, err := p.Runner.RunCmd(cmd, args...)
+	_, err = p.Runner.RunCmd(cmd, args...)
 	if err != nil {
 		return errors.Wrap(err, "failed to set preference")
 	}
