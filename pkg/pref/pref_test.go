@@ -14,7 +14,7 @@ func TestGetPrefString(t *testing.T) {
 	prefName := "testString"
 	expectedValue := "testValue"
 	p := New()
-	defer p.Delete(prefName)
+	defer p.Delete(prefName) //nolint:errcheck
 	err := p.SetString(prefName, expectedValue)
 	assert.NoError(t, err)
 
@@ -30,7 +30,7 @@ func TestGetPrefBool(t *testing.T) {
 	prefName := "testBool"
 	expectedValue := true
 	p := New()
-	defer p.Delete(prefName)
+	defer p.Delete(prefName) //nolint:errcheck
 	err := p.SetBool(prefName, expectedValue)
 	assert.NoError(t, err)
 
@@ -46,7 +46,7 @@ func TestGetPrefInt(t *testing.T) {
 	prefName := "testInt"
 	expectedValue := 123
 	p := New()
-	defer p.Delete(prefName)
+	defer p.Delete(prefName) //nolint:errcheck
 	err := p.SetInt(prefName, expectedValue)
 	assert.NoError(t, err)
 
@@ -62,7 +62,7 @@ func TestGetPrefArray(t *testing.T) {
 	prefName := "testArray"
 	expectedValue := []string{"value1", "value2", "value3"}
 	p := New()
-	defer p.Delete(prefName)
+	defer p.Delete(prefName) //nolint:errcheck
 	err := p.SetArray(prefName, expectedValue)
 	assert.NoError(t, err)
 

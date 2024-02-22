@@ -165,7 +165,7 @@ func (p *Pref) Set(prefName string, prefValue interface{}) error {
 		args = append(args, "-int", fmt.Sprintf("%d", prefValue))
 	case []string:
 		args = append(args, "-array")
-		for _, s := range prefValue.([]string) {
+		for _, s := range prefValue.([]string) { //nolint:gosimple
 			args = append(args, s)
 		}
 	default:
