@@ -1,5 +1,5 @@
 #!/bin/sh
-go get github.com/jandelgado/gcov2lcov
+go install github.com/jandelgado/gcov2lcov
 rm -rf coverage
 mkdir -p coverage
 # bazel coverage --combined_report=lcov //...
