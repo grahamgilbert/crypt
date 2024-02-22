@@ -400,8 +400,10 @@ def rotate_if_used(key_path):
 def main():
     plist_path = pref("OutputPath")
     logging.info(f"OutputPath Pref is set to: {plist_path}")
-    if pref("RotateUsedKey"):
-        rotate_if_used(plist_path)
+    
+    # Not usable after macos 10.15
+    # if pref("RotateUsedKey"):
+    #     rotate_if_used(plist_path)
 
     if pref("RotateUsedKey") and pref("ValidateKey") and not pref("RemovePlist"):
         rotate_invalid_key(plist_path)

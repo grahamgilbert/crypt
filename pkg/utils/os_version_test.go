@@ -7,15 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-type MockCmdRunner struct {
-	Output string
-	Err    error
-}
-
-func (m MockCmdRunner) RunCmd(name string, arg ...string) ([]byte, error) {
-	return []byte(m.Output), m.Err
-}
-
 func TestGetOSVersion(t *testing.T) {
 	tests := []struct {
 		name    string

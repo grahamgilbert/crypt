@@ -14,16 +14,23 @@ PAYLOAD=\
 	pack-scripts \
 	remove-xattrs
 
-#################################################
+.PHONY: coverage
 
+#################################################
+## Why is all the bazel stuff commented out? It seems to have issues with Cgo.
 gazelle:
 	bazel run //:gazelle
+
+run:
+	# bazel run --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 -- //cmd:crypt-arm64
+	go run cmd/main.go
 
 update-repos:
 	bazel run //:gazelle-update-repos -- -from_file=go.mod
 
 test:
-	bazel test --test_output=errors //...
+	# bazel test --test_output=errors //...
+	go test -v ./...
 
 coverage:
 	rm -rf coverage
@@ -31,7 +38,7 @@ coverage:
 	bazel coverage --combined_report=lcov //...
 	mv $(BAZEL_OUTPUT_PATH)/_coverage/_coverage_report.dat coverage/lcov.info
 
-build: check_variables clean-crypt
+build: check_variables clean-crypt build_binary
 	xcodebuild -project Crypt.xcodeproj -configuration Release
 
 clean-crypt:
@@ -52,17 +59,22 @@ pack-scripts:
 	@sudo ${INSTALL} -o root -g wheel -m 755 Package/preinstall ${SCRIPT_D}
 
 build_binary:
-	bazel build //cmd:crypt-amd
-	bazel build //cmd:crypt-arm
-	tools/bazel_to_builddir.sh
+	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //:cmd:crypt-amd
+	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_arm //cmd:crypt-arm
+	# tools/bazel_to_builddir.sh
+	GOOS=darwin GOARCH=arm64 go build -o build/checkin.arm64 cmd/main.go
+	GOOS=darwin GOARCH=amd64 go build -o build/checkin.amd64 cmd/main.go
 	/usr/bin/lipo -create -output build/checkin build/checkin.arm64 build/checkin.amd64
 	/bin/rm build/checkin.arm64
 	/bin/rm build/checkin.amd64
 	@sudo chown root:wheel build/checkin
 	@sudo chmod 755 build/checkin
+	
+
+sign_binary:
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
 
-pack-checkin: l_Library build_binary
+pack-checkin: l_Library build_binary sign_binary
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt

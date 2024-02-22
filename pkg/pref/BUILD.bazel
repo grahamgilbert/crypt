@@ -1,0 +1,25 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "pref",
+    srcs = [
+        "pref.go",
+        "pref_helpers.go",
+    ],
+    cgo = True,
+    clinkopts = ["-framework CoreFoundation"],
+    copts = ["-x objective-c"],
+    importpath = "github.com/grahamgilbert/crypt/pkg/pref",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/utils",
+        "@com_github_pkg_errors//:errors",
+    ],
+)
+
+go_test(
+    name = "pref_test",
+    srcs = ["pref_test.go"],
+    embed = [":pref"],
+    deps = ["@com_github_stretchr_testify//assert"],
+)

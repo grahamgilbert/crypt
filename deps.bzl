@@ -8,6 +8,18 @@ def go_dependencies():
         version = "v1.1.1",
     )
     go_repository(
+        name = "com_github_groob_plist",
+        importpath = "github.com/groob/plist",
+        sum = "h1:saaSiB25B1wgaxrshQhurfPKUGJ4It3OxNJUy0rdOjU=",
+        version = "v0.0.0-20220217120414-63fa881b19a5",
+    )
+    go_repository(
+        name = "com_github_pkg_errors",
+        importpath = "github.com/pkg/errors",
+        sum = "h1:FEBLx1zS214owpjy7qsBeixbURkuhQAwrK5UwLGTwt4=",
+        version = "v0.9.1",
+    )
+    go_repository(
         name = "com_github_pmezard_go_difflib",
         importpath = "github.com/pmezard/go-difflib",
         sum = "h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=",

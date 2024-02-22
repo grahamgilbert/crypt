@@ -1,7 +1,4 @@
-//go:build darwin
-// +build darwin
-
-package utils
+package pref
 
 /*
 #cgo CFLAGS: -x objective-c
@@ -13,10 +10,7 @@ CFPropertyListRef GetPreference(CFStringRef key, CFStringRef applicationID) {
 	return value;
 }
 
-bool SetPreference(CFStringRef key, CFPropertyListRef value, CFStringRef applicationID) {
-    CFPreferencesSetAppValue(key, value, applicationID);
-    return CFPreferencesAppSynchronize(applicationID);
-}
+
 
 CFBooleanRef getTrue() {
     return kCFBooleanTrue;
@@ -24,6 +18,14 @@ CFBooleanRef getTrue() {
 
 CFBooleanRef getFalse() {
     return kCFBooleanFalse;
+}
+
+CFStringRef CFStringCreateWithCString(CFAllocatorRef alloc, const char *cStr, CFStringEncoding encoding) {
+    return CFStringCreateWithCString(alloc, cStr, encoding);
+}
+
+Boolean Go_CFStringGetCString(CFStringRef str, char *buffer, CFIndex bufferSize, CFStringEncoding encoding) {
+    return CFStringGetCString(str, buffer, bufferSize, encoding);
 }
 */
 import "C"
@@ -45,7 +47,7 @@ var defaultPrefs = map[string]interface{}{
 	"AdditionalCurlOpts": []string{},
 }
 
-func Pref(prefName string) (interface{}, error) {
+func (p *Pref) Get(prefName string) (interface{}, error) {
 	cPrefName := C.CFStringCreateWithCStringNoCopy(
 		C.kCFAllocatorDefault,
 		C.CString(prefName),
@@ -66,12 +68,9 @@ func Pref(prefName string) (interface{}, error) {
 	if unsafe.Pointer(prefValue) == nil {
 		defaultValue, ok := defaultPrefs[prefName]
 		if !ok {
-			return nil, fmt.Errorf(
-				"preference %s not found and no default value provided",
-				prefName,
-			)
+			return nil, nil
 		}
-		err := SetPref(prefName, defaultValue)
+		err := p.Set(prefName, defaultValue)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to set default preference")
 		}
@@ -81,9 +80,17 @@ func Pref(prefName string) (interface{}, error) {
 	// Handle different types of preferences
 	switch C.CFGetTypeID(prefValue) {
 	case C.CFStringGetTypeID():
-		return C.GoString(
-			C.CFStringGetCStringPtr(C.CFStringRef(prefValue), C.kCFStringEncodingUTF8),
-		), nil
+		var buffer [1024]C.char
+		success := C.CFStringGetCString(
+			C.CFStringRef(prefValue),
+			&buffer[0],
+			C.CFIndex(len(buffer)),
+			C.kCFStringEncodingUTF8,
+		)
+		if success == C.false {
+			return "", fmt.Errorf("failed to convert value to string")
+		}
+		return C.GoString(&buffer[0]), nil
 	case C.CFBooleanGetTypeID():
 		return C.CFBooleanGetValue(C.CFBooleanRef(prefValue)) != 0, nil
 	case C.CFNumberGetTypeID():
@@ -92,56 +99,59 @@ func Pref(prefName string) (interface{}, error) {
 		return num, nil
 	case C.CFArrayGetTypeID():
 		length := C.CFArrayGetCount(C.CFArrayRef(prefValue))
-		array := make([]interface{}, length)
+		array := make([]string, length)
 		for i := 0; i < int(length); i++ {
 			value := C.CFArrayGetValueAtIndex(C.CFArrayRef(prefValue), C.CFIndex(i))
-			// TODO: Handle different types of values in the array
-			array[i] = C.GoString(
-				C.CFStringGetCStringPtr(C.CFStringRef(value), C.kCFStringEncodingUTF8),
+			if C.CFGetTypeID(C.CFTypeRef(value)) != C.CFStringGetTypeID() {
+				return nil, fmt.Errorf("array contains non-string value")
+			}
+			var buffer [1024]C.char
+			success := C.Go_CFStringGetCString(
+				C.CFStringRef(value),
+				&buffer[0],
+				C.CFIndex(len(buffer)),
+				C.kCFStringEncodingUTF8,
 			)
+			if success != C.true {
+				return nil, fmt.Errorf("failed to convert value to string")
+			}
+			array[i] = C.GoString(&buffer[0])
 		}
 		return array, nil
 	default:
-		return nil, fmt.Errorf("Unsupported preference type for %s", prefName)
+		return nil, fmt.Errorf("unsupported preference type for %s", prefName)
 	}
 }
 
-func SetPref(prefName string, prefValue interface{}) error {
-	cPrefName := C.CFStringCreateWithCStringNoCopy(
-		C.kCFAllocatorDefault,
-		C.CString(prefName),
-		C.kCFStringEncodingUTF8,
-		C.kCFAllocatorDefault,
-	)
-	defer C.CFRelease(C.CFTypeRef(cPrefName))
-
-	cBundleID := C.CFStringCreateWithCStringNoCopy(
-		C.kCFAllocatorDefault,
-		C.CString(BundleID),
-		C.kCFStringEncodingUTF8,
-		C.kCFAllocatorDefault,
-	)
-	defer C.CFRelease(C.CFTypeRef(cBundleID))
-
-	var cPrefValue C.CFPropertyListRef
+// Set sets the value of a preference
+// Why use defaults over cgo? It's simpler, and more reliable.
+func (p *Pref) Set(prefName string, prefValue interface{}) error {
+	cmd := "/usr/bin/defaults"
+	path := fmt.Sprintf("/Library/Preferences/%s", BundleID)
+	args := []string{"write", path, prefName}
 	switch v := prefValue.(type) {
 	case string:
-		cPrefValue = C.CFPropertyListRef(C.CFStringCreateWithCStringNoCopy(C.kCFAllocatorDefault, C.CString(v), C.kCFStringEncodingUTF8, C.kCFAllocatorDefault))
+		args = append(args, prefValue.(string))
 	case bool:
 		if v {
-			cPrefValue = C.CFPropertyListRef(C.getTrue())
+			args = append(args, "-bool", "true")
 		} else {
-			cPrefValue = C.CFPropertyListRef(C.getFalse())
+			args = append(args, "-bool", "false")
 		}
 	case int:
-		cPrefValue = C.CFPropertyListRef(C.CFNumberCreate(C.kCFAllocatorDefault, C.kCFNumberIntType, unsafe.Pointer(&v)))
+		args = append(args, "-int", fmt.Sprintf("%d", prefValue))
+	case []string:
+		args = append(args, "-array")
+		for _, s := range prefValue.([]string) {
+			args = append(args, s)
+		}
 	default:
 		return fmt.Errorf("unsupported preference type for %s", prefName)
 	}
-	defer C.CFRelease(C.CFTypeRef(cPrefValue))
 
-	if C.SetPreference(cPrefName, cPrefValue, cBundleID) == false {
-		return fmt.Errorf("failed to set preference %s", prefName)
+	_, err := p.Runner.RunCmd(cmd, args...)
+	if err != nil {
+		return errors.Wrap(err, "failed to set preference")
 	}
 
 	return nil
