@@ -1,4 +1,5 @@
 #!/bin/sh
+go get -u github.com/jandelgado/gcov2lcov
 go install github.com/jandelgado/gcov2lcov
 rm -rf coverage
 mkdir -p coverage
