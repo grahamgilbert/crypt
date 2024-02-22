@@ -15,7 +15,7 @@ jobs:
           go-version: "1.21.3"
       
       - name: Test Coverage
-        run: make coverage
+        run: ./tools/coverage.sh
         
       - name: Setup LCOV
         uses: hrishikesh-kadam/setup-lcov@d100c36c45e4f64950fb746cd28713f6c756a9c1
