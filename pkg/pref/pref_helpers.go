@@ -45,6 +45,9 @@ func (p *Pref) GetString(prefName string) (string, error) {
 	if err != nil {
 		return "", errors.Wrapf(err, "failed to get preference %s", prefName)
 	}
+	if value == nil {
+		return "", nil
+	}
 	return value.(string), nil
 }
 
@@ -79,7 +82,7 @@ func (p *Pref) GetArray(prefName string) ([]string, error) {
 		return nil, errors.Wrapf(err, "failed to get preference %s", prefName)
 	}
 	if value == nil {
-		return nil, nil
+		return []string{}, nil
 	}
 	return value.([]string), nil
 }
