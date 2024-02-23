@@ -1,11 +1,12 @@
 include /usr/local/share/luggage/luggage.make
 include config.mk
 USE_PKGBUILD=1
-PB_EXTRA_ARGS+= --info "./PackageInfo" --sign "${DEV_INSTALL_CERT}"
+PB_EXTRA_ARGS+= --info "./Package/PackageInfo" --sign "${DEV_INSTALL_CERT}"
 TITLE=Crypt
-GITVERSION=$(shell ./build_no.sh)
-BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "../Crypt/Info.plist")
+GITVERSION=$(shell ./Package/build_no.sh)
+BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "Crypt/Info.plist")
 PACKAGE_VERSION=${BUNDLE_VERSION}.${GITVERSION}
+CLANG_DIR := /opt/homebrew/opt/llvm/bin
 REVERSE_DOMAIN=com.grahamgilbert
 PACKAGE_NAME=${TITLE}
 PAYLOAD=\
@@ -59,8 +60,8 @@ build_binary:
 	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //:cmd:crypt-amd
 	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_arm //cmd:crypt-arm
 	# tools/bazel_to_builddir.sh
-	GOOS=darwin GOARCH=arm64 go build -o build/checkin.arm64 cmd/main.go
-	GOOS=darwin GOARCH=amd64 go build -o build/checkin.amd64 cmd/main.go
+	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${PACKAGE_VERSION}" -o build/checkin.arm64 cmd/main.go
+	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${PACKAGE_VERSION}" -o build/checkin.amd64 cmd/main.go
 	/usr/bin/lipo -create -output build/checkin build/checkin.arm64 build/checkin.amd64
 	/bin/rm build/checkin.arm64
 	/bin/rm build/checkin.amd64
@@ -73,7 +74,7 @@ sign_binary:
 
 pack-checkin: l_Library build_binary sign_binary
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
-	@sudo ${CP} checkin ${WORK_D}/Library/Crypt/checkin
+	@sudo ${CP} build/checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
 	@sudo chmod 755 ${WORK_D}/Library/Crypt/checkin
 	@sudo ${INSTALL} -m 644 -g wheel -o root Package/com.grahamgilbert.crypt.plist ${WORK_D}/Library/LaunchDaemons
@@ -112,4 +113,7 @@ $(error "APPLE_ACC_USER" is not set)
 endif
 ifndef APPLE_ACC_PWD
 $(error "APPLE_ACC_PWD" is not set)
+endif
+ifeq ("$(wildcard $(CLANG_DIR))","")
+$(error The directory $(CLANG_DIR) does not exist)
 endif

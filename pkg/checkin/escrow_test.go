@@ -244,7 +244,13 @@ func TestServerInitiatedRotation(t *testing.T) {
 	output := `{"rotation_required": true}`
 	p := &MockPref{}
 
-	err := serverInitiatedRotation(output, p)
+	runner := utils.MockCmdRunner{
+		Output: "",
+		Err:    nil,
+	}
+	r := utils.Runner{}
+	r.Runner = runner
+	err := serverInitiatedRotation(output, r, p)
 	assert.Nil(t, err)
 }
 

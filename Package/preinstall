@@ -23,10 +23,10 @@ if [[ -f "/Library/Crypt/FoundationPlist.pyc" ]]; then
 fi
 
 # Remove python
-if [[ -d "/Library/Crypt/Python.framework" ]]; then
-    /bin/rm -r /Library/Crypt/Python.framework
+if [[ -e "/Library/Crypt/python" ]]; then
+    /bin/rm /Library/Crypt/python
 fi
 
-if [[ -f "/Library/Crypt/python" ]]; then
-    /bin/rm /Library/Crypt/python
+if [[ -d "/Library/Crypt/Python.framework" ]]; then
+    /bin/rm -r /Library/Crypt/Python.framework
 fi

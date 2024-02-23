@@ -1,3 +1,0 @@
-pyobjc==7.3
-# pyobjc==7.1
---no-binary :all:

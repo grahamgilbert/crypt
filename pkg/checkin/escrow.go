@@ -48,7 +48,7 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 	}
 
 	if rotateUsedKey && validateKey && !removePlist {
-		err := rotateInvalidKey(plistPath, r)
+		err := rotateInvalidKey(plistPath, r, p)
 		if err != nil {
 			return errors.Wrap(err, "rotateInvalidKey")
 		}
@@ -174,7 +174,7 @@ func writePlist(cryptData CryptData, plistPath string) error {
 // it will remove the plist so the key can be regenerated at next login.
 // Due to the bug that restricts the number of validations before reboot
 // in versions of macOS prior to 10.12.5, this will only run there.
-func rotateInvalidKey(plistPath string, r utils.Runner) error {
+func rotateInvalidKey(plistPath string, r utils.Runner, p pref.PrefInterface) error {
 	_, err := utils.GetConsoleUser()
 	if err != nil {
 		// a work aroud for https://github.com/grahamgilbert/crypt/issues/68
@@ -215,6 +215,11 @@ func rotateInvalidKey(plistPath string, r utils.Runner) error {
 		if err != nil {
 			return errors.Wrap(err, "os.remove plistPath")
 		}
+	}
+
+	err = postRunCommand(r, p)
+	if err != nil {
+		return errors.Wrap(err, "postRunCommand")
 	}
 
 	return nil
@@ -349,14 +354,14 @@ func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface) error {
 	}
 	log.Println("Key escrow successful.")
 
-	err = serverInitiatedRotation(output, p)
+	err = serverInitiatedRotation(output, r, p)
 	if err != nil {
 		return errors.Wrap(err, "serverInitiatedRotation")
 	}
 	return nil
 }
 
-func serverInitiatedRotation(output string, p pref.PrefInterface) error {
+func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface) error {
 	var rotation struct {
 		RotationRequired bool `json:"rotation_required"`
 	}
@@ -394,34 +399,39 @@ func serverInitiatedRotation(output string, p pref.PrefInterface) error {
 		}
 	}
 
+	err = postRunCommand(r, p)
+	if err != nil {
+		return errors.Wrap(err, "postRunCommand")
+	}
+
 	return nil
 }
 
-// func postRunCommand(runner utils.CmdRunner) error {
-// 	command, err := utils.GetPrefString("PostRunCommand")
-// 	if err != nil {
-// 		return errors.Wrap(err, "failed to get post run command")
-// 	}
+func postRunCommand(r utils.Runner, p pref.PrefInterface) error {
+	command, err := p.GetString("PostRunCommand")
+	if err != nil {
+		return errors.Wrap(err, "failed to get post run command")
+	}
 
-// 	outputPlist, err := utils.GetPrefString("OutputPath")
-// 	if err != nil {
-// 		return errors.Wrap(err, "failed to get output path")
-// 	}
+	outputPlist, err := p.GetString("OutputPath")
+	if err != nil {
+		return errors.Wrap(err, "failed to get output path")
+	}
 
-// 	if command != "" {
-// 		_, err := os.Stat(outputPlist)
-// 		if os.IsNotExist(err) {
-// 			log.Println("Running post run command...")
-// 			_, err = runner.RunCmd(command, outputPlist)
-// 			if err != nil {
-// 				return errors.Wrap(err, "failed to run post run command")
-// 			}
-// 			log.Println("Post run command successful.")
-// 		}
-// 	}
+	if command != "" {
+		_, err := os.Stat(outputPlist)
+		if os.IsNotExist(err) {
+			log.Println("Running post run command...")
+			_, err = r.Runner.RunCmd(command, outputPlist)
+			if err != nil {
+				return errors.Wrap(err, "failed to run post run command")
+			}
+			log.Println("Post run command successful.")
+		}
+	}
 
-// 	return nil
-// }
+	return nil
+}
 
 func getRecoveryKey(keyLocation string) (string, error) {
 	type keyPlist struct {
