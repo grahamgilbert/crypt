@@ -72,7 +72,7 @@ build_binary:
 sign_binary:
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
 
-pack-checkin: l_Library build_binary sign_binary
+pack-checkin: l_Library l_Library_LaunchDaemons build_binary sign_binary
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} build/checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
