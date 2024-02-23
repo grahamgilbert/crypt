@@ -90,7 +90,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt AdditionalCur
 
 ## Uninstalling
 
-The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. A script that will do this can be found at [Package/uninstall](https://github.com/grahamgilbert/crypt2/blob/master/Package/uninstall).
+The install package will modify the Authorization DB - you need to remove these entries before removing the Crypt Authorization Plugin. To do this, use the `-uninstall` flag in the `checkin` binary (`sudo /Library/Crypt/checkin -uninstall`).
 
 ## Building from source
 

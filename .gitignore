@@ -1,6 +1,7 @@
 # Xcode
 #
 build/
+bazel-*
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -42,3 +43,4 @@ Carthage/Build
 Package/Python.framework/
 Package/entitlements.plist
 Package/config.mk
+config.mk

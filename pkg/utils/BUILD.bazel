@@ -1,0 +1,44 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "utils",
+    srcs = [
+        "console_user.go",
+        "console_user_darwin.go",
+        "curl.go",
+        "exec.go",
+        "exec_mocks.go",
+        "get_computer_name.go",
+        "os_version.go",
+        "string_in_slice.go",
+    ],
+    cgo = True,
+    clinkopts = select({
+        "@io_bazel_rules_go//go/platform:darwin": [
+            "-framework SystemConfiguration",
+        ],
+        "@io_bazel_rules_go//go/platform:ios": [
+            "-framework SystemConfiguration",
+        ],
+        "//conditions:default": [],
+    }),
+    importpath = "github.com/grahamgilbert/crypt/pkg/utils",
+    visibility = ["//visibility:public"],
+)
+
+go_test(
+    name = "utils_test",
+    srcs = [
+        "console_user_test.go",
+        "curl_test.go",
+        "exec_test.go",
+        "get_computer_name_test.go",
+        "os_version_test.go",
+        "string_in_slice_test.go",
+    ],
+    embed = [":utils"],
+    deps = [
+        "@com_github_stretchr_testify//assert",
+        "@com_github_stretchr_testify//require",
+    ],
+)

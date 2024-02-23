@@ -1,0 +1,34 @@
+name: Test Coverage
+
+on: [pull_request]
+
+jobs:
+  coverage:
+
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+          # We'll come back to this later
+#       - name: Test Coverage
+#         run: ./tools/coverage.sh
+      
+#       - name: Convert coverage to lcov
+#         uses: jandelgado/gcov2lcov-action@v1
+#         with:
+#           infile: coverage/coverage.out
+#           outfile: coverage/coverage.lcov
+        
+#       - name: Setup LCOV
+#         uses: hrishikesh-kadam/setup-lcov@d100c36c45e4f64950fb746cd28713f6c756a9c1
+#       - name: Report code coverage
+#         uses: zgosalvez/github-actions-report-lcov@3b60071009dbaf817edeaa3c7226f7889a4171b8
+#         with:
+#           coverage-files: coverage/coverage.lcov
+#           minimum-coverage: 40
+#           github-token: ${{ secrets.GITHUB_TOKEN }}
+#           update-comment: true

@@ -1,0 +1,26 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+
+go_library(
+    name = "checkin",
+    srcs = ["escrow.go"],
+    importpath = "github.com/grahamgilbert/crypt/pkg/checkin",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//pkg/pref",
+        "//pkg/utils",
+        "@com_github_groob_plist//:plist",
+        "@com_github_hashicorp_go_version//:go_default_library",
+        "@com_github_pkg_errors//:errors",
+    ],
+)
+
+go_test(
+    name = "checkin_test",
+    srcs = ["escrow_test.go"],
+    embed = [":checkin"],
+    deps = [
+        "//pkg/utils",
+        "@com_github_groob_plist//:plist",
+        "@com_github_stretchr_testify//assert",
+    ],
+)

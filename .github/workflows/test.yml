@@ -1,0 +1,17 @@
+name: Go Test
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.3"
+
+      - name: Test
+        run: go test -v ./...
