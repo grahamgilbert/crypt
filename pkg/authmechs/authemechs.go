@@ -3,6 +3,7 @@ package authmechs
 import (
 	"errors"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 
@@ -156,10 +157,21 @@ func Run(r utils.Runner, add bool) error {
 	if err != nil {
 		return err
 	}
-	err = editAuthDB(r, add)
+
+	return editAuthDB(r, add)
+}
+
+func Ensure(r utils.Runner) error {
+	d, err := getAuthDb(r)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	if checkMechsInDB(d, fv2Mechs, fv2IndexMech, fv2IndexOffset) {
+		return nil
+	}
+
+	log.Println("Mechanisms are not set correctly, adding to AuthDB")
+
+	return editAuthDB(r, true)
 }

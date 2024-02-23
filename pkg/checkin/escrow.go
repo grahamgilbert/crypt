@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/grahamgilbert/crypt/pkg/authmechs"
 	"github.com/grahamgilbert/crypt/pkg/pref"
 	"github.com/grahamgilbert/crypt/pkg/utils"
 	"github.com/groob/plist"
@@ -45,6 +46,18 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 	removePlist, err := p.GetBool("RemovePlist")
 	if err != nil {
 		return errors.Wrap(err, "failed to get remove plist preference")
+	}
+
+	manageAuthMechs, err := p.GetBool("ManageAuthMechs")
+	if err != nil {
+		return errors.Wrap(err, "failed to get manage auth mechs preference")
+	}
+
+	if manageAuthMechs {
+		err := authmechs.Ensure(r)
+		if err != nil {
+			return errors.Wrap(err, "failed to ensure auth mechs")
+		}
 	}
 
 	if rotateUsedKey && validateKey && !removePlist {
