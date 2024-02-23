@@ -6,8 +6,8 @@ import (
 	"log"
 	"os"
 
+	"github.com/grahamgilbert/crypt/pkg/authmechs"
 	"github.com/grahamgilbert/crypt/pkg/checkin"
-	"github.com/grahamgilbert/crypt/pkg/postinstall"
 	"github.com/grahamgilbert/crypt/pkg/pref"
 	"github.com/grahamgilbert/crypt/pkg/utils"
 )
@@ -18,6 +18,7 @@ func main() {
 
 	install := flag.Bool("install", false, "Install the AuthDB mechanisms")
 	uninstall := flag.Bool("uninstall", false, "Uninstall the AuthDB mechanisms")
+	checkMechs := flag.Bool("check-auth-mechs", false, "Check the AuthDB mechanisms. Returns 0 if all are present, 1 if not.")
 	versionFlag := flag.Bool("version", false, "print the version")
 	flag.Parse()
 
@@ -28,13 +29,19 @@ func main() {
 		os.Exit(0)
 	}
 	if *install {
-		err := postinstall.Run(r, true)
+		err := authmechs.Run(r, true)
 		if err != nil {
 			log.Println(err)
 			os.Exit(1)
 		}
 	} else if *uninstall {
-		err := postinstall.Run(r, false)
+		err := authmechs.Run(r, false)
+		if err != nil {
+			log.Println(err)
+			os.Exit(1)
+		}
+	} else if *checkMechs {
+		err := authmechs.Check(r)
 		if err != nil {
 			log.Println(err)
 			os.Exit(1)

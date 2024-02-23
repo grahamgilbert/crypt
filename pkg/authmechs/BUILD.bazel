@@ -2,8 +2,8 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "postinstall",
-    srcs = ["postinstall.go"],
-    importpath = "github.com/grahamgilbert/crypt/pkg/postinstall",
+    srcs = ["authemechs.go"],
+    importpath = "github.com/grahamgilbert/crypt/pkg/authmechs",
     visibility = ["//visibility:public"],
     deps = [
         "//pkg/utils",
@@ -16,4 +16,14 @@ go_test(
     srcs = ["postinstall_test.go"],
     embed = [":postinstall"],
     deps = ["@com_github_stretchr_testify//assert"],
+)
+
+go_test(
+    name = "authmechs_test",
+    srcs = ["authmechs_test.go"],
+    embed = [":authmechs"],
+    deps = [
+        "//pkg/utils",
+        "@com_github_stretchr_testify//assert",
+    ],
 )

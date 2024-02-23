@@ -2,9 +2,7 @@
 
 **WARNING:** As this has the potential for stopping users from logging in, extensive testing should take place before deploying into production.
 
-Crypt is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt supports macOS 11 and 12. For versions below 11.0, please use version 4.0.0. For versions below 10.12 please use version 2 and below.
-
-Version 3.0.0 now supports 10.12 and above, previous macOS version support has been deprecated!
+Crypt is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt supports macOS 13 and above.For versions below 13.0, please use version 4.1.0. For versions below 11.0, please use version 4.0.0. For versions below 10.12 please use version 2 and below.
 
 When using Crypt with macOS 10.15 and higher, you will also need to deploy a PPC TCC profile via user approved MDM to allow Crypt to enable FileVault. [An example can be found here.](https://github.com/grahamgilbert/crypt/blob/master/ppctcc_example.mobileconfig)
 
@@ -24,6 +22,14 @@ The `ServerURL` preference sets your Crypt Server. Crypt will not enforce FileVa
 
 ```bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ServerURL "https://crypt.example.com"
+```
+
+### ManageAuthMechs
+
+By default, Crypt will ensure the Authenication Mechaniss are set up correctly. If you want to disable this, you can set the `ManageAuthMechs` preference to `FALSE`.
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ManageAuthMechs -bool FALSE
 ```
 
 ### SkipUsers
@@ -54,7 +60,7 @@ For macOS 10.15 and above, you may want to use the `ROTATE_VIEWED_SECRETS` key i
 
 ### ValidateKey
 
-Crypt2 can validate the recovery key if it is stored on disk. If the key fails validation, the plist is removed so it can be regenerated on next login. This is set to `TRUE` by default.
+Crypt can validate the recovery key if it is stored on disk. If the key fails validation, the plist is removed so it can be regenerated on next login. This is set to `TRUE` by default.
 
 ```bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ValidateKey -bool FALSE
@@ -62,7 +68,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ValidateKey -
 
 ### OutputPath
 
-As of version 3.0.0 you can now define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.
+You can define a new location for where the recovery key is written to. Default for this is `'/var/root/crypt_output.plist'`.
 
 ```bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/path/to/different/location"
@@ -70,7 +76,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt OutputPath "/
 
 ### KeyEscrowInterval
 
-As of version 3.0.0 you can now define the time interval in Hours for how often Crypt tries to re-escrow the key, after the first successful escrow. Default for this is `1` hour.
+You can define the time interval in Hours for how often Crypt tries to re-escrow the key, after the first successful escrow. Default for this is `1` hour.
 
 ```bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt KeyEscrowInterval -int 2
@@ -86,7 +92,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt AdditionalCur
 
 ### PostRunCommand
 
-(Introduced in version 3.2.0) This is a command that is run after Crypt has detected an error condition with a stored key that cannot be resolved silently - either it has failed validation or the server has instructed the client to rotate the key. These cannot be resolved silently on APFS volumes, so the user will need to log in again. If you have a tool that can enforce a logout or a reboot, you can run it here. This preference can either be a string if your command has no spaces, or an array if there are spaces in the command.
+This is a command that is run after Crypt has detected an error condition with a stored key that cannot be resolved silently - either it has failed validation or the server has instructed the client to rotate the key. These cannot be resolved silently on APFS volumes, so the user will need to log in again. If you have a tool that can enforce a logout or a reboot, you can run it here. This preference can either be a string if your command has no spaces, or an array if there are spaces in the command.
 
 ## Uninstalling
 
@@ -102,4 +108,4 @@ You will need to configure Xcode 9.3 (requires 10.13.2 or later) to sign the bun
 
 ## Credits
 
-Crypt 2 couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.
+Crypt couldn't have been written without the help of [Tom Burgin](https://github.com/tburgin) - he is responsible for all of the good code in this project. The bad bits are mine.
