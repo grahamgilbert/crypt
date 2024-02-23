@@ -60,8 +60,8 @@ build_binary:
 	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_amd64 //:cmd:crypt-amd
 	# bazel build --platforms=@io_bazel_rules_go//go/toolchain:darwin_arm //cmd:crypt-arm
 	# tools/bazel_to_builddir.sh
-	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${PACKAGE_VERSION}" -o build/checkin.arm64 cmd/main.go
-	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${PACKAGE_VERSION}" -o build/checkin.amd64 cmd/main.go
+	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=${BUNDLE_VERSION}" -o build/checkin.arm64 cmd/main.go
+	CGO_ENABLED=1 CC=/opt/homebrew/opt/llvm/bin/clang CXX=/opt/homebrew/opt/llvm/bin/clang++ GOOS=darwin GOARCH=amd64 go build -ldflags "-X main.version=${BUNDLE_VERSION}" -o build/checkin.amd64 cmd/main.go
 	/usr/bin/lipo -create -output build/checkin build/checkin.arm64 build/checkin.amd64
 	/bin/rm build/checkin.arm64
 	/bin/rm build/checkin.amd64
