@@ -2,7 +2,7 @@
 
 **WARNING:** As this has the potential for stopping users from logging in, extensive testing should take place before deploying into production.
 
-Crypt is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt supports macOS 13 and above.For versions below 13.0, please use version 4.1.0. For versions below 11.0, please use version 4.0.0. For versions below 10.12 please use version 2 and below.
+Crypt is an authorization plugin that will enforce FileVault 2, and then submit it to an instance of [Crypt Server](https://github.com/grahamgilbert/crypt-server). Crypt supports macOS 13 and above. For versions below 13.0, please use version 4.1.0. For versions below 11.0, please use version 4.0.0. For versions below 10.12 please use version 2 and below.
 
 When using Crypt with macOS 10.15 and higher, you will also need to deploy a PPC TCC profile via user approved MDM to allow Crypt to enable FileVault. [An example can be found here.](https://github.com/grahamgilbert/crypt/blob/master/ppctcc_example.mobileconfig)
 
