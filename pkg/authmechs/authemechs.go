@@ -33,6 +33,7 @@ func removeMechsInDB(db AuthDB, mechList []string) AuthDB {
 		for _, mechToRemove := range mechList {
 			if db.Mechanisms[i] == mechToRemove {
 				db.Mechanisms = append(db.Mechanisms[:i], db.Mechanisms[i+1:]...)
+				break
 			}
 		}
 	}
