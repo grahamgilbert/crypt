@@ -1,8 +1,9 @@
-package postinstall
+package authmechs
 
 import (
 	"testing"
 
+	"github.com/grahamgilbert/crypt/pkg/utils"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -184,6 +185,163 @@ func TestInsertMechsAtPosition(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			result := insertMechsAtPosition(tt.mechanisms, tt.mechsToInsert, tt.pos)
 			assert.Equal(t, tt.expectedResult, result)
+		})
+	}
+}
+
+func TestGetAuthDB(t *testing.T) {
+	tests := []struct {
+		name   string
+		want   AuthDB
+		runner utils.MockCmdRunner
+	}{
+		{
+			name: "Test with Crypt config",
+			want: AuthDB{
+				Class:   "evaluate-mechanisms",
+				Comment: "Login mechanism based rule.  Not for general use, yet.",
+				Created: 730353220.36463201,
+				Mechanisms: []string{
+					"builtin:prelogin",
+					"builtin:policy-banner",
+					"loginwindow:login",
+					"builtin:login-begin",
+					"builtin:reset-password,privileged",
+					"loginwindow:FDESupport,privileged",
+					"builtin:forward-login,privileged",
+					"builtin:auto-login,privileged",
+					"builtin:authenticate,privileged",
+					"PKINITMechanism:auth,privileged",
+					"builtin:login-success",
+					"loginwindow:success",
+					"HomeDirMechanism:login,privileged",
+					"HomeDirMechanism:status",
+					"MCXMechanism:login",
+					"CryptoTokenKit:login",
+					"Crypt:Check,privileged",
+					"Crypt:CryptGUI",
+					"Crypt:Enablement,privileged",
+					"loginwindow:done",
+				},
+				Modified: 730407814.24742103,
+				Shared:   true,
+				Tries:    10000,
+				Version:  11,
+			},
+			runner: utils.MockCmdRunner{
+				Output: `<?xml version="1.0" encoding="UTF-8"?>
+				<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+				<plist version="1.0">
+				<dict>
+						<key>class</key>
+						<string>evaluate-mechanisms</string>
+						<key>comment</key>
+						<string>Login mechanism based rule.  Not for general use, yet.</string>
+						<key>created</key>
+						<real>730353220.36463201</real>
+						<key>mechanisms</key>
+						<array>
+								<string>builtin:prelogin</string>
+								<string>builtin:policy-banner</string>
+								<string>loginwindow:login</string>
+								<string>builtin:login-begin</string>
+								<string>builtin:reset-password,privileged</string>
+								<string>loginwindow:FDESupport,privileged</string>
+								<string>builtin:forward-login,privileged</string>
+								<string>builtin:auto-login,privileged</string>
+								<string>builtin:authenticate,privileged</string>
+								<string>PKINITMechanism:auth,privileged</string>
+								<string>builtin:login-success</string>
+								<string>loginwindow:success</string>
+								<string>HomeDirMechanism:login,privileged</string>
+								<string>HomeDirMechanism:status</string>
+								<string>MCXMechanism:login</string>
+								<string>CryptoTokenKit:login</string>
+								<string>Crypt:Check,privileged</string>
+								<string>Crypt:CryptGUI</string>
+								<string>Crypt:Enablement,privileged</string>
+								<string>loginwindow:done</string>
+						</array>
+						<key>modified</key>
+						<real>730407814.24742103</real>
+						<key>shared</key>
+						<true/>
+						<key>tries</key>
+						<integer>10000</integer>
+						<key>version</key>
+						<integer>11</integer>
+				</dict>
+				</plist>`,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			runner := &tt.runner
+			r := utils.Runner{Runner: runner}
+			got, err := getAuthDb(r)
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestCheckMechsInDB(t *testing.T) {
+	tests := []struct {
+		name        string
+		db          AuthDB
+		mechList    []string
+		indexMech   string
+		indexOffset int
+		expected    bool
+	}{
+		{
+			name:        "Test Case 1", // The case when the sequence is present before the indexMech
+			db:          AuthDB{Mechanisms: []string{"mech2", "mech3", "mech1"}},
+			mechList:    []string{"mech2", "mech3"},
+			indexMech:   "mech1",
+			indexOffset: 0,
+			expected:    true,
+		},
+		{
+			name:        "Test Case 2", // The case when the sequence is present after the indexMech
+			db:          AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
+			mechList:    []string{"mech2", "mech3"},
+			indexMech:   "mech1",
+			indexOffset: 0,
+			expected:    false,
+		},
+		{
+			name:        "Test Case 3",
+			db:          AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
+			mechList:    []string{"mech4", "mech5"},
+			indexMech:   "mech3",
+			indexOffset: 0,
+			expected:    false,
+		},
+		{
+			name:        "Test Case 4", // The case when the sequence is not present before the indexMech
+			db:          AuthDB{Mechanisms: []string{"mech3", "mech1", "mech2"}},
+			mechList:    []string{"mech2", "mech3"},
+			indexMech:   "mech1",
+			indexOffset: 0,
+			expected:    false,
+		},
+		{
+			name:        "Test Case 5", // The case when the sequence is present, but not in the correct order
+			db:          AuthDB{Mechanisms: []string{"mech3", "mech2", "mech1"}},
+			mechList:    []string{"mech2", "mech3"},
+			indexMech:   "mech1",
+			indexOffset: 0,
+			expected:    false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := checkMechsInDB(tt.db, tt.mechList, tt.indexMech, tt.indexOffset)
+			assert.Equal(t, tt.expected, result)
 		})
 	}
 }

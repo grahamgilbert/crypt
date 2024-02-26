@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/grahamgilbert/crypt/pkg/checkin",
     visibility = ["//visibility:public"],
     deps = [
+        "//pkg/authmechs:postinstall",
         "//pkg/pref",
         "//pkg/utils",
         "@com_github_groob_plist//:plist",

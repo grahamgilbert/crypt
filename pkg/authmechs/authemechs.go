@@ -1,8 +1,11 @@
-package postinstall
+package authmechs
 
 import (
 	"errors"
+	"fmt"
+	"log"
 	"os"
+	"reflect"
 
 	"github.com/grahamgilbert/crypt/pkg/utils"
 	"github.com/groob/plist"
@@ -35,6 +38,19 @@ func removeMechsInDB(db AuthDB, mechList []string) AuthDB {
 	}
 
 	return db
+}
+
+func checkMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset int) bool {
+	insertIndex := indexOf(db.Mechanisms, indexMech) - len(mechList) // start from the position before the indexMech
+
+	// Check if the position is valid
+	if insertIndex < 0 || insertIndex+len(mechList) > len(db.Mechanisms) {
+		fmt.Println("Invalid index")
+		return false
+	}
+
+	// Compare the corresponding elements of the two slices
+	return reflect.DeepEqual(db.Mechanisms[insertIndex:insertIndex+len(mechList)], mechList)
 }
 
 func setMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset int, add bool) AuthDB {
@@ -75,14 +91,23 @@ func indexOf(slice []string, item string) int {
 	return -1
 }
 
-func editAuthDB(r utils.Runner, add bool) error {
+func getAuthDb(r utils.Runner) (AuthDB, error) {
 	securityConsoleOut, err := r.Runner.RunCmd("/usr/bin/security", "authorizationdb", "read", "system.login.console")
 	if err != nil {
-		return err
+		return AuthDB{}, err
 	}
 
 	var d AuthDB
 	err = plist.Unmarshal(securityConsoleOut, &d)
+	if err != nil {
+		return AuthDB{}, err
+	}
+
+	return d, nil
+}
+
+func editAuthDB(r utils.Runner, add bool) error {
+	d, err := getAuthDb(r)
 	if err != nil {
 		return err
 	}
@@ -109,15 +134,44 @@ func checkRoot() error {
 	return nil
 }
 
+func Check(r utils.Runner) error {
+	err := checkRoot()
+	if err != nil {
+		return err
+	}
+
+	d, err := getAuthDb(r)
+	if err != nil {
+		return err
+	}
+
+	if !checkMechsInDB(d, fv2Mechs, fv2IndexMech, fv2IndexOffset) {
+		return errors.New("mechanisms are not set correctly")
+	}
+
+	return nil
+}
+
 func Run(r utils.Runner, add bool) error {
 	err := checkRoot()
 	if err != nil {
 		return err
 	}
-	err = editAuthDB(r, add)
+
+	return editAuthDB(r, add)
+}
+
+func Ensure(r utils.Runner) error {
+	d, err := getAuthDb(r)
 	if err != nil {
 		return err
 	}
 
-	return nil
+	if checkMechsInDB(d, fv2Mechs, fv2IndexMech, fv2IndexOffset) {
+		return nil
+	}
+
+	log.Println("Mechanisms are not set correctly, adding to AuthDB")
+
+	return editAuthDB(r, true)
 }

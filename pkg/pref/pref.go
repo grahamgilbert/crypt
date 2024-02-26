@@ -46,6 +46,7 @@ var defaultPrefs = map[string]interface{}{
 	"ValidateKey":        true,
 	"KeyEscrowInterval":  1,
 	"AdditionalCurlOpts": []string{},
+	"ManageAuthMechs":    true,
 }
 
 func (p *Pref) Get(prefName string) (interface{}, error) {

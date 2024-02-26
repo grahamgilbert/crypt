@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/grahamgilbert/crypt/cmd",
     visibility = ["//visibility:private"],
     deps = [
+        "//pkg/authmechs:postinstall",
         "//pkg/checkin",
-        "//pkg/postinstall",
         "//pkg/pref",
         "//pkg/utils",
     ],
