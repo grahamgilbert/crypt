@@ -423,7 +423,11 @@ func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface
 func postRunCommand(r utils.Runner, p pref.PrefInterface) error {
 	command, err := p.GetString("PostRunCommand")
 	if err != nil {
-		return errors.Wrap(err, "failed to get post run command")
+		commandArray, err := p.GetArray("PostRunCommand")
+		if err != nil {
+			return errors.Wrap(err, "failed to get post run command")
+		}
+		command = strings.Join(commandArray, " ")
 	}
 
 	outputPlist, err := p.GetString("OutputPath")
