@@ -420,13 +420,12 @@ func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface
 	return nil
 }
 
-func postRunCommand(r utils.Runner, p pref.PrefInterface) error {
+func getCommand(p pref.PrefInterface) (string, error) {
 	var command string
-	var err error
 
 	postRunCommand, err := p.Get("PostRunCommand")
 	if err != nil {
-		return errors.Wrap(err, "failed to get post run command")
+		return "", errors.Wrap(err, "failed to get post run command")
 	}
 
 	switch v := postRunCommand.(type) {
@@ -435,7 +434,16 @@ func postRunCommand(r utils.Runner, p pref.PrefInterface) error {
 	case []string:
 		command = strings.Join(v, " ")
 	default:
-		return errors.New("PostRunCommand is neither a string nor an array of strings")
+		return "", errors.New("PostRunCommand is neither a string nor an array of strings")
+	}
+
+	return command, nil
+}
+
+func postRunCommand(r utils.Runner, p pref.PrefInterface) error {
+	command, err := getCommand(p)
+	if err != nil {
+		return err
 	}
 
 	outputPlist, err := p.GetString("OutputPath")
