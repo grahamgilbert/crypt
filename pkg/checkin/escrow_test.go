@@ -66,6 +66,9 @@ func (m *MockPref) SetArray(key string, value []string) error {
 }
 
 func (m *MockPref) Get(key string) (interface{}, error) {
+	if key == "PostRunCommand" {
+		return []string{"test", "command"}, nil
+	}
 	return nil, nil
 }
 
@@ -75,6 +78,14 @@ func (m *MockPref) Set(key string, value interface{}) error {
 
 func (m *MockPref) Delete(key string) error {
 	return nil
+}
+
+func TestGetCommand(t *testing.T) {
+	p := &MockPref{}
+
+	command, err := getCommand(p)
+	assert.NoError(t, err)
+	assert.Equal(t, "test command", command)
 }
 
 func TestBuildCheckinURL(t *testing.T) {
