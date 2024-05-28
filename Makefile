@@ -69,7 +69,7 @@ build_binary:
 	@sudo chmod 755 build/checkin
 	
 
-sign_binary:
+sign_binary: build_binary
 	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
 
 pack-checkin: l_Library l_Library_LaunchDaemons build_binary sign_binary

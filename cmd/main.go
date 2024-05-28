@@ -16,6 +16,11 @@ var version = "development" // nolint:gochecknoglobals
 
 func main() {
 
+	if os.Geteuid() != 0 {
+		fmt.Println("Crypt must be run as root!")
+		os.Exit(1)
+	}
+
 	install := flag.Bool("install", false, "Install the AuthDB mechanisms")
 	uninstall := flag.Bool("uninstall", false, "Uninstall the AuthDB mechanisms")
 	checkMechs := flag.Bool("check-auth-mechs", false, "Check the AuthDB mechanisms. Returns 0 if all are present, 1 if not.")
