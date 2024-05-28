@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/bin/zsh --no-rcs
 
 OLD_KEY=/private/var/root/recovery_key.plist
 NEW_KEY=/private/var/root/crypt_output.plist
