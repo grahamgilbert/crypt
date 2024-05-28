@@ -433,6 +433,8 @@ func getCommand(p pref.PrefInterface) (string, error) {
 		command = v
 	case []string:
 		command = strings.Join(v, " ")
+	case nil:
+		return "", nil
 	default:
 		return "", errors.New("PostRunCommand is neither a string nor an array of strings")
 	}
