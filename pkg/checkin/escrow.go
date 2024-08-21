@@ -105,7 +105,7 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 		return nil
 	}
 
-	err = escrowKey(cryptData, r, p)
+	keyRotated, err := escrowKey(cryptData, r, p)
 	if err != nil {
 		return errors.Wrap(err, "escrowKey")
 	}
@@ -113,9 +113,11 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 	cryptData.LastRun = time.Now()
 	cryptData.EscrowSuccess = true
 
-	err = writePlist(cryptData, plistPath)
-	if err != nil {
-		return errors.Wrap(err, "failed to write plist")
+	if !keyRotated {
+		err = writePlist(cryptData, plistPath)
+		if err != nil {
+			return errors.Wrap(err, "failed to write plist")
+		}
 	}
 
 	if removePlist {
@@ -346,7 +348,7 @@ func runCurl(configFile string, r utils.Runner, p pref.PrefInterface) (string, e
 	return string(out), nil
 }
 
-func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface) error {
+func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface) (bool, error) {
 	log.Println("Attempting to Escrow Key...")
 	// serverURL, err := p.GetString("ServerURL")
 	// if err != nil {
@@ -354,54 +356,56 @@ func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface) error {
 	// }
 	theURL, err := buildCheckinURL(p)
 	if err != nil {
-		return errors.Wrap(err, "failed to build checkin URL")
+		return false, errors.Wrap(err, "failed to build checkin URL")
 	}
 	data, err := buildData(plist, r)
 	if err != nil {
-		return errors.Wrap(err, "failed to build data")
+		return false, errors.Wrap(err, "failed to build data")
 	}
 	configFile := utils.BuildCurlConfigFile(map[string]string{"url": theURL, "data": data})
 	output, err := runCurl(configFile, r, p)
 	if err != nil {
-		return errors.Wrap(err, "failed to run curl")
+		return false, errors.Wrap(err, "failed to run curl")
 	}
 	log.Println("Key escrow successful.")
 
-	err = serverInitiatedRotation(output, r, p)
+	keyRotated, err := serverInitiatedRotation(output, r, p)
 	if err != nil {
-		return errors.Wrap(err, "serverInitiatedRotation")
+		return false, errors.Wrap(err, "serverInitiatedRotation")
 	}
-	return nil
+	return keyRotated, nil
 }
 
-func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface) error {
+func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface) (bool, error) {
 	var rotation struct {
 		RotationRequired bool `json:"rotation_required"`
 	}
+
+	rotationCompleted := false
 	err := json.Unmarshal([]byte(output), &rotation)
 	if err != nil {
-		return errors.Wrap(err, "failed to unmarshal output")
+		return rotationCompleted, errors.Wrap(err, "failed to unmarshal output")
 	}
 	rotateUsedKey, err := p.GetBool("RotateUsedKey")
 	if err != nil {
-		return errors.Wrap(err, "failed to get rotate used key preference")
+		return rotationCompleted, errors.Wrap(err, "failed to get rotate used key preference")
 	}
 
 	removePlist, err := p.GetBool("RemovePlist")
 	if err != nil {
-		return errors.Wrap(err, "failed to get remove plist preference")
+		return rotationCompleted, errors.Wrap(err, "failed to get remove plist preference")
 	}
 	if !rotateUsedKey || removePlist {
-		return nil
+		return rotationCompleted, nil
 	}
 
 	outputPath, err := p.GetString("OutputPath")
 	if err != nil {
-		return errors.Wrap(err, "failed to get output path preference")
+		return rotationCompleted, errors.Wrap(err, "failed to get output path preference")
 	}
 	_, err = os.Stat(outputPath)
 	if os.IsNotExist(err) {
-		return nil
+		return rotationCompleted, nil
 	}
 
 	if rotation.RotationRequired {
@@ -409,15 +413,17 @@ func serverInitiatedRotation(output string, r utils.Runner, p pref.PrefInterface
 		err = os.Remove(outputPath)
 		if err != nil {
 			log.Println("Failed to remove output plist:", err)
+			return rotationCompleted, errors.Wrap(err, "failed to remove output plist")
 		}
+		rotationCompleted = true
 	}
 
 	err = postRunCommand(r, p)
 	if err != nil {
-		return errors.Wrap(err, "postRunCommand")
+		return rotationCompleted, errors.Wrap(err, "postRunCommand")
 	}
 
-	return nil
+	return rotationCompleted, nil
 }
 
 func getCommand(p pref.PrefInterface) (string, error) {
