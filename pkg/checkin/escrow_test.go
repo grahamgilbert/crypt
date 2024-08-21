@@ -261,8 +261,9 @@ func TestServerInitiatedRotation(t *testing.T) {
 	}
 	r := utils.Runner{}
 	r.Runner = runner
-	err := serverInitiatedRotation(output, r, p)
+	keyRotated, err := serverInitiatedRotation(output, r, p)
 	assert.Nil(t, err)
+	assert.False(t, keyRotated)
 }
 
 func TestGetRecoveryKey(t *testing.T) {
