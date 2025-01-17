@@ -313,6 +313,10 @@ func buildCheckinURL(p pref.PrefInterface) (string, error) {
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get server URL")
 	}
+	if strings.HasSuffix(serverURL, "/default") {
+		serverURL = serverURL + "/checkin"
+		return serverURL, nil
+	}
 	if !strings.HasSuffix(serverURL, "/") {
 		serverURL = serverURL + "/"
 	}
