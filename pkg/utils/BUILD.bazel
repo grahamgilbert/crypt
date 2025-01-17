@@ -1,4 +1,4 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library", "go_test")
 
 go_library(
     name = "utils",
@@ -14,10 +14,10 @@ go_library(
     ],
     cgo = True,
     clinkopts = select({
-        "@io_bazel_rules_go//go/platform:darwin": [
+        "@rules_go//go/platform:darwin": [
             "-framework SystemConfiguration",
         ],
-        "@io_bazel_rules_go//go/platform:ios": [
+        "@rules_go//go/platform:ios": [
             "-framework SystemConfiguration",
         ],
         "//conditions:default": [],

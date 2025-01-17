@@ -1,1 +1,0 @@
-build --action_env=CGO_ENABLED=1
