@@ -39,6 +39,14 @@ func (m *MockPref) GetString(key string) (string, error) {
 	return "", nil
 }
 
+func newMockPref(ServerURL string) *MockPrefV2 {
+	m := &MockPrefV2{}
+
+	m.ServerURL = ServerURL
+
+	return m
+}
+
 func (m *MockPref) SetString(key string, value string) error {
 	return nil
 }
@@ -94,6 +102,24 @@ func TestBuildCheckinURL(t *testing.T) {
 	url, err := buildCheckinURL(p)
 	assert.Nil(t, err)
 	assert.Equal(t, "http://test.com/checkin/", url)
+
+}
+
+func TestBuildNonTrailingSlashURL(t *testing.T) {
+	p := newMockPref("http://test.com/default")
+
+	url, err := buildCheckinURL(p)
+	assert.Nil(t, err)
+	assert.Equal(t, "http://test.com/default/checkin", url)
+
+}
+
+func TestHandleNonDefaultURL(t *testing.T) {
+	p := newMockPref("http://test.com/-default")
+
+	url, err := buildCheckinURL(p)
+	assert.Nil(t, err)
+	assert.Equal(t, "http://test.com/-default/checkin/", url)
 
 }
 
