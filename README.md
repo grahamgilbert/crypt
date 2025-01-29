@@ -26,7 +26,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ServerURL "ht
 
 ### ManageAuthMechs
 
-By default, Crypt will ensure the Authenication Mechaniss are set up correctly. If you want to disable this, you can set the `ManageAuthMechs` preference to `FALSE`.
+By default, Crypt will ensure the Authentication Mechanisms are set up correctly. If you want to disable this, you can set the `ManageAuthMechs` preference to `FALSE`.
 
 ```bash
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt ManageAuthMechs -bool FALSE
