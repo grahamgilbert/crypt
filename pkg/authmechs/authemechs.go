@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	fv2Mechs       = []string{"Crypt:Check,privileged", "Crypt:CryptGUI", "Crypt:Enablement,privileged"}
-	fv2IndexMech   = "loginwindow:done"
-	fv2IndexOffset = 0
+	fv2Mechs         = []string{"Crypt:Check,privileged"}
+	fv2MechsToRemove = []string{"Crypt:Check,privileged", "Crypt:CryptGUI", "Crypt:Enablement,privileged"}
+	fv2IndexMech     = "loginwindow:done"
+	fv2IndexOffset   = 0
 )
 
 type AuthDB struct {
@@ -55,7 +56,7 @@ func checkMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset 
 }
 
 func setMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset int, add bool) AuthDB {
-	db = removeMechsInDB(db, mechList)
+	db = removeMechsInDB(db, fv2MechsToRemove)
 
 	if add {
 		insertIndex := indexOf(db.Mechanisms, indexMech) + indexOffset

@@ -11,14 +11,19 @@ go_library(
         "get_computer_name.go",
         "os_version.go",
         "string_in_slice.go",
+        "keychain.go",
     ],
     cgo = True,
     clinkopts = select({
         "@io_bazel_rules_go//go/platform:darwin": [
             "-framework SystemConfiguration",
+            "-framework CoreFoundation",
+            "-framework Security",
         ],
         "@io_bazel_rules_go//go/platform:ios": [
             "-framework SystemConfiguration",
+            "-framework CoreFoundation",
+            "-framework Security",
         ],
         "//conditions:default": [],
     }),

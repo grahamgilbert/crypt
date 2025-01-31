@@ -49,8 +49,6 @@ struct MechanismRecord {
   AuthorizationEngineRef          fEngine;
   const PluginRecord *            fPlugin;
   Boolean                         fCheck;
-  Boolean                         fCryptGUI;
-  Boolean                         fEnablement;
 };
 typedef struct MechanismRecord MechanismRecord;
 

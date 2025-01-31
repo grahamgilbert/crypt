@@ -11,6 +11,7 @@ When using Crypt with macOS 10.15 and higher, you will also need to deploy a PPC
 - Uses native authorization plugin so FileVault enforcement cannot be skipped.
 - Escrow is delayed until there is an active user, so FileVault can be enforced when the Mac is offline.
 - Administrators can specify a series of username that should not have to enable FileVault (IT admin, for example).
+- Can securely store the recovery key in the keychain.
 
 ## Configuration
 
@@ -147,7 +148,11 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CommonNameFor
 A boolean value indicating that Crypt should generate a new recovery key during login.
 
 ```bash
+<<<<<<< HEAD
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt GenerateNewKey -bool TRUE
+=======
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CommonNameForEscrow -string "Custom Common Name"
+>>>>>>> 3fc1cbc (fix conflicts)
 ```
 
 ## Uninstalling

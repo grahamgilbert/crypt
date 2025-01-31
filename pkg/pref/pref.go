@@ -31,7 +31,9 @@ Boolean Go_CFStringGetCString(CFStringRef str, char *buffer, CFIndex bufferSize,
 import "C"
 import (
 	"fmt"
+	"math"
 	"os/user"
+	"time"
 	"unsafe"
 
 	"github.com/pkg/errors"
@@ -40,13 +42,15 @@ import (
 const BundleID = "com.grahamgilbert.crypt"
 
 var defaultPrefs = map[string]interface{}{
-	"RemovePlist":        true,
-	"RotateUsedKey":      true,
-	"OutputPath":         "/private/var/root/crypt_output.plist",
-	"ValidateKey":        true,
-	"KeyEscrowInterval":  1,
-	"AdditionalCurlOpts": []string{},
-	"ManageAuthMechs":    true,
+	"RemovePlist":                true,
+	"RotateUsedKey":              true,
+	"OutputPath":                 "/private/var/root/crypt_output.plist",
+	"ValidateKey":                true,
+	"KeyEscrowInterval":          1,
+	"AdditionalCurlOpts":         []string{},
+	"ManageAuthMechs":            true,
+	"StoreRecoveryKeyInKeychain": true,
+	"CommonNameForEscrow":        "",
 }
 
 func (p *Pref) Get(prefName string) (interface{}, error) {
@@ -95,6 +99,8 @@ func (p *Pref) Get(prefName string) (interface{}, error) {
 		return C.GoString(&buffer[0]), nil
 	case C.CFBooleanGetTypeID():
 		return C.CFBooleanGetValue(C.CFBooleanRef(prefValue)) != 0, nil
+	case C.CFDateGetTypeID():
+		return CFDateToTime(C.CFDateRef(prefValue)), nil
 	case C.CFNumberGetTypeID():
 		var num int
 		C.CFNumberGetValue(C.CFNumberRef(prefValue), C.kCFNumberIntType, unsafe.Pointer(&num))
@@ -164,6 +170,9 @@ func (p *Pref) Set(prefName string, prefValue interface{}) error {
 		}
 	case int:
 		args = append(args, "-int", fmt.Sprintf("%d", prefValue))
+	case time.Time:
+		iso8601 := v.UTC().Format(time.RFC3339)
+		args = append(args, "-date", iso8601)
 	case []string:
 		args = append(args, "-array")
 		for _, s := range prefValue.([]string) { //nolint:gosimple
@@ -179,4 +188,21 @@ func (p *Pref) Set(prefName string, prefValue interface{}) error {
 	}
 
 	return nil
+}
+
+const nsPerSec = 1000 * 1000 * 1000
+
+func absoluteTimeToUnix(abs C.CFAbsoluteTime) (int64, int64) {
+	int, frac := math.Modf(float64(abs))
+	return int64(int) + absoluteTimeIntervalSince1970(), int64(frac * nsPerSec)
+}
+
+func absoluteTimeIntervalSince1970() int64 {
+	return int64(C.kCFAbsoluteTimeIntervalSince1970)
+}
+
+func CFDateToTime(d C.CFDateRef) time.Time {
+	abs := C.CFDateGetAbsoluteTime(d)
+	s, ns := absoluteTimeToUnix(abs)
+	return time.Unix(s, ns)
 }

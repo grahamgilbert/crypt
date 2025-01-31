@@ -3,4 +3,3 @@
 //
 
 #import "CryptAuthPlugin.h"
-#import "PromptWindowController.h"

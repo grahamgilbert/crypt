@@ -1,7 +1,7 @@
 include /usr/local/share/luggage/luggage.make
 include config.mk
 USE_PKGBUILD=1
-PB_EXTRA_ARGS+= --info "./Package/PackageInfo" --sign "${DEV_INSTALL_CERT}"
+PB_EXTRA_ARGS+= --info "./Package/PackageInfo"
 TITLE=Crypt
 GITVERSION=$(shell ./Package/build_no.sh)
 BUNDLE_VERSION=$(shell /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "Crypt/Info.plist")
@@ -16,6 +16,7 @@ PAYLOAD=\
 	remove-xattrs
 
 .PHONY: coverage
+
 
 #################################################
 ## Why is all the bazel stuff commented out? It seems to have issues with Cgo.
@@ -37,7 +38,8 @@ coverage:
 	./tools/coverage.sh
 
 build: check_variables clean-crypt build_binary
-	xcodebuild -project Crypt.xcodeproj -configuration Release
+	xcodebuild -project Crypt.xcodeproj -configuration Release -scheme Crypt -derivedDataPath ./build OTHER_CODE_SIGN_FLAGS="--timestamp" CODE_SIGN_IDENTITY="${DEV_APP_CERT}"
+
 
 clean-crypt:
 	@sudo rm -rf build
@@ -48,9 +50,7 @@ pack-plugin: build l_private_etc
 	@sudo mkdir -p ${WORK_D}/private/etc/newsyslog.d
 	@sudo ${CP} Package/newsyslog.d/crypt.conf ${WORK_D}/private/etc/newsyslog.d/crypt.conf
 	@sudo mkdir -p ${WORK_D}/Library/Security/SecurityAgentPlugins
-	@sudo ${CP} -R build/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
-	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/Frameworks/*
-	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle/Contents/MacOS/*
+	@sudo ${CP} -R build/Build/Products/Release/Crypt.bundle ${WORK_D}/Library/Security/SecurityAgentPlugins/Crypt.bundle
 
 pack-scripts:
 	@sudo ${INSTALL} -o root -g wheel -m 755 Package/postinstall ${SCRIPT_D}
@@ -67,21 +67,21 @@ build_binary:
 	/bin/rm build/checkin.amd64
 	@sudo chown root:wheel build/checkin
 	@sudo chmod 755 build/checkin
-	
+
 
 sign_binary: build_binary
-	@sudo codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
+	codesign --timestamp --force --deep -s "${DEV_APP_CERT}" build/checkin
 
 pack-checkin: l_Library l_Library_LaunchDaemons build_binary sign_binary
 	@sudo mkdir -p ${WORK_D}/Library/Crypt
 	@sudo ${CP} build/checkin ${WORK_D}/Library/Crypt/checkin
 	@sudo chown -R root:wheel ${WORK_D}/Library/Crypt
 	@sudo chmod 755 ${WORK_D}/Library/Crypt/checkin
+    @sudo chown -R wesw:wheel ${WORK_D}/payload
 	@sudo ${INSTALL} -m 644 -g wheel -o root Package/com.grahamgilbert.crypt.plist ${WORK_D}/Library/LaunchDaemons
 
 dist: pkg
 	@sudo rm -f Distribution
-	python3 generate_dist.py
 	@sudo productbuild --distribution Distribution Crypt-${BUNDLE_VERSION}.pkg
 	@sudo rm -f Crypt.pkg
 	@sudo rm -f Distribution
@@ -90,16 +90,16 @@ notarize:
 	@./notarize.sh "${APPLE_ACC_USER}" "${APPLE_ACC_PWD}" "./Crypt.pkg"
 
 remove-xattrs:
-	@sudo xattr -rd com.dropbox.attributes ${WORK_D}
-	@sudo xattr -rd com.dropbox.internal ${WORK_D}
-	@sudo xattr -rd com.apple.ResourceFork ${WORK_D}
-	@sudo xattr -rd com.apple.FinderInfo ${WORK_D}
-	@sudo xattr -rd com.apple.metadata:_kMDItemUserTags ${WORK_D}
-	@sudo xattr -rd com.apple.metadata:kMDItemFinderComment ${WORK_D}
-	@sudo xattr -rd com.apple.metadata:kMDItemOMUserTagTime ${WORK_D}
-	@sudo xattr -rd com.apple.metadata:kMDItemOMUserTags ${WORK_D}
-	@sudo xattr -rd com.apple.metadata:kMDItemStarRating ${WORK_D}
-	@sudo xattr -rd com.dropbox.ignored ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.dropbox.attributes ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.dropbox.internal ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.ResourceFork ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.FinderInfo ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.metadata:_kMDItemUserTags ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.metadata:kMDItemFinderComment ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.metadata:kMDItemOMUserTagTime ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.metadata:kMDItemOMUserTags ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.apple.metadata:kMDItemStarRating ${WORK_D}
+	@sudo /usr/bin/xattr -rd com.dropbox.ignored ${WORK_D}
 
 check_variables:
 ifndef DEV_INSTALL_CERT
