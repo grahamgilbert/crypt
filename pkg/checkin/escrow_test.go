@@ -80,6 +80,14 @@ func (m *MockPref) Delete(key string) error {
 	return nil
 }
 
+func (m *MockPref) GetDate(key string) (time.Time, error) {
+	return time.Now(), nil
+}
+
+func (m *MockPref) SetDate(key string, value time.Time) error {
+	return nil
+}
+
 func TestGetCommand(t *testing.T) {
 	p := &MockPref{}
 
@@ -272,6 +280,7 @@ func TestGetRecoveryKey(t *testing.T) {
 	}
 
 	key := keyPlist{RecoveryKey: "test_recovery_key"}
+	p := &MockPref{}
 
 	tmpFile, err := os.CreateTemp(os.TempDir(), "crypt-testing-")
 	assert.NoError(t, err)
@@ -283,7 +292,7 @@ func TestGetRecoveryKey(t *testing.T) {
 	err = os.WriteFile(tmpFile.Name(), plistBytes, 0644)
 	assert.NoError(t, err)
 
-	out, err := getRecoveryKey(tmpFile.Name())
+	out, err := getRecoveryKey(tmpFile.Name(), p)
 	if err != nil {
 		t.Fatalf("getRecoveryKey failed with error: %v", err)
 	}
