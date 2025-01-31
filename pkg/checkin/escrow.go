@@ -145,7 +145,10 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 	// if using the keychain and the key wasn't rotated, update the preference last escrow date and return
 	if useKeychain && !keyRotated {
 		// write the last escrow date to preferences if using keychain.
-		p.SetDate("LastEscrow", time.Now())
+		err = p.SetDate("LastEscrow", time.Now())
+		if err != nil {
+			return errors.Wrap(err, "failed to set last escrow date")
+		}
 		return nil
 	}
 
