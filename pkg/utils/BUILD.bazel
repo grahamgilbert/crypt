@@ -12,6 +12,7 @@ go_library(
         "os_version.go",
         "string_in_slice.go",
         "keychain.go",
+        "serial.go",
     ],
     cgo = True,
     clinkopts = select({

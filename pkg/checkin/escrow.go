@@ -18,7 +18,6 @@ import (
 	"github.com/grahamgilbert/crypt/pkg/utils"
 	"github.com/groob/plist"
 	"github.com/hashicorp/go-version"
-	"github.com/korylprince/macserial"
 	"github.com/pkg/errors"
 )
 
@@ -183,10 +182,7 @@ func buildCryptData(p pref.PrefInterface, r utils.Runner) (CryptData, error) {
 	var err error
 
 	// Get serial number
-	cryptData.SerialNumber, err = macserial.Get()
-	if err != nil {
-		return CryptData{}, errors.Wrap(err, "failed to get serial number")
-	}
+	cryptData.SerialNumber = utils.GetSerial()
 
 	// Get enabled user
 	cryptData.EnabledUser, err = utils.GetConsoleUser()
