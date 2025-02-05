@@ -18,7 +18,6 @@
 
 #import "CryptAuthPlugin.h"
 #import "Crypt-Swift.h" // Auto-generated header - Makes the Swift classes available to ObjC
-#import "PromptWindowController.h"
 
 #pragma mark
 #pragma mark Entry Point Wrappers
@@ -98,8 +97,6 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
   mechanism->fEngine = inEngine;
   mechanism->fPlugin = (PluginRecord *)inPlugin;;
   mechanism->fCheck = (strcmp(mechanismId, "Check") == 0);
-  mechanism->fCryptGUI = (strcmp(mechanismId, "CryptGUI") == 0);
-  mechanism->fEnablement = (strcmp(mechanismId, "Enablement") == 0);
   *outMechanism = mechanism;
   return errSecSuccess;
 }
@@ -111,12 +108,6 @@ extern OSStatus AuthorizationPluginCreate(const AuthorizationCallbacks *callback
   if (mechanism->fCheck) {
     Check *check = [[Check alloc] initWithMechanism:mechanism];
     [check run];
-  } else if (mechanism->fCryptGUI) {
-    CryptGUI *cryptgui = [[CryptGUI alloc] initWithMechanism:mechanism];
-    [cryptgui run];
-  } else if (mechanism->fEnablement) {
-    Enablement *enablement = [[Enablement alloc] initWithMechanism:mechanism];
-    [enablement run];
   }
 
   // Default "Allow Login". Used if none of the mechanisms above are called or don't make

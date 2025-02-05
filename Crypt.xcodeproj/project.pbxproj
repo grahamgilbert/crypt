@@ -3,53 +3,79 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 56;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1A5C742E1F15554700D9792A /* PromptWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A5C742D1F15554700D9792A /* PromptWindowController.swift */; };
 		1A8643121F15292200108C19 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A8643111F15292200108C19 /* Preferences.swift */; };
-		C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */; };
 		D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */; };
 		D2D31D5F1C2303F500839D93 /* Check.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D541C2303F500839D93 /* Check.swift */; };
-		D2D31D611C2303F500839D93 /* Enablement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D571C2303F500839D93 /* Enablement.swift */; };
-		D2D31D621C2303F500839D93 /* fv2.png in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D591C2303F500839D93 /* fv2.png */; };
-		D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D5B1C2303F500839D93 /* PromptWindowController.m */; };
-		D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */; };
-		D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D31D661C2307D500839D93 /* CryptGUI.swift */; };
+		D50ACC7C2A6C797E00F8E62D /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50ACC7B2A6C797E00F8E62D /* main.swift */; };
+		D50ACC832A6C79D200F8E62D /* authmod in CopyFiles */ = {isa = PBXBuildFile; fileRef = D50ACC792A6C797E00F8E62D /* authmod */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D50F65B12B8CE9C4008887DB /* Keychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50F65B02B8CE9C4008887DB /* Keychain.swift */; };
+		D50F65B32B8CEF27008887DB /* Logging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D50F65B22B8CEF27008887DB /* Logging.swift */; };
+		D54BDA342C31F4190028425F /* Filevault.swift in Sources */ = {isa = PBXBuildFile; fileRef = D54BDA332C31F4190028425F /* Filevault.swift */; };
+		D579C9312D309A1F00FB6802 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = D579C9302D309A1F00FB6802 /* ArgumentParser */; };
+		D5C75AA72D4C06E900C77CA0 /* Core.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5C75AA62D4C06E900C77CA0 /* Core.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		D50ACC852A6C7E1C00F8E62D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D50ACC782A6C797E00F8E62D;
+			remoteInfo = authmod;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C7AD39031D22C32F000FB736 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/XPCServices";
-			dstSubfolderSpec = 16;
+			dstPath = "";
+			dstSubfolderSpec = 6;
 			files = (
+				D50ACC832A6C79D200F8E62D /* authmod in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D50ACC772A6C797E00F8E62D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1A5C742D1F15554700D9792A /* PromptWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PromptWindowController.swift; sourceTree = "<group>"; };
 		1A8643111F15292200108C19 /* Preferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 2; lastKnownFileType = sourcecode.swift; path = CryptMechanism.swift; sourceTree = "<group>"; tabWidth = 2; };
 		D2D31D4F1C2303F500839D93 /* Crypt-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "Crypt-Bridging-Header.h"; path = "Crypt/Crypt-Bridging-Header.h"; sourceTree = "<group>"; };
 		D2D31D501C2303F500839D93 /* CryptAuthPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CryptAuthPlugin.h; path = Crypt/CryptAuthPlugin.h; sourceTree = "<group>"; };
 		D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CryptAuthPlugin.m; path = Crypt/CryptAuthPlugin.m; sourceTree = "<group>"; };
 		D2D31D521C2303F500839D93 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Crypt/Info.plist; sourceTree = "<group>"; };
 		D2D31D541C2303F500839D93 /* Check.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Check.swift; sourceTree = "<group>"; };
-		D2D31D571C2303F500839D93 /* Enablement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enablement.swift; sourceTree = "<group>"; };
-		D2D31D591C2303F500839D93 /* fv2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fv2.png; sourceTree = "<group>"; };
-		D2D31D5A1C2303F500839D93 /* PromptWindowController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PromptWindowController.h; sourceTree = "<group>"; };
-		D2D31D5B1C2303F500839D93 /* PromptWindowController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PromptWindowController.m; sourceTree = "<group>"; };
-		D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PromptWindowController.xib; sourceTree = "<group>"; };
 		D2D31D651C23042A00839D93 /* Crypt.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Crypt.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
-		D2D31D661C2307D500839D93 /* CryptGUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CryptGUI.swift; sourceTree = "<group>"; };
+		D50ACC792A6C797E00F8E62D /* authmod */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = authmod; sourceTree = BUILT_PRODUCTS_DIR; };
+		D50ACC7B2A6C797E00F8E62D /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		D50F65B02B8CE9C4008887DB /* Keychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keychain.swift; sourceTree = "<group>"; };
+		D50F65B22B8CEF27008887DB /* Logging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logging.swift; sourceTree = "<group>"; };
+		D54BDA332C31F4190028425F /* Filevault.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Filevault.swift; sourceTree = "<group>"; };
+		D5C75AA62D4C06E900C77CA0 /* Core.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Core.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D50ACC762A6C797E00F8E62D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D579C9312D309A1F00FB6802 /* ArgumentParser in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCD4FD911BEE763C00CF7F48 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -63,7 +89,11 @@
 		1A8643131F15294900108C19 /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				D5C75AA62D4C06E900C77CA0 /* Core.swift */,
 				1A8643111F15292200108C19 /* Preferences.swift */,
+				D50F65B02B8CE9C4008887DB /* Keychain.swift */,
+				D50F65B22B8CEF27008887DB /* Logging.swift */,
+				D54BDA332C31F4190028425F /* Filevault.swift */,
 			);
 			name = Utility;
 			sourceTree = "<group>";
@@ -71,26 +101,25 @@
 		D2D31D531C2303F500839D93 /* Mechanisms */ = {
 			isa = PBXGroup;
 			children = (
-				C7AD38FF1D22B3E3000FB736 /* CryptMechanism.swift */,
 				D2D31D541C2303F500839D93 /* Check.swift */,
-				D2D31D661C2307D500839D93 /* CryptGUI.swift */,
-				D2D31D571C2303F500839D93 /* Enablement.swift */,
 			);
 			name = Mechanisms;
 			path = Crypt/Mechanisms;
 			sourceTree = "<group>";
 		};
-		D2D31D581C2303F500839D93 /* Views */ = {
+		D50ACC7A2A6C797E00F8E62D /* authmod */ = {
 			isa = PBXGroup;
 			children = (
-				D2D31D591C2303F500839D93 /* fv2.png */,
-				D2D31D5A1C2303F500839D93 /* PromptWindowController.h */,
-				1A5C742D1F15554700D9792A /* PromptWindowController.swift */,
-				D2D31D5B1C2303F500839D93 /* PromptWindowController.m */,
-				D2D31D5C1C2303F500839D93 /* PromptWindowController.xib */,
+				D50ACC7B2A6C797E00F8E62D /* main.swift */,
 			);
-			name = Views;
-			path = Crypt/Views;
+			path = authmod;
+			sourceTree = "<group>";
+		};
+		D50ACC802A6C799A00F8E62D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		FCD4FD8B1BEE763C00CF7F48 = {
@@ -102,8 +131,10 @@
 				D2D31D511C2303F500839D93 /* CryptAuthPlugin.m */,
 				D2D31D521C2303F500839D93 /* Info.plist */,
 				D2D31D531C2303F500839D93 /* Mechanisms */,
-				D2D31D581C2303F500839D93 /* Views */,
 				D2D31D651C23042A00839D93 /* Crypt.bundle */,
+				D50ACC792A6C797E00F8E62D /* authmod */,
+				D50ACC7A2A6C797E00F8E62D /* authmod */,
+				D50ACC802A6C799A00F8E62D /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -112,6 +143,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D50ACC782A6C797E00F8E62D /* authmod */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D50ACC7D2A6C797E00F8E62D /* Build configuration list for PBXNativeTarget "authmod" */;
+			buildPhases = (
+				D50ACC752A6C797E00F8E62D /* Sources */,
+				D50ACC762A6C797E00F8E62D /* Frameworks */,
+				D50ACC772A6C797E00F8E62D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = authmod;
+			packageProductDependencies = (
+				D579C9302D309A1F00FB6802 /* ArgumentParser */,
+			);
+			productName = authmod;
+			productReference = D50ACC792A6C797E00F8E62D /* authmod */;
+			productType = "com.apple.product-type.tool";
+		};
 		FCD4FD931BEE763C00CF7F48 /* Crypt */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = FCD4FD9A1BEE763C00CF7F48 /* Build configuration list for PBXNativeTarget "Crypt" */;
@@ -125,8 +176,11 @@
 			buildRules = (
 			);
 			dependencies = (
+				D50ACC862A6C7E1C00F8E62D /* PBXTargetDependency */,
 			);
 			name = Crypt;
+			packageProductDependencies = (
+			);
 			productName = Crypt;
 			productReference = D2D31D651C23042A00839D93 /* Crypt.bundle */;
 			productType = "com.apple.product-type.bundle";
@@ -137,9 +191,14 @@
 		FCD4FD8C1BEE763C00CF7F48 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1250;
+				BuildIndependentTargetsInParallel = YES;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1620;
 				ORGANIZATIONNAME = "Graham Gilbert";
 				TargetAttributes = {
+					D50ACC782A6C797E00F8E62D = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
 					FCD4FD931BEE763C00CF7F48 = {
 						CreatedOnToolsVersion = 7.1;
 						LastSwiftMigration = 1150;
@@ -147,7 +206,7 @@
 				};
 			};
 			buildConfigurationList = FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -155,11 +214,15 @@
 				Base,
 			);
 			mainGroup = FCD4FD8B1BEE763C00CF7F48;
+			packageReferences = (
+				D579C92F2D309A1F00FB6802 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+			);
 			productRefGroup = FCD4FD8B1BEE763C00CF7F48;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				FCD4FD931BEE763C00CF7F48 /* Crypt */,
+				D50ACC782A6C797E00F8E62D /* authmod */,
 			);
 		};
 /* End PBXProject section */
@@ -169,8 +232,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2D31D621C2303F500839D93 /* fv2.png in Resources */,
-				D2D31D641C2303F500839D93 /* PromptWindowController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -193,29 +254,98 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D50ACC752A6C797E00F8E62D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D50ACC7C2A6C797E00F8E62D /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		FCD4FD901BEE763C00CF7F48 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				D2D31D5F1C2303F500839D93 /* Check.swift in Sources */,
+				D50F65B32B8CEF27008887DB /* Logging.swift in Sources */,
 				1A8643121F15292200108C19 /* Preferences.swift in Sources */,
-				D2D31D611C2303F500839D93 /* Enablement.swift in Sources */,
+				D54BDA342C31F4190028425F /* Filevault.swift in Sources */,
 				D2D31D5D1C2303F500839D93 /* CryptAuthPlugin.m in Sources */,
-				D2D31D671C2307D500839D93 /* CryptGUI.swift in Sources */,
-				1A5C742E1F15554700D9792A /* PromptWindowController.swift in Sources */,
-				D2D31D631C2303F500839D93 /* PromptWindowController.m in Sources */,
-				C7AD39001D22B3E3000FB736 /* CryptMechanism.swift in Sources */,
+				D50F65B12B8CE9C4008887DB /* Keychain.swift in Sources */,
+				D5C75AA72D4C06E900C77CA0 /* Core.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D50ACC862A6C7E1C00F8E62D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D50ACC782A6C797E00F8E62D /* authmod */;
+			targetProxy = D50ACC852A6C7E1C00F8E62D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		D50ACC7E2A6C797E00F8E62D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Y28TH9SHX7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D50ACC7F2A6C797E00F8E62D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Y28TH9SHX7;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt.authmod;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 		FCD4FD981BEE763C00CF7F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -241,11 +371,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Graham Gilbert (9D8XP85393)";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -260,7 +392,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -270,8 +402,8 @@
 		FCD4FD991BEE763C00CF7F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -297,11 +429,13 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "Developer ID Application: Graham Gilbert (9D8XP85393)";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -310,7 +444,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 11.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -321,13 +455,15 @@
 		FCD4FD9B1BEE763C00CF7F48 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4.0;
-				DEVELOPMENT_TEAM = 9D8XP85393;
+				CURRENT_PROJECT_VERSION = 6.0;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Y28TH9SHX7;
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -335,8 +471,8 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 4.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -354,13 +490,15 @@
 		FCD4FD9C1BEE763C00CF7F48 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 4.0;
-				DEVELOPMENT_TEAM = 9D8XP85393;
+				CURRENT_PROJECT_VERSION = 6.0;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = Y28TH9SHX7;
 				INFOPLIST_FILE = Crypt/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Bundles";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -368,8 +506,8 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
-				MARKETING_VERSION = 4.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.5;
+				MARKETING_VERSION = 6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grahamgilbert.Crypt;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
@@ -385,6 +523,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D50ACC7D2A6C797E00F8E62D /* Build configuration list for PBXNativeTarget "authmod" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D50ACC7E2A6C797E00F8E62D /* Debug */,
+				D50ACC7F2A6C797E00F8E62D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		FCD4FD8F1BEE763C00CF7F48 /* Build configuration list for PBXProject "Crypt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -404,6 +551,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		D579C92F2D309A1F00FB6802 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.5.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		D579C9302D309A1F00FB6802 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D579C92F2D309A1F00FB6802 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = FCD4FD8C1BEE763C00CF7F48 /* Project object */;
 }

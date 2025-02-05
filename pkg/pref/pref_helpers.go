@@ -1,6 +1,8 @@
 package pref
 
 import (
+	"time"
+
 	"github.com/grahamgilbert/crypt/pkg/utils"
 	"github.com/pkg/errors"
 )
@@ -15,10 +17,12 @@ type PrefInterface interface {
 	GetBool(prefName string) (bool, error)
 	GetInt(prefName string) (int, error)
 	GetArray(prefName string) ([]string, error)
+	GetDate(prefName string) (time.Time, error)
 	SetString(prefName string, value string) error
 	SetBool(prefName string, value bool) error
 	SetInt(prefName string, value int) error
 	SetArray(prefName string, prefValue []string) error
+	SetDate(prefName string, value time.Time) error
 	Get(prefName string) (interface{}, error)
 	Set(prefName string, value interface{}) error
 }
@@ -87,6 +91,18 @@ func (p *Pref) GetArray(prefName string) ([]string, error) {
 	return value.([]string), nil
 }
 
+// GetDate returns the value of a preference as a date
+func (p *Pref) GetDate(prefName string) (time.Time, error) {
+	value, err := p.Get(prefName)
+	if err != nil {
+		return time.Time{}, errors.Wrapf(err, "failed to get preference %s", prefName)
+	}
+	if value == nil {
+		return time.Time{}, nil
+	}
+	return value.(time.Time), nil
+}
+
 // SetString sets the value of a preference as a string
 func (p *Pref) SetString(prefName string, value string) error {
 	return p.Set(prefName, value)
@@ -105,4 +121,9 @@ func (p *Pref) SetInt(prefName string, value int) error {
 // SetArray sets the value of a preference as an array
 func (p *Pref) SetArray(prefName string, prefValue []string) error {
 	return p.Set(prefName, prefValue)
+}
+
+// SetDate sets the value of a preference as a date
+func (p *Pref) SetDate(prefName string, value time.Time) error {
+	return p.Set(prefName, value)
 }
