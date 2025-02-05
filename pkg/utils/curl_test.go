@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,9 +27,16 @@ func TestBuildCurlConfigFile(t *testing.T) {
 		"key1": `value1`,
 		"key2": `value"2`,
 	}
-	want := `key1 = "value1"
-key2 = "value\"2"`
+	expectedLines := []string{
+		`key1 = "value1"`,
+		`key2 = "value\"2"`,
+	}
 
 	got := BuildCurlConfigFile(d)
-	assert.Equal(t, want, got)
+	gotLines := strings.Split(got, "\n")
+
+	assert.Equal(t, len(expectedLines), len(gotLines), "Number of lines should match")
+	for _, line := range expectedLines {
+		assert.Contains(t, gotLines, line, "Output should contain the expected line")
+	}
 }
