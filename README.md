@@ -148,11 +148,7 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CommonNameFor
 A boolean value indicating that Crypt should generate a new recovery key during login.
 
 ```bash
-<<<<<<< HEAD
 $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt GenerateNewKey -bool TRUE
-=======
-$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CommonNameForEscrow -string "Custom Common Name"
->>>>>>> 3fc1cbc (fix conflicts)
 ```
 
 ## Uninstalling
