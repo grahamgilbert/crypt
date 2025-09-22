@@ -11,6 +11,7 @@ When using Crypt with macOS 10.15 and higher, you will also need to deploy a PPC
 - Uses native authorization plugin so FileVault enforcement cannot be skipped.
 - Escrow is delayed until there is an active user, so FileVault can be enforced when the Mac is offline.
 - Administrators can specify a series of username that should not have to enable FileVault (IT admin, for example).
+- Can securely store the recovery key in the keychain.
 
 ## Configuration
 
@@ -93,6 +94,62 @@ $ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt AdditionalCur
 ### PostRunCommand
 
 This is a command that is run after Crypt has detected an error condition with a stored key that cannot be resolved silently - either it has failed validation or the server has instructed the client to rotate the key. These cannot be resolved silently on APFS volumes, so the user will need to log in again. If you have a tool that can enforce a logout or a reboot, you can run it here. This preference can either be a string if your command has no spaces, or an array if there are spaces in the command.
+
+### AppsAllowedToChangeKey
+
+An array of applications allowed to change the ACLs for the FileVault recovery key in the keychain. This most likely doesn't need to be changed from it's default. Only works with `StoreRecoveryKeyInKeychain` (Available in Crypt version 6 and later)
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt AppsAllowedToChangeKey -array "/path/to/app1" "/path/to/app2"
+```
+
+### AppsAllowedToReadKey
+
+An array of applications allowed to read the FileVault recovery key. By default, this includes "/Library/Crypt/checkin". Note: It is crucial to include "/Library/Crypt/checkin" in this array, or Crypt may not function correctly. Only works with `StoreRecoveryKeyInKeychain` (Available in Crypt version 6 and later)
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt AppsAllowedToReadKey -array "/Library/Crypt/checkin" "/path/to/custom/app"
+```
+
+### InvisibleInKeychain
+
+A boolean value indicating whether the recovery key should be invisible in the Keychain. If set to `true` the recovery will not be viewable in Keychain.app. The icon can still be listable with the `security` command. Default is `false`. (Available in Crypt version 6 and later)
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt InvisibleInKeychain -bool TRUE
+```
+
+### KeychainUIPromptDescription
+
+The description shown in the Keychain UI prompt when a process tries to access or modify the item that doesn't have permission. You could use this a way to instruct folks on whether or not to allow it. Default is "Crypt FileVault Recovery Key". (Available in Crypt version 6 and later)
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt KeychainUIPromptDescription -string "Custom FileVault Recovery Key Description"
+```
+
+### StoreRecoveryKeyInKeychain
+
+A boolean value indicating whether the recovery key should be stored in the Keychain. Default is `true`. (Available in Crypt version 6 and later)
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt StoreRecoveryKeyInKeychain -bool FALSE
+```
+
+### CommonNameForEscrow
+
+A string value matching the Issuer Common Name of a certificate in the macOS keychain. Empty/not set by default. Available in Crypt version 6 and later you can use this preference to have crypt use native gocode for the escrow request (not `curl`) and use a certificate in the keychain matching the Issuer Common Name provided for mTLS. The private key associated with the certificate must be accessible and signable by /Library/Crypt/checkin.
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt CommonNameForEscrow -string "Custom Common Name"
+```
+
+### GenerateNewKey
+
+A boolean value indicating that Crypt should generate a new recovery key during login.
+
+```bash
+$ sudo defaults write /Library/Preferences/com.grahamgilbert.crypt GenerateNewKey -bool TRUE
+```
 
 ## Uninstalling
 

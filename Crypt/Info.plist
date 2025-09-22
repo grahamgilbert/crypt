@@ -15,13 +15,13 @@
 	<key>CFBundlePackageType</key>
 	<string>BNDL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>5.0.3</string>
+	<string>6.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>282</string>
+	<string>288</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2024 The Crypt Project. All rights reserved.</string>
+	<string>Copyright © 2025 The Crypt Project. All rights reserved.</string>
 	<key>NSPrincipalClass</key>
 	<string></string>
 </dict>

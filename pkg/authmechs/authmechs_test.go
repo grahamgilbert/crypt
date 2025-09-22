@@ -101,7 +101,6 @@ func TestSetMechsInDB(t *testing.T) {
 		mechList    []string
 		indexMech   string
 		indexOffset int
-		add         bool
 		want        AuthDB
 	}{
 		{
@@ -110,7 +109,6 @@ func TestSetMechsInDB(t *testing.T) {
 			mechList:    []string{"mech1", "mech2"},
 			indexMech:   "mech1",
 			indexOffset: 1,
-			add:         true,
 			want:        AuthDB{Mechanisms: []string{"mech1", "mech2"}},
 		},
 		{
@@ -119,7 +117,6 @@ func TestSetMechsInDB(t *testing.T) {
 			mechList:    []string{"mech4", "mech5"},
 			indexMech:   "mech2",
 			indexOffset: 1,
-			add:         true,
 			want:        AuthDB{Mechanisms: []string{"mech1", "mech2", "mech4", "mech5", "mech3"}},
 		},
 		{
@@ -128,32 +125,29 @@ func TestSetMechsInDB(t *testing.T) {
 			mechList:    []string{},
 			indexMech:   "mech2",
 			indexOffset: 1,
-			add:         true,
 			want:        AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
 		},
 		{
-			name:        "Test with non-empty db, add is false",
+			name:        "Test with non-empty db and mechList to add",
 			db:          AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
-			mechList:    []string{"mech4", "mech3"},
+			mechList:    []string{"mech4", "mech5"},
 			indexMech:   "mech2",
 			indexOffset: 1,
-			add:         false,
-			want:        AuthDB{Mechanisms: []string{"mech1", "mech2"}},
+			want:        AuthDB{Mechanisms: []string{"mech1", "mech2", "mech4", "mech5", "mech3"}},
 		},
 		{
-			name:        "Test with non-empty db, mechList is empty, add is false",
+			name:        "Test with non-empty db, empty mechList",
 			db:          AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
 			mechList:    []string{},
 			indexMech:   "mech2",
 			indexOffset: 1,
-			add:         false,
 			want:        AuthDB{Mechanisms: []string{"mech1", "mech2", "mech3"}},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := setMechsInDB(tt.db, tt.mechList, tt.indexMech, tt.indexOffset, tt.add)
+			got := setMechsInDB(tt.db, tt.mechList, tt.indexMech, tt.indexOffset)
 			assert.Equal(t, tt.want, got)
 		})
 	}

@@ -12,9 +12,10 @@ import (
 )
 
 var (
-	fv2Mechs       = []string{"Crypt:Check,privileged", "Crypt:CryptGUI", "Crypt:Enablement,privileged"}
-	fv2IndexMech   = "loginwindow:done"
-	fv2IndexOffset = 0
+	fv2Mechs         = []string{"Crypt:Check,privileged"}
+	fv2MechsToRemove = []string{"Crypt:Check,privileged", "Crypt:CryptGUI", "Crypt:Enablement,privileged"}
+	fv2IndexMech     = "loginwindow:done"
+	fv2IndexOffset   = 0
 )
 
 type AuthDB struct {
@@ -54,13 +55,12 @@ func checkMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset 
 	return reflect.DeepEqual(db.Mechanisms[insertIndex:insertIndex+len(mechList)], mechList)
 }
 
-func setMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset int, add bool) AuthDB {
-	db = removeMechsInDB(db, mechList)
+func setMechsInDB(db AuthDB, mechList []string, indexMech string, indexOffset int) AuthDB {
+	// Remove all the mechanisms that crypt ever added but are not needed anymore we'll re-add the ones we need
+	db = removeMechsInDB(db, fv2MechsToRemove)
 
-	if add {
-		insertIndex := indexOf(db.Mechanisms, indexMech) + indexOffset
-		db.Mechanisms = insertMechsAtPosition(db.Mechanisms, mechList, insertIndex)
-	}
+	insertIndex := indexOf(db.Mechanisms, indexMech) + indexOffset
+	db.Mechanisms = insertMechsAtPosition(db.Mechanisms, mechList, insertIndex)
 
 	return db
 }
@@ -113,7 +113,7 @@ func editAuthDB(r utils.Runner, add bool) error {
 		return err
 	}
 
-	d = setMechsInDB(d, fv2Mechs, fv2IndexMech, fv2IndexOffset, add)
+	d = setMechsInDB(d, fv2Mechs, fv2IndexMech, fv2IndexOffset)
 	data, err := plist.Marshal(d)
 	if err != nil {
 		return err

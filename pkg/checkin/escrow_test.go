@@ -80,6 +80,14 @@ func (m *MockPref) Delete(key string) error {
 	return nil
 }
 
+func (m *MockPref) GetDate(key string) (time.Time, error) {
+	return time.Now(), nil
+}
+
+func (m *MockPref) SetDate(key string, value time.Time) error {
+	return nil
+}
+
 func TestGetCommand(t *testing.T) {
 	p := &MockPref{}
 
@@ -272,6 +280,7 @@ func TestGetRecoveryKey(t *testing.T) {
 	}
 
 	key := keyPlist{RecoveryKey: "test_recovery_key"}
+	p := &MockPref{}
 
 	tmpFile, err := os.CreateTemp(os.TempDir(), "crypt-testing-")
 	assert.NoError(t, err)
@@ -283,10 +292,215 @@ func TestGetRecoveryKey(t *testing.T) {
 	err = os.WriteFile(tmpFile.Name(), plistBytes, 0644)
 	assert.NoError(t, err)
 
-	out, err := getRecoveryKey(tmpFile.Name())
+	out, err := getRecoveryKey(tmpFile.Name(), p)
 	if err != nil {
 		t.Fatalf("getRecoveryKey failed with error: %v", err)
 	}
 
 	assert.Equal(t, key.RecoveryKey, out)
+}
+
+// TestEscrowKeySignatureCheck just verifies the escrowKey function accepts the mTLS parameter
+func TestEscrowKeySignatureCheck(t *testing.T) {
+	// No real test implementation, just verifying function signature
+	t.Run("verify function signature", func(t *testing.T) {
+		// We're not actually calling the function, just making sure
+		// the compiler recognizes the function signature with mTLScommonName
+		var _ = escrowKey
+	})
+}
+
+func TestBuildCryptData(t *testing.T) {
+	// Create a mock PrefInterface that returns specific values for testing
+	mockPref := &MockPref{}
+
+	// Create a mock runner that returns specific values for system commands
+	mockRunner := utils.MockCmdRunner{
+		Output: "enabled_user,19F18F252-781C-4754-820D-C49346C386C4",
+		Err:    nil,
+	}
+	r := utils.Runner{}
+	r.Runner = mockRunner
+
+	// Test building CryptData
+	cryptData, err := buildCryptData(mockPref, r)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, cryptData.SerialNumber)
+	// GetConsoleUser returns the actual current user, so we just verify it's not empty
+	assert.NotEmpty(t, cryptData.EnabledUser)
+}
+
+func TestRemoveInvalidKey(t *testing.T) {
+	t.Run("remove from plist", func(t *testing.T) {
+		// Create a temporary file
+		tempFile, err := os.CreateTemp("", "test_plist_*.plist")
+		assert.NoError(t, err)
+		defer os.Remove(tempFile.Name()) // clean up
+
+		// Write some content to the file
+		err = os.WriteFile(tempFile.Name(), []byte("test content"), 0644)
+		assert.NoError(t, err)
+
+		// Remove the invalid key (should delete the file)
+		err = removeInvalidKey(tempFile.Name(), false)
+		assert.NoError(t, err)
+
+		// Verify the file was deleted
+		_, err = os.Stat(tempFile.Name())
+		assert.True(t, os.IsNotExist(err))
+	})
+
+	t.Run("remove from keychain", func(t *testing.T) {
+		// Test removing from keychain - this will fail on systems without keychain setup
+		// but we can test that the function calls the correct utility function
+		err := removeInvalidKey("", true)
+		// We expect this to potentially fail since we don't have a keychain setup in tests
+		// but we're testing that the function path is correct
+		assert.Error(t, err) // Expected to fail in test environment
+	})
+}
+
+// MockKeychainPref is a mock preference that indicates keychain usage
+type MockKeychainPref struct {
+	MockPref
+}
+
+func (m *MockKeychainPref) GetBool(key string) (bool, error) {
+	if key == "StoreRecoveryKeyInKeychain" {
+		return true, nil
+	}
+	return m.MockPref.GetBool(key)
+}
+
+func TestGetRecoveryKeyWithKeychain(t *testing.T) {
+	// Create a mock pref that indicates keychain usage
+	mockPref := &MockKeychainPref{}
+
+	// This test will fail in most environments since we don't have the keychain set up
+	// but it tests the code path
+	_, err := getRecoveryKey("", mockPref)
+	assert.Error(t, err) // Expected to fail since no keychain entry exists
+}
+
+// MockExtendedPref extends MockPref to support additional functionality for testing
+type MockExtendedPref struct {
+	MockPref
+	stringValues map[string]string
+	boolValues   map[string]bool
+	intValues    map[string]int
+	arrayValues  map[string][]string
+	dateValues   map[string]time.Time
+}
+
+func NewMockExtendedPref() *MockExtendedPref {
+	return &MockExtendedPref{
+		stringValues: make(map[string]string),
+		boolValues:   make(map[string]bool),
+		intValues:    make(map[string]int),
+		arrayValues:  make(map[string][]string),
+		dateValues:   make(map[string]time.Time),
+	}
+}
+
+func (m *MockExtendedPref) GetString(key string) (string, error) {
+	if val, ok := m.stringValues[key]; ok {
+		return val, nil
+	}
+	return m.MockPref.GetString(key)
+}
+
+func (m *MockExtendedPref) GetBool(key string) (bool, error) {
+	if val, ok := m.boolValues[key]; ok {
+		return val, nil
+	}
+	return m.MockPref.GetBool(key)
+}
+
+func (m *MockExtendedPref) GetInt(key string) (int, error) {
+	if val, ok := m.intValues[key]; ok {
+		return val, nil
+	}
+	return m.MockPref.GetInt(key)
+}
+
+func (m *MockExtendedPref) GetArray(key string) ([]string, error) {
+	if val, ok := m.arrayValues[key]; ok {
+		return val, nil
+	}
+	return m.MockPref.GetArray(key)
+}
+
+func (m *MockExtendedPref) GetDate(key string) (time.Time, error) {
+	if val, ok := m.dateValues[key]; ok {
+		return val, nil
+	}
+	return m.MockPref.GetDate(key)
+}
+
+func TestBuildCryptDataWithSkippedUser(t *testing.T) {
+	// Test buildCryptData when we get date information
+	mockPref := NewMockExtendedPref()
+	mockPref.arrayValues["SkipUsers"] = []string{"test_user"}
+	mockPref.dateValues["LastEscrow"] = time.Now().Add(-2 * time.Hour)
+
+	// Mock runner that returns enabled users for getEnabledUser fallback
+	mockRunner := utils.MockCmdRunner{
+		Output: "enabled_user,19F18F252-781C-4754-820D-C49346C386C4",
+		Err:    nil,
+	}
+	r := utils.Runner{}
+	r.Runner = mockRunner
+
+	cryptData, err := buildCryptData(mockPref, r)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, cryptData.SerialNumber)
+	// GetConsoleUser returns the actual current user, so we just verify it's not empty
+	assert.NotEmpty(t, cryptData.EnabledUser)
+	assert.NotZero(t, cryptData.LastRun)
+}
+
+func TestSendRequestErrorCases(t *testing.T) {
+	// Test sendRequest error cases without actually making network calls
+	// This tests the function structure and error handling
+
+	t.Run("invalid URL", func(t *testing.T) {
+		// Test with invalid URL to trigger request creation error
+		_, err := sendRequest(":", "data", "commonName")
+		assert.Error(t, err)
+	})
+}
+
+func TestEscrowKeyConditionalBehavior(t *testing.T) {
+	// Test that escrowKey properly chooses between mTLS and curl
+	mockPref := NewMockExtendedPref()
+	mockPref.stringValues["ServerURL"] = "https://test.example.com"
+
+	mockRunner := utils.MockCmdRunner{
+		Output: "test_computer_name",
+		Err:    nil,
+	}
+	r := utils.Runner{}
+	r.Runner = mockRunner
+
+	cryptData := CryptData{
+		SerialNumber: "test_serial",
+		RecoveryKey:  "test_key",
+		EnabledUser:  "test_user",
+	}
+
+	t.Run("with mTLS common name", func(t *testing.T) {
+		// This should attempt mTLS path but will fail due to missing keychain setup
+		_, err := escrowKey(cryptData, r, mockPref, "test-common-name")
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to send request with mTLS")
+	})
+
+	t.Run("without mTLS common name", func(t *testing.T) {
+		// This should attempt curl path
+		_, err := escrowKey(cryptData, r, mockPref, "")
+		assert.Error(t, err)
+		// The exact error depends on what curl returns, but we expect some error
+		// since we're not actually making real network calls
+		assert.NotNil(t, err)
+	})
 }

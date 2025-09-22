@@ -11,14 +11,26 @@ go_library(
         "get_computer_name.go",
         "os_version.go",
         "string_in_slice.go",
+        "keychain.go",
+        "serial.go",
     ],
     cgo = True,
     clinkopts = select({
         "@io_bazel_rules_go//go/platform:darwin": [
             "-framework SystemConfiguration",
+            "-framework CoreFoundation",
+            "-framework Security",
         ],
         "@io_bazel_rules_go//go/platform:ios": [
             "-framework SystemConfiguration",
+            "-framework CoreFoundation",
+            "-framework Security",
+        ],
+        "//conditions:default": [],
+    }),
+    copts = select({
+        "@io_bazel_rules_go//go/platform:darwin": [
+            "-mmacosx-version-min=13.0",
         ],
         "//conditions:default": [],
     }),
@@ -33,6 +45,7 @@ go_test(
         "curl_test.go",
         "exec_test.go",
         "get_computer_name_test.go",
+        "keychain_test.go",
         "os_version_test.go",
         "string_in_slice_test.go",
     ],
