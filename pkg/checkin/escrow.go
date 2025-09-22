@@ -130,13 +130,7 @@ func RunEscrow(r utils.Runner, p pref.PrefInterface) error {
 		return errors.Wrap(err, "failed to get mTLS common name for escrow")
 	}
 
-	if mTLScommonName != "" {
-		// we will use mTLS for escrow, as well as native go http client
-		keyRotated, err = escrowWithMTLS(cryptData, r, p, mTLScommonName)
-	} else {
-		// escrow using curl if mTLS is not configured
-		keyRotated, err = escrowKey(cryptData, r, p)
-	}
+	keyRotated, err = escrowKey(cryptData, r, p, mTLScommonName)
 	if err != nil {
 		return errors.Wrap(err, "escrow operation failed")
 	}
@@ -546,44 +540,60 @@ func runCurl(configFile string, r utils.Runner, p pref.PrefInterface) (string, e
 	return string(out), nil
 }
 
-// escrowKey attempts to escrow a key by sending data to a server URL built from preferences.
-// It logs the process and handles errors appropriately.
+// escrowKey attempts to escrow a key to the server, using either mTLS or curl based on configuration.
+// It builds the check-in URL, constructs the form data, and sends the escrow request using
+// the appropriate method based on whether a CommonNameForEscrow is configured.
 //
 // Parameters:
-//   - plist: CryptData containing the data to be sent.
-//   - r: utils.Runner to execute commands.
-//   - p: pref.PrefInterface to retrieve preferences.
+//   - plist: CryptData containing the data to be sent
+//   - r: utils.Runner interface for executing commands
+//   - p: pref.PrefInterface for accessing preferences
+//   - mTLScommonName: Optional common name for mTLS authentication. If empty, curl will be used.
 //
 // Returns:
-//   - bool: indicating if the key rotation was initiated by the server.
-//   - error: if any error occurs during the process.
-func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface) (bool, error) {
+//   - bool: Indicates if the key was rotated as part of the escrow process
+//   - error: Any error encountered during the process
+func escrowKey(plist CryptData, r utils.Runner, p pref.PrefInterface, mTLScommonName string) (bool, error) {
 	log.Println("Attempting to Escrow Key...")
-	// serverURL, err := p.GetString("ServerURL")
-	// if err != nil {
-	// 	return errors.Wrap(err, "failed to get server URL")
-	// }
+
 	theURL, err := buildCheckinURL(p)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to build checkin URL")
 	}
 
+	// Build form data
 	data, err := buildData(plist, r)
 	if err != nil {
 		return false, errors.Wrap(err, "failed to build data")
 	}
-	configFile := utils.BuildCurlConfigFile(map[string]string{"url": theURL, "data": data})
-	output, err := runCurl(configFile, r, p)
-	if err != nil {
-		return false, errors.Wrap(err, "failed to run curl")
+
+	var responseBody string
+
+	// Determine whether to use mTLS or curl based on whether a common name is provided
+	if mTLScommonName != "" {
+		log.Printf("Using mTLS for escrow with common name: %s", mTLScommonName)
+		body, err := sendRequest(theURL, data, mTLScommonName)
+		if err != nil {
+			return false, errors.Wrap(err, "failed to send request with mTLS")
+		}
+		responseBody = string(body)
+	} else {
+		log.Println("Using curl for escrow")
+		configFile := utils.BuildCurlConfigFile(map[string]string{"url": theURL, "data": data})
+		output, err := runCurl(configFile, r, p)
+		if err != nil {
+			return false, errors.Wrap(err, "failed to run curl")
+		}
+		responseBody = output
 	}
 
 	log.Println("Key escrow successful.")
 
-	keyRotated, err := serverInitiatedRotation(output, r, p)
+	keyRotated, err := serverInitiatedRotation(responseBody, r, p)
 	if err != nil {
 		return false, errors.Wrap(err, "serverInitiatedRotation")
 	}
+
 	return keyRotated, nil
 }
 
@@ -771,48 +781,6 @@ func getRecoveryKey(keyLocation string, p pref.PrefInterface) (string, error) {
 	}
 
 	return key.RecoveryKey, nil
-}
-
-// escrowWithMTLS attempts to escrow a key using mTLS (mutual TLS) authentication.
-// It builds the check-in URL, constructs the form data, creates an HTTP POST request,
-// and sends it using an mTLS client. The function checks the response status and
-// processes the response body to determine if the key escrow was successful.
-//
-// Parameters:
-//   - plist: CryptData containing the data to be sent.
-//   - r: utils.Runner interface for executing commands.
-//   - p: pref.PrefInterface for accessing preferences.
-//
-// Returns:
-//   - bool: Indicates if the key was rotated as part of the escrow process.
-//   - error: Any error encountered during the process.
-func escrowWithMTLS(plist CryptData, r utils.Runner, p pref.PrefInterface, commonName string) (bool, error) {
-	log.Println("Attempting to Escrow Key...")
-
-	theURL, err := buildCheckinURL(p)
-	if err != nil {
-		return false, errors.Wrap(err, "failed to build checkin URL")
-	}
-
-	// Build form data
-	data, err := buildData(plist, r)
-	if err != nil {
-		return false, errors.Wrap(err, "failed to build data")
-	}
-
-	body, err := sendRequest(theURL, data, commonName)
-	if err != nil {
-		return false, errors.Wrap(err, "failed to send request")
-	}
-
-	log.Println("Key escrow successful.")
-
-	keyRotated, err := serverInitiatedRotation(string(body), r, p)
-	if err != nil {
-		return false, errors.Wrap(err, "serverInitiatedRotation")
-	}
-
-	return keyRotated, nil
 }
 
 // sendRequest sends an HTTP POST request to the specified URL with the given data
